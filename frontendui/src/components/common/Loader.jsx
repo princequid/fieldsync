@@ -1,4 +1,1 @@
-import React from "react";
-export default function Loader() {
-  return <div>Loading...</div>;
-}
+export { default } from "../../shared/components/Loader";
