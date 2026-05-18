@@ -1,3 +1,1 @@
-export const users = [];
-export const fields = [];
-export const reports = [];
+export * from "../shared/utils/mockData";
