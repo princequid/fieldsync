@@ -103,18 +103,18 @@ export default function VerifyModal({ job, onConfirm, onReject, onClose }) {
         </p>
 
         {/* Actions */}
-        <div className="flex gap-3">
+        <div className="fs-modal-footer -mx-8 -mb-8 mt-2 flex gap-3">
           <button
             type="button"
             onClick={handleReject}
-            className="flex-1 rounded-2xl border border-red-300 bg-white px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+            className="fs-btn-press fs-focus-ring flex-1 rounded-2xl border border-red-300 bg-white px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
           >
             Reject
           </button>
           <button
             type="button"
             onClick={handleVerify}
-            className="flex-1 rounded-2xl bg-green-600 px-4 py-3 text-sm font-medium text-white hover:bg-green-700 transition-colors"
+            className="fs-btn-gradient-verify fs-btn-press fs-focus-ring flex-1 rounded-2xl px-4 py-3 text-sm font-medium text-white"
           >
             Verify &amp; Close Job
           </button>

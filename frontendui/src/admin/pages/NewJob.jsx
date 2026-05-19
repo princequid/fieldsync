@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { useAdminData } from "../../admin/hooks/useAdminData";
+import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import {
   getClients,
   getTechnicians,
@@ -16,7 +17,7 @@ const PRIORITY_OPTIONS = [
 
 export default function NewJob() {
   const navigate = useNavigate();
-  const { createJob } = useAdminData();
+  const { createJob, loading, error, refetch } = useAdminData();
   const technicians = getTechnicians();
   const clients = getClients();
 
@@ -149,8 +150,15 @@ export default function NewJob() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f2ee] px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-2xl rounded-4xl bg-white p-8 shadow-[0_20px_60px_rgba(30,58,95,0.12)]">
+    <AsyncPageContent
+      loading={loading}
+      error={error}
+      thing="form data"
+      onRetry={refetch}
+      className="min-h-screen bg-[#f5f2ee]"
+    >
+    <div className="min-h-screen bg-[#f5f2ee] p-6 pb-28">
+      <div className="mx-auto max-w-2xl fs-card p-8">
         <h1 className="text-2xl font-bold text-gray-900">Create New Job</h1>
         <p className="mt-2 text-gray-600">
           Fill in the details below to create and assign a new job.
@@ -290,18 +298,18 @@ export default function NewJob() {
             </FormField>
           </div>
 
-          <div className="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row">
+          <div className="fs-form-sticky-footer flex flex-col gap-3 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={() => navigate("/admin/jobs")}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:border-[#2E86AB] hover:text-[#2E86AB] order-2 sm:order-1"
+              className="fs-btn-press fs-focus-ring order-2 rounded-2xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:border-[#2E86AB] hover:text-[#2E86AB] sm:order-1"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || hasErrors}
-              className="rounded-2xl bg-[#1E3A5F] px-4 py-3 text-sm font-medium text-white hover:bg-[#17304d] disabled:cursor-not-allowed disabled:opacity-50 order-1 sm:order-2 sm:ml-auto"
+              className="fs-btn-gradient-navy fs-btn-press fs-focus-ring order-1 rounded-2xl px-6 py-3 text-sm font-medium text-white disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 sm:order-2"
             >
               {isSubmitting ? "Creating..." : "Create Job"}
             </button>
@@ -309,6 +317,7 @@ export default function NewJob() {
         </form>
       </div>
     </div>
+    </AsyncPageContent>
   );
 }
 
