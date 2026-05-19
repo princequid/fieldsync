@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useTechnicianData } from "../hooks/useTechnicianData";
 import { useAuth } from "../../shared/context/AuthContext";
 import { getUserById } from "../../shared/utils/mockData";
 
 export default function TechProfile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { jobs } = useOutletContext();
+  const { jobs } = useTechnicianData(user?.id);
   const userData = getUserById(user?.id);
   const [showSheet, setShowSheet] = useState(false);
 
@@ -43,12 +44,15 @@ export default function TechProfile() {
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-2">
-        <StatTile value={completedThisMonth} label="Completed" sub="this month" />
+        <StatTile
+          value={completedThisMonth}
+          label="Completed This Month"
+        />
         <StatTile
           value={avgDuration ? `${avgDuration}h` : "—"}
           label="Avg. Duration"
         />
-        <StatTile value={activeNow} label="Active Now" />
+        <StatTile value={activeNow} label="Active Jobs Now" />
       </div>
 
       {/* Info list */}

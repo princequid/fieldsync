@@ -1,7 +1,13 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { getJobById, getUserById } from "../../shared/utils/mockData";
+import { getUserById } from "../../shared/utils/mockData";
 import TechChip from "../components/TechChip";
+import { useAdminData } from "../hooks/useAdminData";
+import AsyncPageContent from "../../shared/components/AsyncPageContent";
+import EmptyState from "../../shared/components/EmptyState";
+import VerifyModal from "../components/modals/VerifyModal";
+import ReassignModal from "../components/modals/ReassignModal";
+import CancelModal from "../components/modals/CancelModal";
 
 const STATUS_META = {
   PENDING: {
@@ -40,8 +46,12 @@ const PRIORITY_META = {
 export default function JobDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { jobs, loading, error, refetch } = useAdminData();
 
-  const job = getJobById(id);
+  const job = useMemo(
+    () => jobs.find((entry) => entry.id === id) ?? null,
+    [jobs, id],
+  );
 
   const detail = useMemo(() => {
     if (!job) {
@@ -54,26 +64,33 @@ export default function JobDetail() {
     return { client, technician };
   }, [job]);
 
-  if (!job) {
-    return (
-      <div className="min-h-screen bg-[#f5f2ee] px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl rounded-4xl bg-white p-8 shadow-[0_20px_60px_rgba(30,58,95,0.08)]">
-          <p className="text-xl font-bold text-gray-900">Job not found</p>
-          <p className="mt-2 text-sm text-gray-700">
-            The job you’re looking for does not exist in the current mock data.
-          </p>
-          <button
-            type="button"
-            onClick={() => navigate("/admin/jobs")}
-            className="mt-6 rounded-full bg-[#1E3A5F] px-4 py-2 text-sm font-medium text-white"
-          >
-            ← All Jobs
-          </button>
-        </div>
-      </div>
-    );
-  }
+  return (
+    <AsyncPageContent
+      loading={loading}
+      error={error}
+      thing="job"
+      onRetry={refetch}
+      className="min-h-screen bg-[#f5f2ee]"
+    >
+      {!job ? (
+        <EmptyState
+          icon="🔎"
+          title="Job not found"
+          subtitle="This job may have been removed or the link is incorrect."
+          action={{ to: "/admin/jobs", label: "View All Jobs" }}
+        />
+      ) : (
+        <JobDetailContent
+          job={job}
+          detail={detail}
+          navigate={navigate}
+        />
+      )}
+    </AsyncPageContent>
+  );
+}
 
+function JobDetailContent({ job, detail, navigate }) {
   const meta = STATUS_META[job.status] ?? STATUS_META.PENDING;
   const jobHistory = [...(job.statusHistory ?? [])].reverse();
   const createdAt = formatDateTime(job.createdAt);
@@ -239,6 +256,7 @@ export default function JobDetail() {
               <div className="mt-5 space-y-3">
                 <button
                   type="button"
+                  onClick={() => setModal("reassign")}
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:border-[#2E86AB] hover:text-[#2E86AB]"
                 >
                   Reassign Technician
@@ -247,6 +265,7 @@ export default function JobDetail() {
                 {showVerify ? (
                   <button
                     type="button"
+                    onClick={() => setModal("verify")}
                     className="w-full rounded-2xl bg-green-600 px-4 py-3 text-sm font-medium text-white hover:bg-green-700"
                   >
                     Verify Job
@@ -256,6 +275,9 @@ export default function JobDetail() {
                 {showVerify ? (
                   <button
                     type="button"
+                    onClick={() => {
+                      rejectJob(job.id);
+                    }}
                     className="w-full rounded-2xl border border-red-300 bg-white px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50"
                   >
                     Reject Completion
@@ -265,6 +287,7 @@ export default function JobDetail() {
                 {showEditAndCancel ? (
                   <button
                     type="button"
+                    onClick={() => navigate(`/admin/jobs/new`)}
                     className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:border-[#2E86AB] hover:text-[#2E86AB]"
                   >
                     Edit Job Details
@@ -274,6 +297,7 @@ export default function JobDetail() {
                 {showEditAndCancel ? (
                   <button
                     type="button"
+                    onClick={() => setModal("cancel")}
                     className="w-full rounded-2xl border border-transparent px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50"
                   >
                     Cancel Job
@@ -299,6 +323,34 @@ export default function JobDetail() {
           </aside>
         </div>
       </div>
+
+      {modal === "verify" ? (
+        <VerifyModal
+          job={job}
+          onConfirm={() => verifyJob(job.id)}
+          onReject={() => rejectJob(job.id)}
+          onClose={() => setModal(null)}
+        />
+      ) : null}
+      {modal === "reassign" ? (
+        <ReassignModal
+          jobId={job.id}
+          currentTechnicianId={job.technicianId}
+          onConfirm={(techId) => reassignJob(job.id, techId)}
+          onClose={() => setModal(null)}
+        />
+      ) : null}
+      {modal === "cancel" ? (
+        <CancelModal
+          jobId={job.id}
+          jobTitle={job.title}
+          onConfirm={() => {
+            cancelJob(job.id);
+            navigate("/admin/jobs");
+          }}
+          onClose={() => setModal(null)}
+        />
+      ) : null}
     </div>
   );
 }

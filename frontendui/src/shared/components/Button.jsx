@@ -3,6 +3,9 @@ const VARIANTS = {
   secondary: "bg-[#2E86AB] text-white hover:bg-[#267a9d]",
   ghost: "border border-gray-200 text-gray-600 hover:bg-gray-50",
   danger: "bg-red-500 text-white hover:bg-red-600",
+  "danger-ghost":
+    "border border-red-200 bg-white text-red-600 hover:bg-red-50",
+  success: "bg-green-600 text-white hover:bg-green-700",
 };
 
 const SIZES = {

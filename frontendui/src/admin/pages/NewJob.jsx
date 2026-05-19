@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { useAdminData } from "../../admin/hooks/useAdminData";
+import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import {
   getClients,
   getTechnicians,
@@ -16,7 +17,7 @@ const PRIORITY_OPTIONS = [
 
 export default function NewJob() {
   const navigate = useNavigate();
-  const { createJob } = useAdminData();
+  const { createJob, loading, error, refetch } = useAdminData();
   const technicians = getTechnicians();
   const clients = getClients();
 
@@ -149,6 +150,13 @@ export default function NewJob() {
   }
 
   return (
+    <AsyncPageContent
+      loading={loading}
+      error={error}
+      thing="form data"
+      onRetry={refetch}
+      className="min-h-screen bg-[#f5f2ee]"
+    >
     <div className="min-h-screen bg-[#f5f2ee] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl rounded-4xl bg-white p-8 shadow-[0_20px_60px_rgba(30,58,95,0.12)]">
         <h1 className="text-2xl font-bold text-gray-900">Create New Job</h1>
@@ -309,6 +317,7 @@ export default function NewJob() {
         </form>
       </div>
     </div>
+    </AsyncPageContent>
   );
 }
 

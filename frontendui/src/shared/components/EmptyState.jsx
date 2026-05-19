@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function EmptyState({ icon, title, subtitle, action }) {
   return (
     <div className="flex flex-col items-center justify-center px-8 py-16 text-center">
@@ -10,7 +12,15 @@ export default function EmptyState({ icon, title, subtitle, action }) {
       {subtitle && (
         <p className="mt-2 max-w-xs text-sm text-gray-500">{subtitle}</p>
       )}
-      {action && (
+      {action?.to ? (
+        <Link
+          to={action.to}
+          className="mt-6 rounded-2xl bg-[#1E3A5F] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#17304d]"
+        >
+          {action.label}
+        </Link>
+      ) : null}
+      {action?.onClick && !action.to ? (
         <button
           type="button"
           onClick={action.onClick}
@@ -18,7 +28,7 @@ export default function EmptyState({ icon, title, subtitle, action }) {
         >
           {action.label}
         </button>
-      )}
+      ) : null}
     </div>
   );
 }

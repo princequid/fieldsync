@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
+import { getUserById } from "../utils/mockData";
 
-// Mock users for login testing
 const MOCK_CREDENTIALS = [
   {
     email: "akosua@swiftfix.com",
@@ -26,21 +26,26 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    // Persist across page refreshes using localStorage
     const stored = localStorage.getItem("fieldsync_user");
     return stored ? JSON.parse(stored) : null;
   });
 
   function login(email, password) {
-    // TODO: replace with Apollo mutation — login({ variables: { email, password } })
-    // On success the real API returns { token, user } — store token in localStorage
+    // TODO: replace with Apollo useMutation(LOGIN) once backend is ready
     const match = MOCK_CREDENTIALS.find(
       (c) => c.email === email && c.password === password,
     );
     if (!match) {
       throw new Error("Invalid email or password.");
     }
-    const userData = { id: match.userId, email: match.email, role: match.role };
+    const profile = getUserById(match.userId);
+    const userData = {
+      id: match.userId,
+      email: match.email,
+      role: match.role,
+      name: profile?.name,
+      initials: profile?.initials,
+    };
     localStorage.setItem("fieldsync_user", JSON.stringify(userData));
     setUser(userData);
     return userData;

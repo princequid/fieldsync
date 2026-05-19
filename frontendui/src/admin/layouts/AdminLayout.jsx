@@ -1,12 +1,16 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../../components/layout/Sidebar";
+import Sidebar from "../components/Sidebar";
+import { AdminDataProvider } from "../hooks/useAdminData";
 
 export default function AdminLayout() {
   return (
-    <div>
-      <Sidebar />
-      <Outlet />
-    </div>
+    <AdminDataProvider>
+      <div className="flex h-screen overflow-hidden bg-[#f5f2ee]">
+        <Sidebar />
+        <main className="min-w-0 flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
+      </div>
+    </AdminDataProvider>
   );
 }
