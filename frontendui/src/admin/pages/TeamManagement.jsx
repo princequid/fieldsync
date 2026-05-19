@@ -3,9 +3,11 @@ import { MoreVertical, X, Plus, CheckCircle2, Clock, Zap } from "lucide-react";
 import { MOCK_JOBS } from "../../shared/utils/mockData";
 import { useAdminData } from "../hooks/useAdminData";
 import AddTechnicianModal from "../components/modals/AddTechnicianModal";
+import AsyncPageContent from "../../shared/components/AsyncPageContent";
+import EmptyState from "../../shared/components/EmptyState";
 
 export default function TeamManagement() {
-  const { technicians, addTechnician } = useAdminData();
+  const { technicians, addTechnician, loading, error, refetch } = useAdminData();
   const [selectedTech, setSelectedTech] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [menuOpen, setMenuOpen] = useState(null);
@@ -21,6 +23,13 @@ export default function TeamManagement() {
   }, [menuOpen]);
 
   return (
+    <AsyncPageContent
+      loading={loading}
+      error={error}
+      thing="team"
+      onRetry={refetch}
+      className="min-h-screen bg-[#f5f2ee]"
+    >
     <div className="min-h-screen bg-[#f5f2ee] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
@@ -42,6 +51,17 @@ export default function TeamManagement() {
 
         {/* Table */}
         <div className="mt-8 rounded-4xl bg-white shadow-[0_20px_60px_rgba(30,58,95,0.12)] overflow-hidden">
+          {technicians.length === 0 ? (
+            <EmptyState
+              icon="👷"
+              title="No technicians yet"
+              subtitle="Add your first field technician to start assigning jobs."
+              action={{
+                onClick: () => setShowAddModal(true),
+                label: "Add Technician",
+              }}
+            />
+          ) : (
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
@@ -146,6 +166,7 @@ export default function TeamManagement() {
               ))}
             </tbody>
           </table>
+          )}
         </div>
       </div>
 
@@ -163,6 +184,7 @@ export default function TeamManagement() {
         />
       )}
     </div>
+    </AsyncPageContent>
   );
 }
 

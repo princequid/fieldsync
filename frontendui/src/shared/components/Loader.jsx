@@ -15,7 +15,9 @@ export default function Loader({ size = "md", centered = false }) {
 
   if (centered) {
     return (
-      <div className="flex items-center justify-center p-8">{spinner}</div>
+      <div className="fs-loader-enter flex min-h-[40vh] items-center justify-center p-8">
+        {spinner}
+      </div>
     );
   }
   return spinner;
