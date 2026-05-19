@@ -1,11 +1,14 @@
 const VARIANTS = {
-  primary: "bg-[#1E3A5F] text-white hover:bg-[#16304f]",
-  secondary: "bg-[#2E86AB] text-white hover:bg-[#267a9d]",
-  ghost: "border border-gray-200 text-gray-600 hover:bg-gray-50",
+  primary:
+    "fs-btn-gradient-navy text-white hover:brightness-110 focus-visible:ring-[#1E3A5F]/25",
+  secondary:
+    "fs-btn-gradient-accent text-white hover:brightness-110 focus-visible:ring-[#2E86AB]/25",
+  ghost:
+    "border border-gray-200 bg-[#FAFAFA] text-gray-600 hover:bg-gray-50",
   danger: "bg-red-500 text-white hover:bg-red-600",
   "danger-ghost":
-    "border border-red-200 bg-white text-red-600 hover:bg-red-50",
-  success: "bg-green-600 text-white hover:bg-green-700",
+    "border border-red-200 bg-[#FAFAFA] text-red-600 hover:bg-red-50",
+  success: "fs-btn-gradient-success text-white hover:brightness-110",
 };
 
 const SIZES = {
@@ -34,8 +37,8 @@ export default function Button({
       disabled={disabled || loading}
       style={{ minHeight: MIN_HEIGHTS[size] ?? "44px" }}
       className={[
-        "inline-flex items-center justify-center gap-2 font-medium transition-colors",
-        "disabled:cursor-not-allowed disabled:opacity-50",
+        "fs-btn-press fs-focus-ring inline-flex items-center justify-center gap-2 font-medium transition-all",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
         VARIANTS[variant] ?? VARIANTS.primary,
         SIZES[size] ?? SIZES.md,
         fullWidth ? "w-full" : "",

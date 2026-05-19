@@ -1,3 +1,5 @@
+import { AlertCircle } from "lucide-react";
+
 export default function Input({
   label,
   type = "text",
@@ -14,11 +16,13 @@ export default function Input({
   return (
     <div className="block">
       {label && (
-        <label htmlFor={inputId} className="mb-2 flex items-center gap-1.5">
-          <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-            {label}
-          </span>
-          {required && <span className="text-xs text-red-500">*</span>}
+        <label htmlFor={inputId} className="mb-1.5 flex items-center gap-1">
+          <span className="fs-label text-gray-500">{label}</span>
+          {required && (
+            <span className="ml-1 text-xs text-[#EF4444]" aria-hidden>
+              *
+            </span>
+          )}
         </label>
       )}
       <input
@@ -29,14 +33,19 @@ export default function Input({
         onChange={onChange}
         disabled={disabled}
         className={[
-          "w-full rounded-2xl border bg-white px-4 py-3 text-sm text-gray-900 outline-none transition",
+          "fs-input fs-focus-ring w-full rounded-xl border bg-white text-gray-900 outline-none transition",
           "disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-gray-400",
           error
-            ? "border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
-            : "border-slate-200 focus:border-[#2E86AB] focus:ring-2 focus:ring-[#2E86AB]/30",
+            ? "border-red-400 focus:border-red-400 focus:ring-red-400/15"
+            : "border-[#E5E7EB] focus:border-[#2E86AB]",
         ].join(" ")}
       />
-      {error && <p className="mt-1.5 text-xs text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-1.5 flex items-center gap-1 text-xs text-red-600">
+          <AlertCircle size={14} className="shrink-0" aria-hidden />
+          {error}
+        </p>
+      )}
     </div>
   );
 }

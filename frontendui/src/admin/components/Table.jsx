@@ -44,26 +44,26 @@ export default function Table({
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px]">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-left">
-              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-gray-500">
+            <tr className="border-b border-[#E5E7EB] bg-[#F8FAFC] text-left">
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">
                 Job
               </th>
-              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">
                 Client
               </th>
-              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">
                 Technician
               </th>
-              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">
                 Status
               </th>
-              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">
                 Priority
               </th>
-              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">
                 Updated
               </th>
-              <th className="px-4 py-3 text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">
                 Actions
               </th>
             </tr>
@@ -77,33 +77,33 @@ export default function Table({
                 <tr
                   key={job.id}
                   onClick={() => navigate(`/admin/jobs/${job.id}`)}
-                  className="cursor-pointer transition-colors hover:bg-slate-50"
+                  className="group cursor-pointer border-l-2 border-l-transparent transition-colors hover:border-l-[#2E86AB] hover:bg-[#F8FAFC]"
                 >
-                  <td className="px-4 py-4">
-                    <p className="font-mono text-xs text-gray-400">
+                  <td className="px-4 py-3">
+                    <p className="font-mono text-[11px] text-[#9CA3AF]">
                       {job.jobNumber}
                     </p>
-                    <p className="mt-0.5 text-sm font-medium text-gray-900">
+                    <p className="mt-0.5 text-[13px] font-medium text-[#111827]">
                       {job.title}
                     </p>
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-700">
+                  <td className="px-4 py-3 text-[13px] text-gray-700">
                     {client?.name ?? "—"}
                   </td>
-                  <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <TechChip technician={technician} />
                   </td>
-                  <td className="px-4 py-4">
-                    <StatusBadge status={job.status} />
+                  <td className="px-4 py-3">
+                    <StatusBadge status={job.status} showDot />
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-4 py-3">
                     <PriorityBadge priority={job.priority} />
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
+                  <td className="px-4 py-3 text-[13px] text-gray-500">
                     {formatRelative(job.updatedAt)}
                   </td>
                   <td
-                    className="px-4 py-4"
+                    className="px-4 py-3"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {job.status === "COMPLETED" ? (
@@ -116,12 +116,14 @@ export default function Table({
                             onVerify?.(job.id);
                           }
                         }}
-                        className="rounded-xl bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                        className="fs-btn-gradient-verify fs-btn-press fs-focus-ring h-7 rounded-lg px-3 text-xs font-medium text-white opacity-60 transition-opacity group-hover:opacity-100"
                       >
                         Verify
                       </button>
                     ) : (
-                      <span className="text-xs text-gray-400">—</span>
+                      <span className="text-xs text-gray-400 opacity-60 group-hover:opacity-100">
+                        —
+                      </span>
                     )}
                   </td>
                 </tr>

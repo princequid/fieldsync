@@ -8,7 +8,9 @@ export default function AdminLayout() {
       <div className="flex h-screen overflow-hidden bg-[#f5f2ee]">
         <Sidebar />
         <main className="min-w-0 flex-1 overflow-y-auto">
-          <Outlet />
+          <div className="fs-page-enter mx-auto min-h-full max-w-[1400px]">
+            <Outlet />
+          </div>
         </main>
       </div>
     </AdminDataProvider>

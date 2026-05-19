@@ -154,11 +154,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-full px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl space-y-6">
+    <div className="min-h-full p-6">
+      <div className="space-y-6">
         <header>
-          <h1 className="text-2xl font-bold text-[#1E3A5F]">Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="fs-page-title text-[#1E3A5F]">Dashboard</h1>
+          <p className="mt-1 text-[13px] text-gray-600">
             Overview of field operations across Accra &amp; Tema.
           </p>
         </header>
@@ -182,9 +182,9 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-          <section className="overflow-hidden rounded-4xl bg-white shadow-[0_20px_60px_rgba(30,58,95,0.08)] xl:col-span-2">
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-              <h2 className="text-sm font-semibold text-gray-900">
+          <section className="fs-card overflow-hidden xl:col-span-2">
+            <div className="flex items-center justify-between border-b border-[#E5E7EB] p-5">
+              <h2 className="fs-card-title font-semibold text-gray-900">
                 Recent Jobs
                 {statusFilter
                   ? ` · ${statusFilter.replaceAll("_", " ")}`
@@ -219,9 +219,9 @@ export default function Dashboard() {
             )}
           </section>
 
-          <aside className="space-y-6">
-            <section className="rounded-4xl bg-white p-5 shadow-[0_20px_60px_rgba(30,58,95,0.08)]">
-              <h2 className="text-sm font-semibold text-gray-900">
+          <aside className="w-full space-y-4 xl:w-72 min-[1280px]:w-[260px]">
+            <section className="fs-card p-5">
+              <h2 className="fs-card-title font-semibold text-gray-900">
                 Jobs by Status
               </h2>
               <StatusDonut jobs={jobs} />
@@ -243,8 +243,8 @@ export default function Dashboard() {
               </ul>
             </section>
 
-            <section className="rounded-4xl bg-white p-5 shadow-[0_20px_60px_rgba(30,58,95,0.08)]">
-              <h2 className="text-sm font-semibold text-gray-900">
+            <section className="fs-card p-5">
+              <h2 className="fs-card-title font-semibold text-gray-900">
                 Active Technicians
               </h2>
               <ul className="mt-4 space-y-3">
@@ -261,7 +261,7 @@ export default function Dashboard() {
                     return (
                       <li
                         key={tech.id}
-                        className="flex items-center justify-between gap-2"
+                        className="flex items-center justify-between gap-2 rounded-xl p-2 transition-colors hover:bg-[#F8FAFC]"
                       >
                         <div className="flex items-center gap-2">
                           <span className="grid h-9 w-9 place-items-center rounded-full bg-[#2E86AB] text-xs font-bold text-white">

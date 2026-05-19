@@ -34,46 +34,68 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`flex h-screen shrink-0 flex-col bg-[#1E3A5F] text-white transition-all duration-200 ${
-        collapsed ? "w-[72px]" : "w-64"
+      className={`fs-sidebar-gradient flex h-screen shrink-0 flex-col text-white transition-[width] duration-300 ease-in-out ${
+        collapsed ? "w-16" : "w-64"
       }`}
     >
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-5">
-        <div className={`flex items-center gap-3 ${collapsed ? "justify-center w-full" : ""}`}>
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#2E86AB] text-sm font-bold">
+      <div className="flex items-center justify-between border-b border-white/10 px-3 py-5">
+        <div
+          className={`flex items-center gap-2.5 ${collapsed ? "w-full justify-center" : ""}`}
+        >
+          <div
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border-2 border-white/10 bg-[#2E86AB] text-sm font-bold shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)]"
+            aria-hidden
+          >
             FS
           </div>
           {!collapsed && (
             <div>
-              <p className="text-sm font-bold">FieldSync</p>
-              <p className="text-[10px] uppercase tracking-wide text-white/60">
+              <p className="text-sm font-bold leading-tight">FieldSync</p>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-white/60">
                 Admin
               </p>
             </div>
           )}
         </div>
-        <button
-          type="button"
-          onClick={() => setCollapsed((c) => !c)}
-          className="rounded-lg p-1.5 text-white/70 hover:bg-white/10 hover:text-white"
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-        </button>
+        {!collapsed ? (
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            className="fs-btn-press fs-focus-ring rounded-full border border-transparent p-1.5 text-white/70 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
+            aria-label="Collapse sidebar"
+          >
+            <ChevronLeft size={18} />
+          </button>
+        ) : null}
       </div>
 
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      {collapsed ? (
+        <div className="flex justify-center px-2 py-2">
+          <button
+            type="button"
+            onClick={() => setCollapsed(false)}
+            className="fs-btn-press fs-focus-ring rounded-full border border-transparent p-1.5 text-white/70 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
+            aria-label="Expand sidebar"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      ) : null}
+
+      <nav className="flex-1 space-y-1 px-2 py-4">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             title={collapsed ? label : undefined}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+              [
+                "fs-btn-press fs-focus-ring flex items-center gap-2.5 rounded-xl py-2.5 text-[13px] font-medium transition-colors",
+                collapsed ? "justify-center px-2" : "px-3",
                 isActive
-                  ? "bg-[#2E86AB] text-white"
-                  : "text-white/75 hover:bg-white/10 hover:text-white"
-              } ${collapsed ? "justify-center" : ""}`
+                  ? "fs-nav-active text-white"
+                  : "border-l-[3px] border-transparent text-white/75 hover:bg-white/[0.06] hover:text-white",
+              ].join(" ")
             }
           >
             <Icon size={20} className="shrink-0" />
@@ -82,26 +104,26 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-white/10 p-4">
+      <div className="border-t border-white/10 bg-white/[0.04] p-3">
         <div
-          className={`mb-3 flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}
+          className={`mb-3 flex items-center gap-2.5 ${collapsed ? "justify-center" : ""}`}
         >
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#2E86AB] text-sm font-bold">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border-2 border-white/20 bg-[#2E86AB] text-sm font-bold shadow-sm">
             {profile?.initials ?? "A"}
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">
+              <p className="truncate text-sm font-semibold leading-tight">
                 {profile?.name ?? user?.email}
               </p>
-              <p className="text-xs text-white/60">Operations Manager</p>
+              <p className="text-[11px] text-white/60">Operations Manager</p>
             </div>
           )}
         </div>
         <button
           type="button"
           onClick={handleLogout}
-          className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/10 hover:text-white ${
+          className={`fs-btn-press fs-focus-ring flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] text-white/80 transition-colors hover:bg-white/[0.06] hover:text-white ${
             collapsed ? "justify-center" : ""
           }`}
         >

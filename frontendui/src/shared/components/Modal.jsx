@@ -8,7 +8,6 @@ const SIZE_MAP = {
 };
 
 export default function Modal({ isOpen, onClose, title, children, size = "md" }) {
-  // Close on ESC
   useEffect(() => {
     if (!isOpen) return;
     function handleKey(e) {
@@ -22,31 +21,36 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" })
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 z-40 bg-black/40" onClick={onClose} />
+      <div
+        className="fs-modal-backdrop fixed inset-0 z-40"
+        onClick={onClose}
+        aria-hidden
+      />
 
-      {/* Centred card */}
       <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto px-4 py-8">
         <div
-          className={`relative w-full ${SIZE_MAP[size] ?? SIZE_MAP.md} rounded-4xl bg-white shadow-xl`}
+          className={`fs-modal-panel relative w-full ${SIZE_MAP[size] ?? SIZE_MAP.md} fs-shadow-elevated overflow-hidden rounded-2xl border border-[#E5E7EB] bg-[#FAFAFA]`}
+          role="dialog"
+          aria-modal="true"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <div className="flex items-center justify-between border-b border-[#F3F4F6] px-6 py-4">
             {title ? (
-              <h2 className="text-lg font-bold text-gray-900">{title}</h2>
+              <h2 className="text-[15px] font-semibold text-gray-900">
+                {title}
+              </h2>
             ) : (
               <span />
             )}
             <button
               type="button"
               onClick={onClose}
-              className="ml-2 rounded-xl p-1.5 text-gray-400 transition-colors hover:bg-slate-100 hover:text-gray-700"
+              className="fs-focus-ring flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-[#F3F4F6] hover:text-gray-700"
+              aria-label="Close"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
 
-          {/* Body */}
           <div>{children}</div>
         </div>
       </div>
