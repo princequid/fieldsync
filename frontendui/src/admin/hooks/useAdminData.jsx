@@ -153,6 +153,11 @@ export function AdminDataProvider({ children }) {
     );
   }
 
+  function markAllNotificationsRead() {
+    // TODO: replace with Apollo useMutation(MARK_ALL_NOTIFICATIONS_READ) once backend is ready
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  }
+
   const value = useMemo(
     () => ({
       jobs,
@@ -168,6 +173,7 @@ export function AdminDataProvider({ children }) {
       createJob,
       addTechnician,
       markNotificationRead,
+      markAllNotificationsRead,
     }),
     [jobs, technicians, notifications, loading, error, refetch],
   );

@@ -1,25 +1,26 @@
 import { useState } from "react";
-import { CheckCircle2, X } from "lucide-react";
+import { X } from "lucide-react";
 import Modal from "../../../components/common/Modal";
 
 export default function AddTechnicianModal({ onSuccess, onClose }) {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [closing,  setClosing]  = useState(false);
+  const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", phone: "" });
+  const [errors,   setErrors]   = useState({});
+  const [loading,  setLoading]  = useState(false);
+  const [success,  setSuccess]  = useState(false);
+
+  function animatedClose() {
+    if (closing) return;
+    setClosing(true);
+    setTimeout(onClose, 150);
+  }
 
   function validate() {
     const errs = {};
     if (!formData.firstName.trim()) errs.firstName = "First name is required";
-    if (!formData.lastName.trim()) errs.lastName = "Last name is required";
-    if (!formData.email.trim()) errs.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
-      errs.email = "Enter a valid email";
+    if (!formData.lastName.trim())  errs.lastName  = "Last name is required";
+    if (!formData.email.trim())     errs.email     = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = "Enter a valid email";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -32,107 +33,121 @@ export default function AddTechnicianModal({ onSuccess, onClose }) {
     setLoading(false);
     onSuccess(formData);
     setSuccess(true);
-    setTimeout(onClose, 1800);
+    setTimeout(animatedClose, 1800);
   }
+
+  const INPUT_CLS =
+    "w-full h-10 rounded-input border border-black/8 bg-white px-3 text-[13px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/15";
 
   if (success) {
     return (
-      <Modal onClose={onClose} maxWidth="max-w-md">
-        <div className="p-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-50">
-            <CheckCircle2 className="text-green-600" size={28} />
+      <Modal onClose={animatedClose} maxWidth="max-w-md" closing={closing}>
+        <div className="flex flex-col items-center px-8 py-10">
+          <div
+            className="flex h-14 w-14 items-center justify-center rounded-full"
+            style={{ background: "#22C55E" }}
+          >
+            <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden>
+              <path
+                d="M5 14l6 6L23 8"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  strokeDasharray: 26,
+                  strokeDashoffset: 26,
+                  animation: "check-draw 400ms cubic-bezier(0.4, 0, 0.2, 1) 60ms forwards",
+                }}
+              />
+            </svg>
           </div>
-          <p className="text-lg font-bold text-gray-900">Account created.</p>
-          <p className="mt-1 text-sm text-gray-500">Welcome email sent.</p>
+          <p
+            className="mt-4 text-[17px] font-bold text-[#0F172A]"
+            style={{ animation: "fade-in 200ms ease-out 300ms both" }}
+          >
+            Account created.
+          </p>
+          <p
+            className="mt-1 text-[13px] text-[#94A3B8]"
+            style={{ animation: "fade-in 200ms ease-out 420ms both" }}
+          >
+            Welcome email sent.
+          </p>
         </div>
       </Modal>
     );
   }
 
   return (
-    <Modal onClose={onClose} maxWidth="max-w-md">
-      <div className="p-8">
-        <div className="mb-1 flex items-start justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Add Technician</h2>
-          <button
-            onClick={onClose}
-            className="rounded-xl p-1.5 text-gray-400 hover:bg-slate-100 hover:text-gray-700 transition-colors"
-          >
-            <X size={20} />
-          </button>
-        </div>
-        <p className="mb-6 text-gray-500">Add a new technician to your team</p>
+    <Modal onClose={animatedClose} maxWidth="max-w-md" closing={closing}>
+      {/* Header */}
+      <div className="fs-modal-header">
+        <h2 className="text-[15px] font-semibold text-[#0F172A]">Add Technician</h2>
+        <button
+          onClick={animatedClose}
+          className="flex h-7 w-7 items-center justify-center rounded-full text-[#94A3B8] transition-colors hover:bg-[#F1F5F9] hover:text-[#374151]"
+          aria-label="Close"
+        >
+          <X size={16} />
+        </button>
+      </div>
+
+      {/* Body */}
+      <div className="fs-modal-body">
+        <p className="mb-5 text-[13px] text-[#64748B]">Add a new technician to your team.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <FormField label="First Name" error={errors.firstName} required>
-              <input
-                type="text"
-                value={formData.firstName}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, firstName: e.target.value }))
-                }
-                placeholder="Kofi"
-                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none focus:border-[#2E86AB] focus:ring-2 focus:ring-[#2E86AB]/20"
-              />
+              <input type="text" value={formData.firstName}
+                onChange={(e) => setFormData((p) => ({ ...p, firstName: e.target.value }))}
+                placeholder="Kofi" className={INPUT_CLS} />
             </FormField>
             <FormField label="Last Name" error={errors.lastName} required>
-              <input
-                type="text"
-                value={formData.lastName}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, lastName: e.target.value }))
-                }
-                placeholder="Mensah"
-                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none focus:border-[#2E86AB] focus:ring-2 focus:ring-[#2E86AB]/20"
-              />
+              <input type="text" value={formData.lastName}
+                onChange={(e) => setFormData((p) => ({ ...p, lastName: e.target.value }))}
+                placeholder="Mensah" className={INPUT_CLS} />
             </FormField>
           </div>
 
           <FormField label="Email" error={errors.email} required>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData((p) => ({ ...p, email: e.target.value }))
-              }
-              placeholder="kofi@company.com"
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none focus:border-[#2E86AB] focus:ring-2 focus:ring-[#2E86AB]/20"
-            />
+            <input type="email" value={formData.email}
+              onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
+              placeholder="kofi@company.com" className={INPUT_CLS} />
           </FormField>
 
           <FormField label="Phone">
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData((p) => ({ ...p, phone: e.target.value }))
-              }
-              placeholder="+233 XX XXX XXXX"
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none focus:border-[#2E86AB] focus:ring-2 focus:ring-[#2E86AB]/20"
-            />
+            <input type="tel" value={formData.phone}
+              onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
+              placeholder="+233 XX XXX XXXX" className={INPUT_CLS} />
           </FormField>
 
           <FormField label="Role">
-            <div className="w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-gray-400">
+            <div className="flex h-10 items-center rounded-input border border-black/5 bg-gray-50 px-3 text-[13px] text-[#94A3B8]">
               Technician
             </div>
           </FormField>
 
-          <div className="flex gap-3 pt-2">
+          {/* Footer inside form */}
+          <div className="fs-modal-footer-bar -mx-5 -mb-5 mt-2">
             <button
               type="button"
-              onClick={onClose}
-              className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:border-[#2E86AB] hover:text-[#2E86AB] transition-colors"
+              onClick={animatedClose}
+              className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button border border-black/8 bg-white px-4 text-[13px] font-medium text-[#374151] transition-colors hover:border-brand-accent hover:text-brand-accent"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 rounded-2xl bg-[#1E3A5F] px-4 py-3 text-sm font-medium text-white hover:bg-[#17304d] disabled:opacity-60 transition-colors"
+              className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button px-4 text-[13px] font-medium text-white disabled:opacity-60"
+              style={{
+                background: "linear-gradient(180deg, #1E3A5F 0%, #162D4A 100%)",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
+              }}
             >
-              {loading ? "Creating..." : "Add Technician"}
+              {loading ? "Creating…" : "Add Technician"}
             </button>
           </div>
         </form>
@@ -144,14 +159,12 @@ export default function AddTechnicianModal({ onSuccess, onClose }) {
 function FormField({ label, error, required = false, children }) {
   return (
     <label className="block">
-      <div className="mb-2 flex items-center gap-1.5">
-        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-          {label}
-        </span>
-        {required && <span className="text-xs text-red-500">*</span>}
+      <div className="mb-1.5 flex items-center gap-1">
+        <span className="fs-label text-[#94A3B8]">{label}</span>
+        {required && <span className="text-[10px] text-red-500">*</span>}
       </div>
       {children}
-      {error && <p className="mt-1.5 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-1 text-[11px] text-red-600">{error}</p>}
     </label>
   );
 }

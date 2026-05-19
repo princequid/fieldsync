@@ -279,6 +279,14 @@ export const MOCK_NOTIFICATIONS = [
     isRead: true,
     createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
   },
+  {
+    id: "notif-4",
+    type: "JOB_ASSIGNED",
+    message: "New job #JOB-0042 assigned to Ama Boateng.",
+    jobId: "job-2",
+    isRead: false,
+    createdAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+  },
 ];
 
 // Helper: look up user by ID

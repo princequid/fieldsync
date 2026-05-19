@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Info, LoaderCircle } from "lucide-react";
+import { Check, Eye, EyeOff, Info, LoaderCircle } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
 
 export default function LoginForm() {
@@ -9,8 +9,7 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    const path =
-      user?.role === "ADMIN" ? "/admin/dashboard" : "/tech/jobs";
+    const path = user?.role === "ADMIN" ? "/admin/dashboard" : "/tech/jobs";
     navigate(path, { replace: true });
   }, [isAuthenticated, user, navigate]);
 
@@ -24,18 +23,13 @@ export default function LoginForm() {
     event.preventDefault();
     setError("");
     setIsSubmitting(true);
-
     try {
       await new Promise((resolve) => setTimeout(resolve, 350));
       const userData = login(email, password);
-
-      if (userData.role === "ADMIN") {
+      if (userData.role === "ADMIN")
         navigate("/admin/dashboard", { replace: true });
-      }
-
-      if (userData.role === "TECHNICIAN") {
+      if (userData.role === "TECHNICIAN")
         navigate("/tech/jobs", { replace: true });
-      }
     } catch {
       setError("Invalid email or password. Please try again.");
     } finally {
@@ -44,139 +38,162 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-[#f5f2ee] px-4 py-10 lg:px-0">
-      <div className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-[#E5E7EB] bg-white lg:grid-cols-[1.08fr_0.92fr]">
-        <aside className="fs-login-brand relative hidden flex-col justify-between p-10 text-white md:flex">
-          <div className="relative z-10">
-            <div className="flex items-center gap-4">
-              <div className="grid h-14 w-14 place-items-center rounded-2xl border-2 border-white/10 bg-[#2E86AB] text-2xl font-bold shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)]">
-                FS
-              </div>
-              <div>
-                <p className="text-[22px] font-bold text-white">FieldSync</p>
-                <p className="fs-label text-white/70">Field Operations Platform</p>
-              </div>
+    <div className="min-h-screen bg-white lg:grid lg:grid-cols-2">
+      <aside
+        className="fs-login-brand relative hidden h-screen flex-col justify-between p-10 text-white lg:flex"
+        aria-hidden
+      >
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="grid h-10 w-10 place-items-center rounded-[10px] border border-white/20 bg-white/10 text-[18px] font-semibold">
+              FS
             </div>
-
-            <h1 className="mt-14 max-w-md text-3xl font-bold leading-tight text-white">
-              Manage every job. Track every site. Keep your team moving.
-            </h1>
-
-            <ul className="mt-10 space-y-4 text-[13px] text-white/90">
-              <li className="flex items-start gap-3">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-[#2E86AB]" />
-                <span>Role-based access control</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-[#2E86AB]" />
-                <span>Real-time job tracking</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-[#2E86AB]" />
-                <span>Client notifications</span>
-              </li>
-            </ul>
+            <p className="text-[22px] font-semibold tracking-[-0.02em]">
+              FieldSync
+            </p>
           </div>
 
-          <p className="relative z-10 fs-label text-white/60">
-            SwiftFix Facilities Management Ltd. · Accra, Ghana
+          <h1 className="mt-10 max-w-md text-[24px] font-semibold leading-[1.3] text-white">
+            Keep every field team coordinated with one clean operations
+            platform.
+          </h1>
+
+          <ul className="mt-10 space-y-4">
+            {[
+              "Live job tracking across every site",
+              "Fast approvals with role-based workflows",
+              "Technician updates that sync in real time",
+            ].map((item) => (
+              <li
+                key={item}
+                className="flex items-center gap-3 text-[14px] text-white/70"
+              >
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-[rgba(46,134,171,0.3)]">
+                  <Check size={12} className="text-[#2E86AB]" />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p className="relative z-10 text-[12px] text-white/35">
+          SwiftFix Facilities Management Ltd. · Accra, Ghana
+        </p>
+
+        <div className="fs-login-brand-circles" aria-hidden>
+          <span />
+          <span />
+          <span />
+        </div>
+      </aside>
+
+      <section className="flex min-h-screen items-center justify-center bg-white px-6 py-10 sm:px-10 lg:px-12">
+        <div className="w-full max-w-100">
+          <div className="mb-8 flex items-center gap-3 lg:hidden">
+            <div className="grid h-10 w-10 place-items-center rounded-[10px] bg-[#1E3A5F] text-[14px] font-semibold text-white">
+              FS
+            </div>
+            <p className="text-[18px] font-semibold tracking-[-0.02em] text-[#0F172A]">
+              FieldSync
+            </p>
+          </div>
+
+          <h2 className="text-[28px] font-bold tracking-[-0.5px] text-[#0F172A]">
+            Welcome back
+          </h2>
+          <p className="mt-1.5 text-[14px] text-[#94A3B8]">
+            Sign in to continue managing operations.
           </p>
 
-          <div className="pointer-events-none absolute -bottom-20 -right-16" aria-hidden>
-            <div className="h-[400px] w-[400px] rounded-full border border-white/[0.08] bg-white/[0.04]" />
-            <div className="absolute bottom-16 right-20 h-[300px] w-[300px] rounded-full border border-white/[0.08] bg-white/[0.04]" />
-            <div className="absolute bottom-32 right-40 h-[200px] w-[200px] rounded-full border border-white/[0.08] bg-white/[0.04]" />
-          </div>
-        </aside>
-
-        <section className="flex items-center bg-white px-5 py-10 sm:px-8 lg:px-10">
-          <div className="mx-auto flex w-full max-w-[400px] flex-col justify-center">
-            <div>
-              <p className="fs-section-title text-gray-900">Welcome back</p>
-              <p className="mt-2 text-[13px] text-gray-700">
-                Sign in to your FieldSync account
-              </p>
+          {error && (
+            <div className="mt-5 rounded-button border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700">
+              {error}
             </div>
+          )}
 
-            {error ? (
-              <div className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700">
-                {error}
-              </div>
-            ) : null}
+          <form onSubmit={handleSubmit} className="mt-7 space-y-4">
+            <label className="block">
+              <span className="fs-label mb-1.5 block text-gray-400">Email</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="Enter your email"
+                className="fs-input fs-focus-ring w-full rounded-input border border-black/8 bg-white text-gray-900 outline-none transition"
+                autoComplete="email"
+                required
+              />
+            </label>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-              <label className="block">
-                <span className="fs-label mb-1.5 block text-gray-500">Email</span>
+            <label className="block">
+              <span className="fs-label mb-1.5 block text-gray-400">
+                Password
+              </span>
+              <div className="relative">
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="Enter your email"
-                  className="fs-input fs-focus-ring w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-gray-900 outline-none transition"
-                  autoComplete="email"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Enter your password"
+                  className="fs-input fs-focus-ring w-full rounded-input border border-black/8 bg-white pr-12 text-gray-900 outline-none transition"
+                  autoComplete="current-password"
                   required
                 />
-              </label>
-
-              <label className="block">
-                <span className="fs-label mb-1.5 block text-gray-500">
-                  Password
-                </span>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    placeholder="Enter your password"
-                    className="fs-input fs-focus-ring w-full rounded-xl border border-[#E5E7EB] bg-white px-3 pr-12 text-gray-900 outline-none transition"
-                    autoComplete="current-password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((current) => !current)}
-                    className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 transition hover:text-gray-700"
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </label>
-
-              <div className="flex items-center justify-end">
-                <Link
-                  to="/forgot-password"
-                  className="text-[13px] font-medium text-[#2E86AB] hover:underline"
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((c) => !c)}
+                  className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-400 transition hover:text-gray-700"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  Forgot your password?
-                </Link>
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
               </div>
+            </label>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="fs-btn-gradient-navy fs-btn-press fs-focus-ring flex h-12 w-full items-center justify-center rounded-2xl text-sm font-semibold text-white transition focus-visible:ring-4 focus-visible:ring-[#1E3A5F]/25 disabled:cursor-not-allowed disabled:opacity-80"
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-[12px] font-medium text-brand-accent hover:underline"
               >
-                {isSubmitting ? (
-                  <span className="flex items-center gap-2">
-                    <LoaderCircle className="animate-spin" size={18} />
-                    Signing in...
-                  </span>
-                ) : (
-                  "Log In to FieldSync"
-                )}
-              </button>
-            </form>
-
-            <div className="mt-6 flex items-start gap-2 rounded-xl border border-dashed border-[#E5E7EB] bg-[#FAFAFA] px-4 py-3 text-[12px] text-gray-500">
-              <Info size={16} className="mt-0.5 shrink-0 text-[#2E86AB]" aria-hidden />
-              <p>No public registration · Accounts are provisioned by Admin</p>
+                Forgot your password?
+              </Link>
             </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="fs-btn-press fs-focus-ring relative flex h-11 w-full items-center justify-center overflow-hidden rounded-button bg-linear-to-r from-[#1E3A5F] to-[#162D4A] text-[13px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-75"
+              style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              <span
+                className="pointer-events-none absolute inset-x-0 top-0 h-1/2"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,0.08), transparent)",
+                }}
+              />
+              {isSubmitting ? (
+                <span className="relative z-10 flex items-center gap-2">
+                  <LoaderCircle className="animate-spin" size={16} />
+                  Signing in...
+                </span>
+              ) : (
+                <span className="relative z-10">Log In</span>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-5 flex items-start gap-2 rounded-button border border-dashed border-black/8 bg-gray-50/70 px-4 py-3 text-[12px] text-gray-400">
+            <Info
+              size={14}
+              className="mt-0.5 shrink-0 text-brand-accent"
+              aria-hidden
+            />
+            <p>No public registration · Accounts are provisioned by admin.</p>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
