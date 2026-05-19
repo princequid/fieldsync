@@ -1,14 +1,106 @@
-export default function Modal({ onClose, children, maxWidth = "max-w-md" }) {
+import { useEffect, useRef } from "react";
+
+/**
+ * Base modal shell used by all admin modals.
+ * Entry: scale-0.95 → 1 over 200ms cubic-bezier(0.34, 1.56, 0.64, 1)
+ * Exit:  scale-1 → 0.95 over 150ms ease-in, driven by `closing` prop
+ *
+ * The consuming modal manages `closing` state and passes an `animatedClose`
+ * as `onClose` so every close path (backdrop, Escape, inner buttons)
+ * triggers the exit animation first.
+ */
+export default function Modal({
+  onClose,
+  children,
+  maxWidth = "max-w-md",
+  closing = false,
+}) {
+  const panelRef = useRef(null);
+
+  useEffect(() => {
+    function handleKey(e) {
+      if (e.key === "Escape") onClose();
+
+      if (e.key === "Tab" && panelRef.current) {
+        const focusables = panelRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+        );
+        if (!focusables.length) return;
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!panelRef.current) return;
+    const focusables = panelRef.current.querySelectorAll(
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+    );
+    if (focusables.length) {
+      focusables[0].focus();
+    }
+  }, []);
+
   return (
     <>
+      {/* Backdrop: bg-black/60 + blur-md */}
       <div
-        className="fs-modal-backdrop fixed inset-0 z-40"
+        className={
+          closing ? "animate-modal-backdrop-out" : "animate-modal-backdrop-in"
+        }
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 40,
+          background: "rgba(0,0,0,0.60)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+        }}
         onClick={onClose}
         aria-hidden
       />
-      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto px-4 py-8">
+
+      {/* Scroll container */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 50,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "32px 16px",
+          overflowY: "auto",
+        }}
+      >
+        {/* Card — entry/exit animation + width constraint on same element */}
         <div
-          className={`fs-modal-panel relative w-full ${maxWidth} fs-shadow-elevated overflow-hidden rounded-2xl border border-[#E5E7EB] bg-[#FAFAFA]`}
+          ref={panelRef}
+          className={[
+            "w-full",
+            maxWidth,
+            closing ? "animate-modal-card-out" : "animate-modal-card-in",
+          ].join(" ")}
+          style={{
+            background: "#ffffff",
+            borderRadius: "var(--radius-modal, 16px)",
+            boxShadow: "var(--shadow-4)",
+            overflow: "hidden",
+          }}
+          role="dialog"
+          aria-modal="true"
         >
           {children}
         </div>

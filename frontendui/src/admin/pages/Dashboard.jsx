@@ -1,17 +1,13 @@
 import { useMemo, useState } from "react";
-import {
-  Briefcase,
-  CheckCircle2,
-  Clock3,
-  ShieldCheck,
-} from "lucide-react";
+import { Briefcase, CheckCircle2, Clock3, ShieldCheck } from "lucide-react";
 import { useAdminData } from "../hooks/useAdminData";
 import StatCard from "../components/StatCard";
 import Table from "../components/Table";
 import VerifyModal from "../components/modals/VerifyModal";
-import Loader from "../../shared/components/Loader";
 import ErrorState from "../../shared/components/ErrorState";
 import EmptyState from "../../shared/components/EmptyState";
+import { SkeletonBlock } from "../../shared/components/Skeleton";
+
 function buildStatCards(jobs) {
   return [
     {
@@ -74,8 +70,8 @@ function StatusDonut({ jobs }) {
         cy="70"
         r={radius}
         fill="none"
-        stroke="#e2e8f0"
-        strokeWidth="14"
+        stroke="#f1f5f9"
+        strokeWidth="13"
       />
       {segments.map((seg) => {
         const dash = (seg.count / total) * circumference;
@@ -87,7 +83,8 @@ function StatusDonut({ jobs }) {
             r={radius}
             fill="none"
             stroke={seg.color}
-            strokeWidth="14"
+            strokeWidth="13"
+            strokeLinecap="round"
             strokeDasharray={`${dash} ${circumference - dash}`}
             strokeDashoffset={-offset}
             transform="rotate(-90 70 70)"
@@ -98,20 +95,15 @@ function StatusDonut({ jobs }) {
       })}
       <text
         x="70"
-        y="68"
+        y="67"
         textAnchor="middle"
-        className="fill-[#1E3A5F] text-xl font-bold"
+        fill="#1e3a5f"
         fontSize="20"
+        fontWeight="700"
       >
         {jobs.length}
       </text>
-      <text
-        x="70"
-        y="86"
-        textAnchor="middle"
-        className="fill-gray-500"
-        fontSize="10"
-      >
+      <text x="70" y="82" textAnchor="middle" fill="#9ca3af" fontSize="9">
         Total Jobs
       </text>
     </svg>
@@ -119,15 +111,8 @@ function StatusDonut({ jobs }) {
 }
 
 export default function Dashboard() {
-  const {
-    jobs,
-    technicians,
-    loading,
-    error,
-    refetch,
-    verifyJob,
-    rejectJob,
-  } = useAdminData();
+  const { jobs, technicians, loading, error, refetch, verifyJob, rejectJob } =
+    useAdminData();
   const [statusFilter, setStatusFilter] = useState(null);
   const [verifyTarget, setVerifyTarget] = useState(null);
 
@@ -146,23 +131,22 @@ export default function Dashboard() {
     [technicians, jobs],
   );
 
-  if (loading) return <Loader centered />;
-  if (error) {
-    return (
-      <ErrorState thing="dashboard" message={error} onRetry={refetch} />
-    );
-  }
+  if (loading) return <DashboardSkeleton />;
+  if (error)
+    return <ErrorState thing="dashboard" message={error} onRetry={refetch} />;
 
   return (
     <div className="min-h-full p-6">
       <div className="space-y-6">
+        {/* Page header */}
         <header>
-          <h1 className="fs-page-title text-[#1E3A5F]">Dashboard</h1>
-          <p className="mt-1 text-[13px] text-gray-600">
+          <h1 className="fs-page-title">Dashboard</h1>
+          <p className="mt-1 text-[13px] text-gray-500">
             Overview of field operations across Accra &amp; Tema.
           </p>
         </header>
 
+        {/* Stat cards */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => (
             <StatCard
@@ -181,24 +165,28 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-          <section className="fs-card overflow-hidden xl:col-span-2">
-            <div className="flex items-center justify-between border-b border-[#E5E7EB] p-5">
-              <h2 className="fs-card-title font-semibold text-gray-900">
+        {/* Main content grid */}
+        <div className="grid grid-cols-1 gap-5 xl:flex">
+          {/* Recent Jobs table */}
+          <section className="fs-card overflow-hidden xl:min-w-0 xl:flex-1">
+            <div className="flex items-center justify-between border-b border-black/5 px-5 py-4">
+              <h2 className="fs-card-title">
                 Recent Jobs
-                {statusFilter
-                  ? ` · ${statusFilter.replaceAll("_", " ")}`
-                  : ""}
+                {statusFilter ? (
+                  <span className="ml-2 font-normal text-gray-400">
+                    · {statusFilter.replaceAll("_", " ")}
+                  </span>
+                ) : null}
               </h2>
-              {statusFilter ? (
+              {statusFilter && (
                 <button
                   type="button"
                   onClick={() => setStatusFilter(null)}
-                  className="text-xs font-medium text-[#2E86AB] hover:underline"
+                  className="text-[11px] font-medium text-brand-accent hover:underline"
                 >
                   Clear filter
                 </button>
-              ) : null}
+              )}
             </div>
             {jobs.length === 0 ? (
               <EmptyState
@@ -219,20 +207,25 @@ export default function Dashboard() {
             )}
           </section>
 
-          <aside className="w-full space-y-4 xl:w-72 min-[1280px]:w-[260px]">
+          {/* Right sidebar panels */}
+          <div className="space-y-4 xl:w-68 xl:shrink-0">
+            {/* Donut chart */}
             <section className="fs-card p-5">
-              <h2 className="fs-card-title font-semibold text-gray-900">
-                Jobs by Status
-              </h2>
-              <StatusDonut jobs={jobs} />
-              <ul className="mt-4 space-y-2 text-xs text-gray-600">
+              <h2 className="fs-card-title">Jobs by Status</h2>
+              <div className="mt-4">
+                <StatusDonut jobs={jobs} />
+              </div>
+              <ul className="mt-4 space-y-2">
                 {[
                   ["Pending", "#f59e0b"],
                   ["In Progress", "#3b82f6"],
                   ["Completed", "#22c55e"],
                   ["Verified", "#64748b"],
                 ].map(([label, color]) => (
-                  <li key={label} className="flex items-center gap-2">
+                  <li
+                    key={label}
+                    className="flex items-center gap-2 text-[12px] text-gray-500"
+                  >
                     <span
                       className="h-2 w-2 rounded-full"
                       style={{ backgroundColor: color }}
@@ -243,40 +236,40 @@ export default function Dashboard() {
               </ul>
             </section>
 
+            {/* Active technicians */}
             <section className="fs-card p-5">
-              <h2 className="fs-card-title font-semibold text-gray-900">
-                Active Technicians
-              </h2>
-              <ul className="mt-4 space-y-3">
+              <h2 className="fs-card-title">Active Technicians</h2>
+              <ul className="mt-4 space-y-2">
                 {activeTechnicians.length === 0 ? (
-                  <li className="text-sm text-gray-500">No active technicians</li>
+                  <li className="text-[13px] text-gray-400">
+                    No active technicians
+                  </li>
                 ) : (
                   activeTechnicians.map((tech) => {
                     const activeCount = jobs.filter(
                       (j) =>
                         j.technicianId === tech.id &&
-                        (j.status === "IN_PROGRESS" ||
-                          j.status === "PENDING"),
+                        (j.status === "IN_PROGRESS" || j.status === "PENDING"),
                     ).length;
                     return (
                       <li
                         key={tech.id}
-                        className="flex items-center justify-between gap-2 rounded-xl p-2 transition-colors hover:bg-[#F8FAFC]"
+                        className="flex items-center justify-between gap-2 rounded-card px-2 py-2 transition-colors hover:bg-gray-50"
                       >
-                        <div className="flex items-center gap-2">
-                          <span className="grid h-9 w-9 place-items-center rounded-full bg-[#2E86AB] text-xs font-bold text-white">
+                        <div className="flex items-center gap-2.5">
+                          <span className="grid h-8 w-8 place-items-center rounded-full bg-brand-accent text-[11px] font-bold text-white">
                             {tech.initials}
                           </span>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-[13px] font-medium text-gray-900">
                               {tech.name}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-[11px] text-gray-400">
                               {tech.online ? "Online" : "Offline"}
                             </p>
                           </div>
                         </div>
-                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+                        <span className="rounded-badge bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600">
                           {activeCount} jobs
                         </span>
                       </li>
@@ -285,18 +278,54 @@ export default function Dashboard() {
                 )}
               </ul>
             </section>
-          </aside>
+          </div>
         </div>
       </div>
 
-      {verifyTarget ? (
+      {verifyTarget && (
         <VerifyModal
           job={verifyTarget}
           onConfirm={() => verifyJob(verifyTarget.id)}
           onReject={() => rejectJob(verifyTarget.id)}
           onClose={() => setVerifyTarget(null)}
         />
-      ) : null}
+      )}
+    </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="min-h-full p-6" aria-hidden>
+      <div className="space-y-6">
+        <header className="space-y-2">
+          <SkeletonBlock className="h-7 w-40 rounded-md" />
+          <SkeletonBlock className="h-4 w-72 rounded-md" />
+        </header>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {[1, 2, 3, 4].map((item) => (
+            <div key={item} className="fs-card rounded-card p-5">
+              <SkeletonBlock className="h-3 w-20 rounded-md" />
+              <SkeletonBlock className="mt-3 h-7 w-12 rounded-md" />
+            </div>
+          ))}
+        </div>
+
+        <section className="fs-card overflow-hidden">
+          <div className="border-b border-black/5 px-5 py-4">
+            <SkeletonBlock className="h-4 w-32 rounded-md" />
+          </div>
+          <div className="px-5 py-3">
+            <SkeletonBlock className="h-4 w-full rounded-md" />
+          </div>
+          <div className="space-y-2 px-5 pb-5">
+            {[1, 2, 3, 4].map((row) => (
+              <SkeletonBlock key={row} className="h-12 w-full rounded-md" />
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

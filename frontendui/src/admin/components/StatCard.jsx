@@ -1,85 +1,125 @@
+import { ArrowRight } from "lucide-react";
+
 const STYLES = {
   amber: {
-    card: "from-[#FFFBF2] to-[#FAFAFA]",
-    strip: "from-[#F59E0B] to-[#D97706]",
-    value: "text-amber-700",
-    icon: "bg-amber-100 text-amber-700",
-    chip: "bg-amber-50 text-amber-700",
+    /* card bg: subtle gradient per spec */
+    cardBg:    "linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 100%)",
+    border:    "#F1F5F9",
+    hoverBorder: "rgba(245,158,11,0.30)",
+    /* icon circle */
+    iconBg:    "rgba(245,158,11,0.10)",
+    iconColor: "#F59E0B",
+    /* value */
+    valueColor: "#D97706",
+    /* bottom line */
+    lineColor: "rgba(245,158,11,0.60)",
+    /* trend */
+    trendColor: "#92400E",
   },
   blue: {
-    card: "from-[#F0F7FF] to-[#FAFAFA]",
-    strip: "from-[#3B82F6] to-[#2563EB]",
-    value: "text-blue-700",
-    icon: "bg-blue-100 text-blue-700",
-    chip: "bg-blue-50 text-blue-700",
+    cardBg:    "linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 100%)",
+    border:    "#F1F5F9",
+    hoverBorder: "rgba(59,130,246,0.30)",
+    iconBg:    "rgba(59,130,246,0.10)",
+    iconColor: "#3B82F6",
+    valueColor: "#2563EB",
+    lineColor: "rgba(59,130,246,0.60)",
+    trendColor: "#1E40AF",
   },
   green: {
-    card: "from-[#F0FDF4] to-[#FAFAFA]",
-    strip: "from-[#22C55E] to-[#16A34A]",
-    value: "text-green-700",
-    icon: "bg-green-100 text-green-700",
-    chip: "bg-green-50 text-green-700",
+    cardBg:    "linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%)",
+    border:    "#F1F5F9",
+    hoverBorder: "rgba(34,197,94,0.30)",
+    iconBg:    "rgba(34,197,94,0.10)",
+    iconColor: "#22C55E",
+    valueColor: "#16A34A",
+    lineColor: "rgba(34,197,94,0.60)",
+    trendColor: "#166534",
   },
   navy: {
-    card: "from-[#F8FAFC] to-[#FAFAFA]",
-    strip: "from-[#1E3A5F] to-[#2E86AB]",
-    value: "text-[#1E3A5F]",
-    icon: "bg-slate-100 text-slate-700",
-    chip: "bg-slate-100 text-slate-700",
+    cardBg:    "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%)",
+    border:    "#F1F5F9",
+    hoverBorder: "rgba(30,58,95,0.30)",
+    iconBg:    "rgba(30,58,95,0.10)",
+    iconColor: "#1E3A5F",
+    valueColor: "#1E3A5F",
+    lineColor: "rgba(30,58,95,0.60)",
+    trendColor: "#1E3A5F",
   },
 };
 
-export default function StatCard({
-  label,
-  value,
-  icon: Icon,
-  color,
-  trend,
-  onClick,
-}) {
-  const style = STYLES[color] ?? STYLES.navy;
+export default function StatCard({ label, value, icon: Icon, color, trend, onClick }) {
+  const s = STYLES[color] ?? STYLES.navy;
   const Component = onClick ? "button" : "div";
 
   return (
     <Component
       type={onClick ? "button" : undefined}
       onClick={onClick}
-      className={[
-        "relative overflow-hidden rounded-2xl border border-[#E5E7EB] bg-gradient-to-b p-5 text-left transition-all duration-200",
-        style.card,
-        onClick
-          ? "fs-btn-press cursor-pointer hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(0,0,0,0.08)]"
-          : "",
-      ].join(" ")}
+      className={`group relative overflow-hidden rounded-card text-left transition-all duration-[180ms] ease-out ${
+        onClick ? "cursor-pointer active:scale-[1.005]" : ""
+      }`}
+      style={{
+        background: s.cardBg,
+        border: `1px solid ${s.border}`,
+        boxShadow: "var(--shadow-1)",
+        padding: "20px",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = "var(--shadow-2)";
+        e.currentTarget.style.transform = "translateY(-2px)";
+        e.currentTarget.style.borderColor = s.hoverBorder;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = "var(--shadow-1)";
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.borderColor = s.border;
+      }}
     >
+      {/* Top row: label + icon circle */}
+      <div className="flex items-start justify-between gap-3">
+        <p
+          className="text-[11px] font-medium uppercase tracking-widest"
+          style={{ color: "#94A3B8" }}
+        >
+          {label}
+        </p>
+
+        {Icon && (
+          <span
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full"
+            style={{ backgroundColor: s.iconBg }}
+          >
+            <Icon size={18} aria-hidden style={{ color: s.iconColor }} />
+          </span>
+        )}
+      </div>
+
+      {/* Value */}
+      <p
+        className="mt-3 text-[36px] font-bold leading-none tracking-tight"
+        style={{ color: s.valueColor }}
+      >
+        {value}
+      </p>
+
+      {/* Trend row */}
+      {trend && (
+        <div
+          className="mt-3 flex items-center gap-1.5 text-[12px] font-medium"
+          style={{ color: s.trendColor }}
+        >
+          <ArrowRight size={12} aria-hidden />
+          <span>{trend.text}</span>
+        </div>
+      )}
+
+      {/* Bottom coloured line — 3px, full width, status colour at 60% opacity */}
       <div
-        className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${style.strip}`}
+        className="absolute inset-x-0 bottom-0 h-[3px]"
+        style={{ backgroundColor: s.lineColor }}
         aria-hidden
       />
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="fs-label text-gray-500">{label}</p>
-          <p
-            className={`mt-2 text-3xl font-bold tracking-tight ${style.value}`}
-          >
-            {value}
-          </p>
-        </div>
-        {Icon ? (
-          <span
-            className={`grid h-10 w-10 place-items-center rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.06)] ${style.icon}`}
-          >
-            <Icon size={18} aria-hidden />
-          </span>
-        ) : null}
-      </div>
-      {trend ? (
-        <span
-          className={`mt-4 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${style.chip}`}
-        >
-          {trend.text}
-        </span>
-      ) : null}
     </Component>
   );
 }
