@@ -42,13 +42,13 @@ export default function CancelModal({ jobId, jobTitle, onConfirm, onClose }) {
             </svg>
           </div>
           <h2 className="text-[18px] font-bold text-[#0F172A]">Cancel this job?</h2>
-          <p className="mt-2 text-[13px] text-[#64748B]">
+          <p className="mt-2 text-[13px] text-[#64748B] dark:text-gray-400">
             This action cannot be undone. The technician and client will be notified.
           </p>
         </div>
 
-        <div className="rounded-card border border-black/5 bg-gray-50 px-4 py-3 text-center">
-          <p className="text-[13px] font-medium text-[#374151]">{jobTitle}</p>
+        <div className="rounded-card border border-black/5 bg-gray-50 px-4 py-3 text-center dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+          <p className="text-[13px] font-medium text-[#374151] dark:text-gray-200">{jobTitle}</p>
         </div>
       </div>
 

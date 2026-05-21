@@ -6,6 +6,7 @@ import AllJobs from "../admin/pages/AllJobs";
 import NewJob from "../admin/pages/NewJob";
 import JobDetail from "../admin/pages/JobDetail";
 import TeamManagement from "../admin/pages/TeamManagement";
+import Clients from "../admin/pages/Clients";
 import Analytics from "../admin/pages/Analytics";
 
 export const adminRouteTree = (
@@ -23,6 +24,7 @@ export const adminRouteTree = (
     <Route path="jobs/new" element={<NewJob />} />
     <Route path="jobs/:id" element={<JobDetail />} />
     <Route path="team" element={<TeamManagement />} />
+    <Route path="clients" element={<Clients />} />
     <Route path="analytics" element={<Analytics />} />
   </Route>
 );

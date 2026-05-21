@@ -6,6 +6,7 @@ const ILLUSTRATIONS = {
   "🔔": BellIllustration,
   "🔎": SearchIllustration,
   "👷": TeamIllustration,
+  "🏢": BuildingIllustration,
 };
 
 export default function EmptyState({ icon, title, subtitle, action }) {
@@ -14,9 +15,11 @@ export default function EmptyState({ icon, title, subtitle, action }) {
   return (
     <div className="mx-auto flex max-w-100 flex-col items-center justify-center px-6 py-12 text-center">
       <Illustration />
-      <p className="mt-5 text-[16px] font-semibold text-[#374151]">{title}</p>
+      <p className="mt-5 text-[16px] font-semibold text-[#374151] dark:text-gray-300">
+        {title}
+      </p>
       {subtitle && (
-        <p className="mt-2 max-w-70 text-[14px] leading-relaxed text-[#94A3B8]">
+        <p className="mt-2 max-w-70 text-[14px] leading-relaxed text-[#94A3B8] dark:text-gray-500">
           {subtitle}
         </p>
       )}
@@ -144,6 +147,73 @@ function SearchIllustration() {
         stroke="#1E3A5F"
         strokeWidth="2.6"
         strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function BuildingIllustration() {
+  return (
+    <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
+      <rect x="10" y="10" width="100" height="100" rx="24" fill="#F8FAFC" />
+      <rect
+        x="36"
+        y="28"
+        width="48"
+        height="64"
+        rx="6"
+        fill="#EEF2F7"
+        stroke="#CBD5E1"
+        strokeWidth="1.5"
+      />
+      <rect
+        x="43"
+        y="35"
+        width="10"
+        height="10"
+        rx="2"
+        fill="#DBEAFE"
+        stroke="#93C5FD"
+        strokeWidth="1"
+      />
+      <rect
+        x="58"
+        y="35"
+        width="10"
+        height="10"
+        rx="2"
+        fill="#DBEAFE"
+        stroke="#93C5FD"
+        strokeWidth="1"
+      />
+      <rect
+        x="43"
+        y="50"
+        width="10"
+        height="10"
+        rx="2"
+        fill="#DBEAFE"
+        stroke="#93C5FD"
+        strokeWidth="1"
+      />
+      <rect
+        x="58"
+        y="50"
+        width="10"
+        height="10"
+        rx="2"
+        fill="#DBEAFE"
+        stroke="#93C5FD"
+        strokeWidth="1"
+      />
+      <rect
+        x="49"
+        y="67"
+        width="22"
+        height="25"
+        rx="4"
+        fill="#2E86AB"
+        opacity="0.28"
       />
     </svg>
   );

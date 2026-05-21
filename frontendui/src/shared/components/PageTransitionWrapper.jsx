@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { scrollAppToTop } from "./ScrollToTop";
 
 const EXIT_MS = 150;
 
@@ -25,8 +26,11 @@ export default function PageTransitionWrapper({
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
+      scrollAppToTop();
       return;
     }
+
+    scrollAppToTop();
 
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current);

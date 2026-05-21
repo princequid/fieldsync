@@ -26,11 +26,11 @@ export default function FormInput({
   const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : "");
 
   const baseClasses =
-    "w-full h-10 px-3 py-2 text-[13px] text-[#0F172A] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[8px] outline-none transition-all duration-150";
+    "w-full h-10 px-3 py-2 text-[13px] text-[#0F172A] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[8px] outline-none transition-all duration-150 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500";
 
   const stateClasses = error
-    ? "border-[#EF4444] bg-[#FEF2F2] focus:border-[#EF4444] focus:bg-white focus:ring-[0_0_0_3px] focus:ring-[rgba(239,68,68,0.15)]"
-    : "focus:bg-white focus:border-[#2E86AB] focus:ring-[0_0_0_3px] focus:ring-[rgba(46,134,171,0.15)]";
+    ? "border-[#EF4444] bg-[#FEF2F2] focus:border-[#EF4444] focus:bg-white focus:ring-[0_0_0_3px] focus:ring-[rgba(239,68,68,0.15)] dark:bg-red-900/20 dark:border-red-500 dark:focus:bg-gray-800"
+    : "focus:bg-white focus:border-[#2E86AB] focus:ring-[0_0_0_3px] focus:ring-[rgba(46,134,171,0.15)] dark:focus:bg-gray-800 dark:focus:border-[#2E86AB]";
 
   const disabledClasses = disabled
     ? "disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300"
@@ -41,7 +41,7 @@ export default function FormInput({
       {label && (
         <label
           htmlFor={inputId}
-          className="mb-1.5 block text-[12px] font-medium text-[#374151]"
+          className="mb-1.5 block text-[12px] font-medium text-[#374151] dark:text-gray-300"
         >
           {label}
           {required && (
@@ -72,7 +72,9 @@ export default function FormInput({
       )}
 
       {!error && helperText && (
-        <p className="mt-1.5 text-[11px] text-[#94A3B8]">{helperText}</p>
+        <p className="mt-1.5 text-[11px] text-[#94A3B8] dark:text-gray-500">
+          {helperText}
+        </p>
       )}
     </div>
   );

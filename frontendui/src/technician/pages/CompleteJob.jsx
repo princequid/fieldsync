@@ -21,7 +21,7 @@ export default function CompleteJob() {
   if (!job || job.technicianId !== user?.id) {
     return (
       <div className="p-4 text-center">
-        <p className="text-[14px] font-semibold text-gray-900">Job not found</p>
+        <p className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">Job not found</p>
         <Link
           to="/tech/jobs"
           className="mt-4 inline-block text-[13px] text-brand-accent"
@@ -60,10 +60,10 @@ export default function CompleteJob() {
       </Link>
 
       <section className="fs-card p-5">
-        <h1 className="text-[18px] font-bold text-gray-900">
+        <h1 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">
           Mark job complete
         </h1>
-        <p className="mt-1 text-[13px] text-gray-500">{job.title}</p>
+        <p className="mt-1 text-[13px] text-gray-500 dark:text-gray-400">{job.title}</p>
       </section>
 
       {submitError && (
@@ -76,7 +76,7 @@ export default function CompleteJob() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <label className="block">
-          <span className="fs-label mb-1.5 block text-gray-400">
+          <span className="fs-label mb-1.5 block text-gray-400 dark:text-gray-500">
             Completion note{" "}
             <span className="normal-case text-gray-300">(optional)</span>
           </span>
@@ -85,21 +85,21 @@ export default function CompleteJob() {
             onChange={(e) => setNote(e.target.value)}
             rows={4}
             placeholder="Describe work completed…"
-            className="w-full resize-y rounded-input border border-black/8 bg-white px-3 py-3 text-[16px] text-gray-900 outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/15 md:text-[13px]"
+            className="w-full resize-y rounded-input border border-black/8 bg-white px-3 py-3 text-[16px] text-gray-900 outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/15 md:text-[13px] dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:placeholder-gray-600"
             style={{ minHeight: "80px" }}
           />
         </label>
 
         {/* Photo upload placeholder */}
         <div className="fs-card flex h-28 flex-col items-center justify-center border-dashed p-4">
-          <Camera className="text-gray-300" size={28} aria-hidden />
-          <p className="mt-2 text-[11px] text-gray-400">
+          <Camera className="text-gray-300 dark:text-gray-600" size={28} aria-hidden />
+          <p className="mt-2 text-[11px] text-gray-400 dark:text-gray-500">
             Photo upload (coming soon)
           </p>
         </div>
 
         {import.meta.env.DEV && (
-          <label className="flex items-center gap-2 text-[12px] text-gray-400">
+          <label className="flex items-center gap-2 text-[12px] text-gray-400 dark:text-gray-500">
             <input
               type="checkbox"
               checked={simulateNetworkError}

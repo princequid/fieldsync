@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   BarChart3,
   Briefcase,
+  Building2,
   ChevronLeft,
   ChevronRight,
   LayoutDashboard,
@@ -25,6 +26,7 @@ const NAV_SECTIONS = [
       { to: "/admin/jobs", label: "All Jobs", icon: Briefcase },
       { to: "/admin/jobs/new", label: "New Job", icon: Plus },
       { to: "/admin/team", label: "Team", icon: Users },
+      { to: "/admin/clients", label: "Clients", icon: Building2 },
       { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     ],
   },
@@ -33,11 +35,15 @@ const NAV_SECTIONS = [
 /* FS logo gradient */
 const LOGO_GRADIENT = "linear-gradient(135deg, #2E86AB 0%, #1A6FA8 100%)";
 
+const TOGGLE_BTN =
+  "fs-focus-ring flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white/80 transition-all duration-150 hover:border-white/20 hover:bg-white/15 hover:text-white active:scale-95";
+
 export default function Sidebar({
   collapsed = false,
   onCollapsedChange,
   overlay = false,
   onNavigate,
+  onCloseOverlay,
   className = "",
 }) {
   const { user, logout } = useAuth();
@@ -57,13 +63,11 @@ export default function Sidebar({
   return (
     <aside
       style={{
-        transition: overlay
-          ? "transform 240ms cubic-bezier(0.32, 0.72, 0, 1)"
-          : "width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
       }}
       className={[
-        `fs-sidebar flex h-screen shrink-0 flex-col text-white ${
-          overlay ? "w-full" : collapsed ? "w-16" : "w-64"
+        `fs-sidebar flex h-full shrink-0 flex-col text-white ${
+          collapsed ? "w-16" : "w-64"
         }`,
         className,
       ]
@@ -105,30 +109,36 @@ export default function Sidebar({
         {!collapsed && (
           <button
             type="button"
-            onClick={() => setCollapsed(true)}
-            className="fs-focus-ring flex h-6 w-6 items-center justify-center rounded-md text-white/40 transition-colors hover:bg-white/8 hover:text-white/70"
-            aria-label="Collapse sidebar"
+            onClick={() => {
+              if (overlay) {
+                onCloseOverlay?.();
+                return;
+              }
+              setCollapsed(true);
+            }}
+            className={TOGGLE_BTN}
+            aria-label={overlay ? "Close sidebar" : "Collapse sidebar"}
           >
-            <ChevronLeft size={14} />
+            <ChevronLeft size={16} strokeWidth={2.25} />
           </button>
         )}
       </div>
 
       {/* Separator — 1px rule at 8% opacity, 16px inset */}
-      <div className="mx-4 h-px bg-white/8" />
+      <div className="mx-4 h-px border-t border-white/8 dark:border-gray-700" />
 
       {/* ── Navigation ───────────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto py-4">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4">
         {/* Expand button when collapsed */}
         {collapsed && (
-          <div className="mb-2 flex justify-center">
+          <div className="mb-3 flex justify-center px-1">
             <button
               type="button"
               onClick={() => setCollapsed(false)}
-              className="fs-focus-ring flex h-7 w-7 items-center justify-center rounded-md text-white/40 transition-colors hover:bg-white/8 hover:text-white/70"
+              className={TOGGLE_BTN}
               aria-label="Expand sidebar"
             >
-              <ChevronRight size={14} />
+              <ChevronRight size={16} strokeWidth={2.25} />
             </button>
           </div>
         )}
@@ -205,7 +215,7 @@ export default function Sidebar({
       </nav>
 
       {/* Separator */}
-      <div className="mx-4 h-px bg-white/8" />
+      <div className="mx-4 h-px border-t border-white/8 dark:border-gray-700" />
 
       {/* ── User profile footer ───────────────────────────────── */}
       <div className="shrink-0 p-4">

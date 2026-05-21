@@ -32,7 +32,7 @@ export default function TechJobDetail() {
   if (!job) {
     return (
       <div className="flex min-h-64 flex-col items-center justify-center px-4 text-center">
-        <p className="text-[15px] font-semibold text-gray-900">Job not found</p>
+        <p className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">Job not found</p>
         <button
           type="button"
           onClick={() => navigate("/tech/jobs")}
@@ -68,11 +68,11 @@ export default function TechJobDetail() {
         <div className="space-y-3 p-4">
           {/* Job card */}
           <section className="fs-card p-4">
-            <h2 className="text-[18px] font-bold text-gray-900">{job.title}</h2>
-            <p className="mt-1 text-[12px] text-gray-400">
+            <h2 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">{job.title}</h2>
+            <p className="mt-1 text-[12px] text-gray-400 dark:text-gray-500">
               {client?.name ?? "Unknown client"}
             </p>
-            <p className="mt-3 text-[13px] leading-relaxed text-gray-700">
+            <p className="mt-3 text-[13px] leading-relaxed text-gray-700 dark:text-gray-300">
               {job.description}
             </p>
           </section>
@@ -93,8 +93,8 @@ export default function TechJobDetail() {
           {/* Contact */}
           {client && (
             <section className="fs-card p-4">
-              <p className="fs-label text-gray-400">Contact</p>
-              <p className="mt-2 text-[13px] font-medium text-gray-900">
+              <p className="fs-label text-gray-400 dark:text-gray-500">Contact</p>
+              <p className="mt-2 text-[13px] font-medium text-gray-900 dark:text-gray-100">
                 {client.contactName ?? client.name}
               </p>
               {client.phone && (
@@ -121,7 +121,7 @@ export default function TechJobDetail() {
           {/* Status history */}
           {showTimeline && history.length > 0 && (
             <section className="fs-card p-4">
-              <p className="fs-label text-gray-400">Status History</p>
+              <p className="fs-label text-gray-400 dark:text-gray-500">Status History</p>
               <ul className="mt-4 space-y-4">
                 {history.map((entry, index) => (
                   <li key={`${entry.status}-${entry.changedAt}-${index}`}>
@@ -130,16 +130,16 @@ export default function TechJobDetail() {
                         className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[entry.status] ?? "bg-gray-400"}`}
                       />
                       <div>
-                        <p className="text-[13px] font-medium text-gray-900">
+                        <p className="text-[13px] font-medium text-gray-900 dark:text-gray-100">
                           {entry.status.replaceAll("_", " ")} by{" "}
                           {entry.changedByName}
                         </p>
-                        <p className="mt-0.5 text-[11px] text-gray-400">
+                        <p className="mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
                           {formatFullDate(entry.changedAt)} ·{" "}
                           {formatTime(entry.changedAt)}
                         </p>
                         {entry.note && (
-                          <p className="mt-1 text-[13px] text-gray-600">
+                          <p className="mt-1 text-[13px] text-gray-600 dark:text-gray-400">
                             {entry.note}
                           </p>
                         )}
@@ -167,7 +167,7 @@ function JobActionBar({ job, jobId, navigate }) {
   if (job.status === "PENDING") {
     return (
       <div
-        className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm"
+        className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm dark:bg-gray-900/96"
         style={shellStyle}
       >
         <button
@@ -185,7 +185,7 @@ function JobActionBar({ job, jobId, navigate }) {
   if (job.status === "IN_PROGRESS") {
     return (
       <div
-        className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm"
+        className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm dark:bg-gray-900/96"
         style={shellStyle}
       >
         <button
@@ -203,10 +203,10 @@ function JobActionBar({ job, jobId, navigate }) {
   if (job.status === "COMPLETED") {
     return (
       <div
-        className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm"
+        className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm dark:bg-gray-900/96"
         style={shellStyle}
       >
-        <div className="flex h-13 w-full items-center justify-center rounded-[12px] bg-gray-100 text-[16px] font-semibold text-gray-400">
+        <div className="flex h-13 w-full items-center justify-center rounded-[12px] bg-gray-100 text-[16px] font-semibold text-gray-400 dark:bg-gray-800 dark:text-gray-500">
           Awaiting admin verification
         </div>
       </div>
@@ -215,7 +215,7 @@ function JobActionBar({ job, jobId, navigate }) {
 
   return (
     <div
-      className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm"
+      className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm dark:bg-gray-900/96"
       style={shellStyle}
     >
       <div className="flex h-13 w-full items-center justify-center rounded-[12px] bg-brand-navy text-[16px] font-semibold text-white/80">
@@ -228,8 +228,8 @@ function JobActionBar({ job, jobId, navigate }) {
 function StatTile({ label, value }) {
   return (
     <div className="fs-card p-3">
-      <p className="fs-label text-gray-400">{label}</p>
-      <div className="mt-1 text-[13px] font-semibold text-gray-900">
+      <p className="fs-label text-gray-400 dark:text-gray-500">{label}</p>
+      <div className="mt-1 text-[13px] font-semibold text-gray-900 dark:text-gray-100">
         {value}
       </div>
     </div>

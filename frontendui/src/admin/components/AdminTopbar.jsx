@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Bell, Menu, Search } from "lucide-react";
+import { Bell, Search } from "lucide-react";
+import ThemeToggle from "../../shared/components/ThemeToggle";
 import { useAuth } from "../../shared/context/AuthContext";
 import { getUserById } from "../../shared/utils/mockData";
 import { formatNotificationRelative } from "../../shared/utils/formatDate";
@@ -35,6 +36,12 @@ function getPageInfo(pathname, jobs, technicians) {
       subtitle: `${technicians.length} field technician${technicians.length !== 1 ? "s" : ""}`,
     };
   }
+  if (pathname.startsWith("/admin/clients")) {
+    return {
+      title: "Clients",
+      subtitle: "Client records and site contacts",
+    };
+  }
   if (pathname.startsWith("/admin/analytics")) {
     return {
       title: "Analytics",
@@ -44,7 +51,7 @@ function getPageInfo(pathname, jobs, technicians) {
   return { title: "FieldSync", subtitle: "Operations Platform" };
 }
 
-export default function AdminTopbar({ showMenuButton = false, onMenuClick }) {
+export default function AdminTopbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -126,34 +133,21 @@ export default function AdminTopbar({ showMenuButton = false, onMenuClick }) {
 
   return (
     <header
-      className="sticky top-0 z-30 shrink-0 bg-white"
+      className="sticky top-0 z-30 shrink-0 border-b border-[#F1F5F9] bg-white dark:border-gray-800 dark:bg-gray-900"
       style={{
         height: "64px",
-        borderBottom: "1px solid #F1F5F9",
         boxShadow: "0 1px 0 rgba(0,0,0,0.06)",
       }}
     >
       <div className="flex h-full items-center justify-between gap-6 px-6">
         {/* ── Left: page title + subtitle ──────────────────────── */}
-        <div className="flex min-w-0 shrink-0 items-center gap-3">
-          {showMenuButton && (
-            <button
-              type="button"
-              onClick={onMenuClick}
-              className="fs-focus-ring inline-flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#E2E8F0] bg-white text-[#64748B] transition-colors hover:bg-gray-50"
-              aria-label="Open sidebar menu"
-            >
-              <Menu size={18} />
-            </button>
-          )}
-          <div className="min-w-0">
-            <h1 className="truncate text-[18px] font-semibold leading-tight tracking-[-0.015em] text-[#0F172A]">
-              {title}
-            </h1>
-            <p className="mt-0.5 truncate text-[12px] text-[#94A3B8]">
-              {subtitle}
-            </p>
-          </div>
+        <div className="min-w-0 shrink-0">
+          <h1 className="truncate text-[18px] font-semibold leading-tight tracking-[-0.015em] text-[#0F172A] dark:text-gray-50">
+            {title}
+          </h1>
+          <p className="mt-0.5 truncate text-[12px] text-[#94A3B8] dark:text-gray-400">
+            {subtitle}
+          </p>
         </div>
 
         {/* ── Right cluster ─────────────────────────────────────── */}
@@ -163,7 +157,9 @@ export default function AdminTopbar({ showMenuButton = false, onMenuClick }) {
             <Search
               size={15}
               className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 transition-colors duration-150 ${
-                searchFocused ? "text-[#2E86AB]" : "text-[#94A3B8]"
+                searchFocused
+                  ? "text-[#2E86AB]"
+                  : "text-[#94A3B8] dark:text-gray-500"
               }`}
               aria-hidden
             />
@@ -174,14 +170,14 @@ export default function AdminTopbar({ showMenuButton = false, onMenuClick }) {
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
               placeholder="Search…"
-              className="h-9 rounded-input border border-[#E2E8F0] bg-[#F8FAFC] pl-9 pr-3 text-[13px] text-gray-900 outline-none transition-[width,box-shadow] duration-150 placeholder:text-[#94A3B8] focus:border-[#2E86AB] focus:shadow-[0_0_0_3px_rgba(46,134,171,0.12)] focus:bg-white"
+              className="h-9 rounded-input border border-[#E2E8F0] bg-[#F8FAFC] pl-9 pr-3 text-[13px] text-gray-900 outline-none transition-[width,box-shadow] duration-150 placeholder:text-[#94A3B8] focus:border-[#2E86AB] focus:shadow-[0_0_0_3px_rgba(46,134,171,0.12)] focus:bg-white dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500 dark:focus:bg-gray-800"
               style={{ width: searchFocused ? "260px" : "220px" }}
               aria-label="Search jobs and technicians"
             />
             {/* ⌘K hint — disappears when user types */}
             {!searchQuery && (
               <span
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[11px] text-[#CBD5E1]"
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[11px] text-[#CBD5E1] dark:text-gray-600"
                 aria-hidden
               >
                 ⌘K
@@ -189,13 +185,15 @@ export default function AdminTopbar({ showMenuButton = false, onMenuClick }) {
             )}
           </div>
 
+          <ThemeToggle />
+
           {/* Bell */}
           <div className="relative">
             <button
               ref={bellRef}
               type="button"
               onClick={() => setDropdownOpen((open) => !open)}
-              className={`relative flex h-9 w-9 items-center justify-center rounded-full border border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B] transition-colors hover:bg-gray-100 hover:text-gray-700 ${
+              className={`relative flex h-9 w-9 items-center justify-center rounded-full border border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B] transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 ${
                 bellAnimate ? "animate-bell-ring" : ""
               }`}
               aria-label={
@@ -221,7 +219,7 @@ export default function AdminTopbar({ showMenuButton = false, onMenuClick }) {
             {dropdownOpen && (
               <div
                 ref={panelRef}
-                className="animate-scale-in absolute right-0 top-[calc(100%+8px)] w-90 overflow-hidden border border-[#F1F5F9] bg-white"
+                className="animate-scale-in absolute right-0 top-[calc(100%+8px)] w-90 overflow-hidden border border-[#F1F5F9] bg-white dark:border-gray-800 dark:bg-gray-900"
                 style={{
                   borderRadius: "16px",
                   maxHeight: "420px",
@@ -231,8 +229,8 @@ export default function AdminTopbar({ showMenuButton = false, onMenuClick }) {
                 role="menu"
                 aria-label="Notifications"
               >
-                <div className="flex h-12 items-center justify-between border-b border-[#F1F5F9] bg-white px-4">
-                  <p className="text-[13px] font-semibold text-[#0F172A]">
+                <div className="flex h-12 items-center justify-between border-b border-[#F1F5F9] bg-white px-4 dark:border-gray-800 dark:bg-gray-900">
+                  <p className="text-[13px] font-semibold text-[#0F172A] dark:text-gray-50">
                     Notifications
                   </p>
                   <button
@@ -293,8 +291,10 @@ export default function AdminTopbar({ showMenuButton = false, onMenuClick }) {
                           type="button"
                           role="menuitem"
                           onClick={() => handleNotificationClick(notification)}
-                          className={`relative flex h-16 w-full gap-0 px-4 py-3 text-left transition-colors hover:bg-gray-50 ${
-                            notification.isRead ? "bg-white" : "bg-[#F0F9FF]"
+                          className={`relative flex h-16 w-full gap-0 px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                            notification.isRead
+                              ? "bg-white dark:bg-gray-900"
+                              : "bg-[#F0F9FF] dark:bg-blue-950/30"
                           }`}
                         >
                           <span
@@ -310,10 +310,10 @@ export default function AdminTopbar({ showMenuButton = false, onMenuClick }) {
                             />
                           )}
                           <span className="min-w-0 flex-1 pl-1">
-                            <p className="line-clamp-1 pr-4 text-[13px] leading-snug text-[#374151]">
+                            <p className="line-clamp-1 pr-4 text-[13px] leading-snug text-[#374151] dark:text-gray-300">
                               {renderNotificationMessage(notification.message)}
                             </p>
-                            <p className="mt-1 font-mono text-[11px] text-[#94A3B8]">
+                            <p className="mt-1 font-mono text-[11px] text-[#94A3B8] dark:text-gray-500">
                               {formatNotificationRelative(
                                 notification.createdAt,
                               )}
