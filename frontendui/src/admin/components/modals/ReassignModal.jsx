@@ -46,14 +46,14 @@ export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, o
         {currentTech && (
           <div>
             <p className="fs-label mb-1.5 text-[#94A3B8]">Currently Assigned</p>
-            <div className="inline-flex items-center gap-2 rounded-card border border-black/5 bg-gray-50 px-3 py-2">
+            <div className="inline-flex items-center gap-2 rounded-card border border-black/5 bg-gray-50 px-3 py-2 dark:bg-gray-800 dark:text-gray-200">
               <div
                 className="grid h-6 w-6 place-items-center rounded-full text-[10px] font-bold text-white"
                 style={{ background: "linear-gradient(135deg, #2E86AB, #1A6FA8)" }}
               >
                 {currentTech.initials}
               </div>
-              <span className="text-[13px] font-medium text-[#0F172A]">{currentTech.name}</span>
+              <span className="text-[13px] font-medium text-[#0F172A] dark:text-gray-200">{currentTech.name}</span>
               <span className="rounded-badge bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
                 {currentTech.activeJobs ?? 0} active
               </span>
@@ -64,7 +64,7 @@ export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, o
         {/* Technician list */}
         <div>
           <p className="fs-label mb-1.5 text-[#94A3B8]">Select New Technician</p>
-          <div className="max-h-56 space-y-1 overflow-y-auto rounded-card border border-black/5 p-1.5">
+          <div className="max-h-56 space-y-1 overflow-y-auto rounded-card border border-black/5 p-1.5 dark:border-gray-700">
             {technicians.map((tech) => {
               const isCurrent  = tech.id === currentTechnicianId;
               const isSelected = tech.id === selectedId;
@@ -76,10 +76,10 @@ export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, o
                   disabled={isCurrent}
                   className={`flex w-full items-center gap-3 rounded-button px-3 py-2.5 text-left transition-colors ${
                     isSelected
-                      ? "border-2 border-brand-accent bg-blue-50"
+                      ? "border-2 border-brand-accent bg-blue-50 dark:bg-blue-950/30"
                       : isCurrent
                         ? "cursor-not-allowed border border-black/5 bg-gray-100 opacity-40"
-                        : "border border-transparent hover:border-black/5 hover:bg-gray-50"
+                        : "border border-transparent hover:border-black/5 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                 >
                   <div
@@ -89,14 +89,14 @@ export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, o
                     {tech.initials}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-medium text-[#0F172A]">
+                    <p className="truncate text-[13px] font-medium text-[#0F172A] dark:text-gray-200">
                       {tech.name}
                       {isCurrent && <span className="ml-2 text-[11px] font-normal text-[#94A3B8]">(current)</span>}
                     </p>
                     <p className="truncate text-[11px] text-[#94A3B8]">{tech.email}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
-                    <span className="text-[11px] text-[#94A3B8]">{tech.activeJobs ?? 0} active</span>
+                    <span className="text-[11px] text-[#94A3B8] dark:text-gray-500">{tech.activeJobs ?? 0} active</span>
                     <span
                       className={`inline-flex items-center gap-1 rounded-badge px-2 py-0.5 text-[10px] font-medium ${
                         tech.online ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
@@ -122,7 +122,7 @@ export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, o
             onChange={(e) => setReason(e.target.value)}
             rows={3}
             placeholder="Briefly explain why you are reassigning this job…"
-            className="w-full resize-none rounded-input border border-black/8 bg-white px-3 py-2.5 text-[13px] text-[#0F172A] outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/15"
+            className="w-full resize-none rounded-input border border-black/8 bg-white px-3 py-2.5 text-[13px] text-[#0F172A] outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/15 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:placeholder-gray-600"
           />
         </label>
       </div>

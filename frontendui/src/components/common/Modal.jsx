@@ -89,15 +89,13 @@ export default function Modal({
         <div
           ref={panelRef}
           className={[
-            "w-full",
+            "w-full overflow-hidden border border-transparent bg-white dark:border-gray-800 dark:bg-gray-900 dark:shadow-[0_24px_64px_rgba(0,0,0,0.45)]",
             maxWidth,
             closing ? "animate-modal-card-out" : "animate-modal-card-in",
           ].join(" ")}
           style={{
-            background: "#ffffff",
             borderRadius: "var(--radius-modal, 16px)",
             boxShadow: "var(--shadow-4)",
-            overflow: "hidden",
           }}
           role="dialog"
           aria-modal="true"

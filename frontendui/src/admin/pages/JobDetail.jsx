@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin } from "lucide-react";
-import { getUserById } from "../../shared/utils/mockData";
+import { getClientById, getUserById } from "../../shared/utils/mockData";
 import TechChip from "../components/TechChip";
 import { useAdminData } from "../hooks/useAdminData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
@@ -57,7 +57,7 @@ export default function JobDetail() {
   const detail = useMemo(() => {
     if (!job) return null;
     return {
-      client: getUserById(job.clientId),
+      client: getClientById(job.clientId),
       technician: getUserById(job.technicianId),
     };
   }, [job]);
@@ -107,23 +107,23 @@ function JobDetailContent({ job, detail, navigate }) {
   ];
 
   return (
-    <div className="min-h-screen bg-brand-bg p-6">
+    <div className="min-h-screen bg-brand-bg p-6 dark:bg-gray-950">
       <div className="space-y-5">
         {/* Header card */}
-        <div className="fs-card flex flex-col gap-4 p-5 md:flex-row md:items-start md:justify-between">
+        <div className="fs-card flex flex-col gap-4 border border-transparent p-5 dark:border-gray-800 dark:bg-gray-900 md:flex-row md:items-start md:justify-between">
           <div>
             <button
               type="button"
               onClick={() => navigate("/admin/jobs")}
-              className="fs-focus-ring inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-accent hover:underline"
+              className="fs-focus-ring inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-accent hover:underline dark:text-gray-400 dark:hover:text-gray-200"
             >
               <ArrowLeft size={14} />
               All Jobs
             </button>
-            <p className="mt-3 font-mono text-[10px] text-gray-400">
+            <p className="mt-3 font-mono text-[10px] text-gray-400 dark:text-gray-500">
               {job.jobNumber}
             </p>
-            <h1 className="mt-1 text-[20px] font-bold tracking-tight text-gray-900 md:text-2xl">
+            <h1 className="mt-1 text-[20px] font-bold tracking-tight text-gray-900 dark:text-gray-50 md:text-2xl">
               {job.title}
             </h1>
           </div>
@@ -139,23 +139,23 @@ function JobDetailContent({ job, detail, navigate }) {
           {/* Left column */}
           <div className="space-y-5 md:col-span-2">
             {/* Job info */}
-            <section className="fs-card p-5">
+            <section className="fs-card border border-transparent p-5 dark:border-gray-800 dark:bg-gray-900">
               <div className={`mb-4 h-1 w-16 rounded-full ${meta.bar}`} />
               <h2 className="fs-card-title">Job Information</h2>
 
-              <div className="mt-4 space-y-5 text-[13px] text-gray-700">
+              <div className="mt-4 space-y-5 text-[13px] text-gray-700 dark:text-gray-200">
                 <div>
-                  <p className="fs-label mb-1.5 text-gray-400">Description</p>
-                  <p className="leading-relaxed text-gray-700">
+                  <p className="fs-label mb-1.5 text-gray-400 dark:text-gray-400">Description</p>
+                  <p className="leading-relaxed text-gray-700 dark:text-gray-200">
                     {job.description}
                   </p>
                 </div>
 
                 <div>
-                  <p className="fs-label mb-1.5 text-gray-400">Location</p>
+                  <p className="fs-label mb-1.5 text-gray-400 dark:text-gray-400">Location</p>
                   <div className="flex gap-3">
                     <div
-                      className="grid h-14 w-20 shrink-0 place-items-center rounded-card border border-black/5 bg-[linear-gradient(#f8fafc_1px,transparent_1px),linear-gradient(90deg,#f8fafc_1px,transparent_1px)] bg-size-[8px_8px] text-gray-300"
+                      className="grid h-14 w-20 shrink-0 place-items-center rounded-card border border-black/5 bg-[linear-gradient(#f8fafc_1px,transparent_1px),linear-gradient(90deg,#f8fafc_1px,transparent_1px)] bg-size-[8px_8px] text-gray-300 dark:border-gray-800 dark:bg-gray-800"
                       aria-hidden
                     >
                       <MapPin size={16} />
@@ -174,16 +174,54 @@ function JobDetailContent({ job, detail, navigate }) {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <InfoBlock
                     label="Client"
-                    value={detail?.client?.name ?? "Unknown client"}
+                    value={detail?.client?.companyName ?? "Unknown client"}
                   />
-                  <InfoBlock
-                    label="Contact Name"
-                    value={detail?.client?.contactName ?? "—"}
-                  />
-                  <InfoBlock
-                    label="Phone"
-                    value={detail?.client?.phone ?? "—"}
-                  />
+                  <div>
+                    <p className="fs-label mb-1 text-gray-400 dark:text-gray-400">
+                      Notification Email
+                    </p>
+                    <a
+                      href={
+                        job.clientEmail
+                          ? `mailto:${job.clientEmail}`
+                          : undefined
+                      }
+                      className="text-[13px] font-medium text-brand-accent hover:underline"
+                    >
+                      {job.clientEmail ?? "—"}
+                    </a>
+                    <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
+                      This email receives status update notifications.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="fs-label mb-1 text-gray-400 dark:text-gray-400">Phone</p>
+                    <a
+                      href={
+                        job.clientPhone
+                          ? `tel:${job.clientPhone.replace(/\s/g, "")}`
+                          : undefined
+                      }
+                      className="text-[13px] font-medium text-gray-700 hover:text-brand-accent hover:underline dark:text-gray-200"
+                    >
+                      {job.clientPhone ?? "—"}
+                    </a>
+                  </div>
+                  <div>
+                    <p className="fs-label mb-1 text-gray-400 dark:text-gray-400">Address</p>
+                    <a
+                      href={
+                        job.clientAddress
+                          ? `https://maps.google.com/?q=${encodeURIComponent(job.clientAddress)}`
+                          : undefined
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[13px] font-medium text-gray-700 hover:text-brand-accent hover:underline dark:text-gray-200"
+                    >
+                      {job.clientAddress ?? "—"}
+                    </a>
+                  </div>
                   <InfoBlock
                     label="Priority"
                     value={
@@ -197,7 +235,7 @@ function JobDetailContent({ job, detail, navigate }) {
                 </div>
 
                 <div>
-                  <p className="fs-label mb-1.5 text-gray-400">
+                  <p className="fs-label mb-1.5 text-gray-400 dark:text-gray-400">
                     Assigned Technician
                   </p>
                   <TechChip technician={detail?.technician} />
@@ -211,7 +249,7 @@ function JobDetailContent({ job, detail, navigate }) {
             </section>
 
             {/* Status history */}
-            <section className="fs-card p-5">
+            <section className="fs-card border border-transparent p-5 dark:border-gray-800 dark:bg-gray-900">
               <h2 className="fs-card-title">Status History</h2>
               <div className="mt-5 space-y-4">
                 {jobHistory.map((entry, index) => {
@@ -223,7 +261,7 @@ function JobDetailContent({ job, detail, navigate }) {
                   return (
                     <div
                       key={`${entry.status}-${entry.changedAt}-${index}`}
-                      className="flex gap-4 rounded-card border border-black/5 border-l-2 border-l-brand-accent/30 bg-gray-50/50 p-4"
+                      className="flex gap-4 rounded-card border border-black/5 border-l-2 border-l-brand-accent/30 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800"
                     >
                       <div className="flex flex-col items-center pt-0.5">
                         <span
@@ -232,16 +270,16 @@ function JobDetailContent({ job, detail, navigate }) {
                           } ${index === 0 && entry.status === "IN_PROGRESS" ? "animate-pulse-dot" : ""}`}
                         />
                         {index !== jobHistory.length - 1 && (
-                          <span className="mt-2 min-h-8 w-px grow bg-linear-to-b from-brand-accent/30 to-gray-200" />
+                          <span className="mt-2 min-h-8 w-px grow bg-linear-to-b from-brand-accent/30 to-gray-200 dark:bg-gray-700" />
                         )}
                       </div>
                       <div className="pb-1">
-                        <p className="text-[13px] font-medium text-gray-900">
+                        <p className="text-[13px] font-medium text-gray-900 dark:text-gray-200">
                           {label} by {entry.changedByName}
                         </p>
-                        <p className="fs-muted mt-0.5">{timestamp}</p>
+                        <p className="fs-muted mt-0.5 dark:text-gray-500">{timestamp}</p>
                         {entry.note && (
-                          <p className="mt-2 text-[13px] text-gray-600">
+                          <p className="mt-2 text-[13px] text-gray-600 dark:text-gray-300">
                             {entry.note}
                           </p>
                         )}
@@ -256,7 +294,7 @@ function JobDetailContent({ job, detail, navigate }) {
           {/* Right column */}
           <aside className="space-y-5">
             {/* Actions */}
-            <section className="fs-card p-5">
+            <section className="fs-card border border-transparent p-5 dark:border-gray-800 dark:bg-gray-900">
               <h2 className="fs-card-title">Actions</h2>
               <div className="mt-4 space-y-2.5">
                 <button
@@ -310,7 +348,7 @@ function JobDetailContent({ job, detail, navigate }) {
             </section>
 
             {/* Job details summary */}
-            <section className="fs-card p-5">
+            <section className="fs-card border border-transparent p-5 dark:border-gray-800 dark:bg-gray-900">
               <h2 className="fs-card-title">Job Details</h2>
               <div className="mt-4 space-y-0">
                 {summaryFields.map((field) => (
@@ -360,9 +398,9 @@ function JobDetailContent({ job, detail, navigate }) {
 function InfoBlock({ label, value, mono = false }) {
   return (
     <div>
-      <p className="fs-label mb-1 text-gray-400">{label}</p>
+      <p className="fs-label mb-1 text-gray-400 dark:text-gray-400">{label}</p>
       <div
-        className={`text-[13px] text-gray-700 ${mono ? "font-mono text-[11px]" : ""}`}
+        className={`text-[13px] text-gray-700 dark:text-gray-200 ${mono ? "font-mono text-[11px]" : ""}`}
       >
         {value}
       </div>
@@ -372,9 +410,9 @@ function InfoBlock({ label, value, mono = false }) {
 
 function SummaryRow({ label, value }) {
   return (
-    <div className="grid grid-cols-2 items-center gap-3 border-b border-black/5 py-2.5 last:border-0">
-      <span className="fs-label text-gray-400">{label}</span>
-      <span className="text-right text-[12px] text-gray-700">{value}</span>
+    <div className="grid grid-cols-2 items-center gap-3 border-b border-black/5 py-2.5 last:border-0 dark:border-gray-800">
+      <span className="fs-label text-gray-400 dark:text-gray-400">{label}</span>
+      <span className="text-right text-[12px] text-gray-700 dark:text-gray-200">{value}</span>
     </div>
   );
 }

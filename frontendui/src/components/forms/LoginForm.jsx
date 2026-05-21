@@ -88,46 +88,46 @@ export default function LoginForm() {
         </div>
       </aside>
 
-      <section className="flex min-h-screen items-center justify-center bg-white px-6 py-10 sm:px-10 lg:px-12">
+      <section className="flex min-h-screen items-center justify-center bg-white px-6 py-10 sm:px-10 lg:px-12 dark:bg-gray-950">
         <div className="w-full max-w-100">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
             <div className="grid h-10 w-10 place-items-center rounded-[10px] bg-[#1E3A5F] text-[14px] font-semibold text-white">
               FS
             </div>
-            <p className="text-[18px] font-semibold tracking-[-0.02em] text-[#0F172A]">
+            <p className="text-[18px] font-semibold tracking-[-0.02em] text-[#0F172A] dark:text-gray-50">
               FieldSync
             </p>
           </div>
 
-          <h2 className="text-[28px] font-bold tracking-[-0.5px] text-[#0F172A]">
+          <h2 className="text-[28px] font-bold tracking-[-0.5px] text-[#0F172A] dark:text-gray-50">
             Welcome back
           </h2>
-          <p className="mt-1.5 text-[14px] text-[#94A3B8]">
+          <p className="mt-1.5 text-[14px] text-[#94A3B8] dark:text-gray-400">
             Sign in to continue managing operations.
           </p>
 
           {error && (
-            <div className="mt-5 rounded-button border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700">
+            <div className="mt-5 rounded-button border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="mt-7 space-y-4">
             <label className="block">
-              <span className="fs-label mb-1.5 block text-gray-400">Email</span>
+              <span className="fs-label mb-1.5 block text-gray-400 dark:text-gray-500">Email</span>
               <input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="Enter your email"
-                className="fs-input fs-focus-ring w-full rounded-input border border-black/8 bg-white text-gray-900 outline-none transition"
+                className="fs-input fs-focus-ring w-full rounded-input border border-black/8 bg-white text-gray-900 outline-none transition dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
                 autoComplete="email"
                 required
               />
             </label>
 
             <label className="block">
-              <span className="fs-label mb-1.5 block text-gray-400">
+              <span className="fs-label mb-1.5 block text-gray-400 dark:text-gray-500">
                 Password
               </span>
               <div className="relative">
@@ -136,14 +136,14 @@ export default function LoginForm() {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="Enter your password"
-                  className="fs-input fs-focus-ring w-full rounded-input border border-black/8 bg-white pr-12 text-gray-900 outline-none transition"
+                  className="fs-input fs-focus-ring w-full rounded-input border border-black/8 bg-white pr-12 text-gray-900 outline-none transition dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
                   autoComplete="current-password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((c) => !c)}
-                  className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-400 transition hover:text-gray-700"
+                  className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-400 transition hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
@@ -184,7 +184,7 @@ export default function LoginForm() {
             </button>
           </form>
 
-          <div className="mt-5 flex items-start gap-2 rounded-button border border-dashed border-black/8 bg-gray-50/70 px-4 py-3 text-[12px] text-gray-400">
+          <div className="mt-5 flex items-start gap-2 rounded-button border border-dashed border-black/8 bg-gray-50/70 px-4 py-3 text-[12px] text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500">
             <Info
               size={14}
               className="mt-0.5 shrink-0 text-brand-accent"

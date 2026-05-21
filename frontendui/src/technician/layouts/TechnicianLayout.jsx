@@ -7,6 +7,7 @@ import {
 } from "../hooks/useTechnicianData";
 import { getUserById } from "../../shared/utils/mockData";
 import ErrorState from "../../shared/components/ErrorState";
+import ThemeToggle from "../../shared/components/ThemeToggle";
 import PageTransitionWrapper from "../../shared/components/PageTransitionWrapper";
 import { SkeletonBlock } from "../../shared/components/Skeleton";
 
@@ -36,19 +37,22 @@ export default function TechnicianLayout() {
 
   return (
     <TechnicianDataProvider technicianId={user?.id}>
-      <div className="flex h-screen flex-col overflow-hidden bg-brand-bg">
+      <div className="flex h-screen flex-col overflow-hidden bg-brand-bg dark:bg-gray-950">
         {/* Top header */}
         <header className="fs-tech-header flex h-14 shrink-0 items-center justify-between px-4">
           <div className="w-9 shrink-0" aria-hidden />
           <h1 className="text-center text-[16px] font-semibold text-white">
             {title}
           </h1>
-          <div
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-white/25 text-[12px] font-bold text-white"
-            style={{ backgroundColor: "#27AE60" }}
-            aria-hidden
-          >
-            {userData?.initials ?? "T"}
+          <div className="flex shrink-0 items-center gap-2">
+            <ThemeToggle />
+            <div
+              className="grid h-9 w-9 place-items-center rounded-full border-2 border-white/25 text-[12px] font-bold text-white"
+              style={{ backgroundColor: "#27AE60" }}
+              aria-hidden
+            >
+              {userData?.initials ?? "T"}
+            </div>
           </div>
         </header>
 
@@ -57,7 +61,7 @@ export default function TechnicianLayout() {
 
         {/* Bottom navigation */}
         <nav
-          className="shrink-0 bg-white"
+          className="shrink-0 border-t border-transparent bg-white dark:border-gray-800 dark:bg-gray-900"
           style={{
             height: "64px",
             boxShadow: "0 -1px 0 #F1F5F9, 0 -4px 12px rgba(0,0,0,0.04)",
@@ -79,12 +83,12 @@ export default function TechnicianLayout() {
                   >
                     <Icon
                       size={20}
-                      className={active ? "text-[#27AE60]" : "text-[#94A3B8]"}
+                      className={active ? "text-[#27AE60]" : "text-[#94A3B8] dark:text-gray-600"}
                     />
                   </span>
                   <span
                     className={`text-[11px] font-medium transition-colors duration-150 ${
-                      active ? "text-[#27AE60]" : "text-[#94A3B8]"
+                      active ? "text-[#27AE60]" : "text-[#94A3B8] dark:text-gray-600"
                     }`}
                   >
                     {label}
@@ -142,7 +146,7 @@ function TechLayoutSkeleton({ pathname }) {
       {[1, 2, 3].map((row) => (
         <div
           key={row}
-          className="mx-0.5 my-1 flex min-h-20 overflow-hidden rounded-r-[16px] rounded-l-none border border-black/5 bg-white"
+          className="mx-0.5 my-1 flex min-h-20 overflow-hidden rounded-r-[16px] rounded-l-none border border-black/5 bg-white dark:border-gray-800 dark:bg-gray-900"
           style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
         >
           <div className="h-auto w-1 shrink-0 bg-slate-200" />

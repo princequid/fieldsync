@@ -48,6 +48,15 @@ const STYLES = {
   },
 };
 
+const DARK_CARD_CLASS = {
+  amber:
+    "dark:!border-gray-800 dark:!bg-gradient-to-b dark:!from-amber-950/30 dark:!to-gray-900 dark:shadow-black/20",
+  blue: "dark:!border-gray-800 dark:!bg-gradient-to-b dark:!from-blue-950/30 dark:!to-gray-900 dark:shadow-black/20",
+  green:
+    "dark:!border-gray-800 dark:!bg-gradient-to-b dark:!from-green-950/30 dark:!to-gray-900 dark:shadow-black/20",
+  navy: "dark:!border-gray-800 dark:!bg-gradient-to-b dark:!from-slate-900 dark:!to-gray-900 dark:shadow-black/20",
+};
+
 export default function StatCard({ label, value, icon: Icon, color, trend, onClick }) {
   const s = STYLES[color] ?? STYLES.navy;
   const Component = onClick ? "button" : "div";
@@ -56,7 +65,7 @@ export default function StatCard({ label, value, icon: Icon, color, trend, onCli
     <Component
       type={onClick ? "button" : undefined}
       onClick={onClick}
-      className={`group relative overflow-hidden rounded-card text-left transition-all duration-[180ms] ease-out ${
+      className={`group relative overflow-hidden rounded-card border border-transparent bg-white text-left transition-all duration-[180ms] ease-out dark:bg-gray-900 ${DARK_CARD_CLASS[color] ?? DARK_CARD_CLASS.navy} ${
         onClick ? "cursor-pointer active:scale-[1.005]" : ""
       }`}
       style={{
@@ -106,7 +115,7 @@ export default function StatCard({ label, value, icon: Icon, color, trend, onCli
       {/* Trend row */}
       {trend && (
         <div
-          className="mt-3 flex items-center gap-1.5 text-[12px] font-medium"
+          className="mt-3 flex items-center gap-1.5 text-[12px] font-medium dark:text-gray-400"
           style={{ color: s.trendColor }}
         >
           <ArrowRight size={12} aria-hidden />

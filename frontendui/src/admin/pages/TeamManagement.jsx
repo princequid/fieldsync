@@ -30,29 +30,29 @@ export default function TeamManagement() {
       thing="team"
       onRetry={refetch}
       skeleton={() => <TeamManagementSkeleton />}
-      className="min-h-screen bg-brand-bg"
+      className="fs-admin-page-bg min-h-screen"
     >
-      <div className="min-h-screen bg-brand-bg px-4 py-6 sm:px-6 lg:px-8">
+      <div className="fs-admin-page-bg min-h-screen px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-5">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <header className="fs-card flex flex-col gap-4 border border-transparent px-5 py-5 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_1px_0_0_rgba(46,134,171,0.08)_inset,0_4px_24px_rgba(0,0,0,0.25)]">
             <div>
-              <h1 className="fs-page-title">Team</h1>
-              <p className="mt-1 text-[13px] text-gray-500">
+              <h1 className="fs-page-title dark:text-gray-50">Team</h1>
+              <p className="mt-1 text-[13px] text-gray-500 dark:text-gray-400">
                 Manage technicians and their assignments.
               </p>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="fs-btn-gradient-navy fs-btn-press fs-focus-ring inline-flex items-center gap-2 rounded-button px-4 py-2.5 text-[13px] font-medium text-white"
+              className="fs-btn-gradient-navy fs-btn-press fs-focus-ring inline-flex shrink-0 items-center gap-2 rounded-button px-4 py-2.5 text-[13px] font-medium text-white shadow-sm dark:shadow-[0_2px_12px_rgba(30,58,95,0.45)]"
             >
               <Plus size={16} />
               Add Technician
             </button>
-          </div>
+          </header>
 
           {/* Table */}
-          <div className="fs-card overflow-hidden">
+          <div className="fs-card overflow-hidden border border-transparent dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_4px_32px_rgba(0,0,0,0.28)]">
             {technicians.length === 0 ? (
               <EmptyState
                 icon="👷"
@@ -67,7 +67,7 @@ export default function TeamManagement() {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-180">
                   <thead>
-                    <tr className="border-b border-black/5 bg-gray-50/70">
+                    <tr className="border-b border-black/5 bg-gray-50/70 dark:border-gray-800 dark:bg-gray-800">
                       {[
                         "Technician",
                         "Phone",
@@ -79,18 +79,18 @@ export default function TeamManagement() {
                       ].map((col) => (
                         <th
                           key={col}
-                          className="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-gray-400"
+                          className="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-400"
                         >
                           {col}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-black/3">
+                  <tbody className="divide-y divide-black/3 dark:divide-gray-800">
                     {technicians.map((tech) => (
                       <tr
                         key={tech.id}
-                        className="transition-colors hover:bg-gray-50/60"
+                        className="transition-colors hover:bg-gray-50/60 dark:hover:bg-gray-800"
                       >
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
@@ -98,25 +98,25 @@ export default function TeamManagement() {
                               {tech.initials}
                             </div>
                             <div>
-                              <p className="text-[13px] font-medium text-gray-900">
+                              <p className="text-[13px] font-medium text-gray-900 dark:text-gray-100">
                                 {tech.name}
                               </p>
-                              <p className="text-[11px] text-gray-400">
+                              <p className="text-[11px] text-gray-400 dark:text-gray-500">
                                 {tech.email}
                               </p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-[13px] text-gray-600">
+                        <td className="px-5 py-4 text-[13px] text-gray-600 dark:text-gray-300">
                           {tech.phone}
                         </td>
-                        <td className="px-5 py-4 text-center text-[13px] font-semibold text-gray-900">
+                        <td className="px-5 py-4 text-center text-[13px] font-semibold text-gray-900 dark:text-gray-100">
                           {tech.activeJobs ?? 0}
                         </td>
-                        <td className="px-5 py-4 text-center text-[13px] font-semibold text-gray-900">
+                        <td className="px-5 py-4 text-center text-[13px] font-semibold text-gray-900 dark:text-gray-100">
                           {tech.completedThisMonth ?? 0}
                         </td>
-                        <td className="px-5 py-4 text-center text-[13px] text-gray-600">
+                        <td className="px-5 py-4 text-center text-[13px] text-gray-600 dark:text-gray-300">
                           {tech.avgDurationHours
                             ? `${tech.avgDurationHours}h`
                             : "—"}
@@ -125,8 +125,8 @@ export default function TeamManagement() {
                           <span
                             className={`inline-flex items-center gap-1.5 rounded-badge px-2.5 py-1 text-[11px] font-medium ${
                               tech.online
-                                ? "bg-green-100 text-green-700"
-                                : "bg-gray-100 text-gray-500"
+                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800"
+                                : "bg-gray-100 text-gray-500 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
                             }`}
                           >
                             <span
@@ -153,19 +153,19 @@ export default function TeamManagement() {
                                     menuOpen === tech.id ? null : tech.id,
                                   );
                                 }}
-                                className="fs-btn-press rounded-button p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
+                                className="fs-btn-press rounded-button p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                               >
                                 <MoreVertical size={15} />
                               </button>
                               {menuOpen === tech.id && (
-                                <div className="absolute right-0 z-10 mt-1 w-44 overflow-hidden rounded-modal border border-black/6 bg-white shadow-3">
-                                  <button className="block w-full px-4 py-2.5 text-left text-[13px] text-gray-700 hover:bg-gray-50">
+                                <div className="absolute right-0 z-10 mt-1 w-44 overflow-hidden rounded-modal border border-black/6 bg-white shadow-3 dark:border-gray-800 dark:bg-gray-900">
+                                  <button className="block w-full px-4 py-2.5 text-left text-[13px] text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800">
                                     Edit Details
                                   </button>
-                                  <button className="block w-full px-4 py-2.5 text-left text-[13px] text-gray-700 hover:bg-gray-50">
+                                  <button className="block w-full px-4 py-2.5 text-left text-[13px] text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800">
                                     Resend Welcome Email
                                   </button>
-                                  <button className="block w-full px-4 py-2.5 text-left text-[13px] text-red-600 hover:bg-red-50">
+                                  <button className="block w-full px-4 py-2.5 text-left text-[13px] text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">
                                     Deactivate
                                   </button>
                                 </div>
@@ -203,7 +203,7 @@ export default function TeamManagement() {
 function TeamManagementSkeleton() {
   return (
     <div
-      className="min-h-screen bg-brand-bg px-4 py-6 sm:px-6 lg:px-8"
+      className="fs-admin-page-bg min-h-screen px-4 py-6 sm:px-6 lg:px-8"
       aria-hidden
     >
       <div className="mx-auto max-w-7xl space-y-5">
@@ -257,18 +257,18 @@ function TechnicianDetailPanel({ tech, onClose }) {
         onClick={handleClose}
       />
       <div
-        className={`fixed right-0 top-0 z-50 h-screen w-80 overflow-y-auto bg-white shadow-4 transition-transform duration-280 ease-out ${
+        className={`fixed right-0 top-0 z-50 h-screen w-80 overflow-y-auto border-l border-transparent bg-white shadow-4 transition-transform duration-280 ease-out dark:border-gray-800 dark:bg-gray-900 ${
           visible ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-black/5 bg-white px-5 py-4">
-          <h2 className="text-[15px] font-semibold text-gray-900">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-black/5 bg-white px-5 py-4 dark:border-gray-800 dark:bg-gray-900">
+          <h2 className="text-[15px] font-semibold text-gray-900 dark:text-gray-50">
             Technician Details
           </h2>
           <button
             onClick={handleClose}
-            className="fs-btn-press fs-focus-ring flex h-7 w-7 items-center justify-center rounded-button text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
+            className="fs-btn-press fs-focus-ring flex h-7 w-7 items-center justify-center rounded-button text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
           >
             <X size={16} />
           </button>
@@ -280,15 +280,15 @@ function TechnicianDetailPanel({ tech, onClose }) {
             <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-full bg-brand-accent text-xl font-bold text-white">
               {tech.initials}
             </div>
-            <h3 className="text-[15px] font-bold text-gray-900">{tech.name}</h3>
-            <p className="text-[13px] text-gray-500 capitalize">
+            <h3 className="text-[15px] font-bold text-gray-900 dark:text-gray-50">{tech.name}</h3>
+            <p className="text-[13px] capitalize text-gray-500 dark:text-gray-400">
               {tech.role.toLowerCase()}
             </p>
             <span
               className={`mt-2 inline-flex items-center gap-1.5 rounded-badge px-2.5 py-1 text-[11px] font-medium ${
                 tech.online
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-500"
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800"
+                  : "bg-gray-100 text-gray-500 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
               }`}
             >
               <span
@@ -319,17 +319,17 @@ function TechnicianDetailPanel({ tech, onClose }) {
 
           {/* Current jobs */}
           <div className="mb-5">
-            <h4 className="fs-label mb-3 text-gray-400">
+            <h4 className="fs-label mb-3 text-gray-400 dark:text-gray-300">
               Current Jobs ({currentJobs.length})
             </h4>
             {currentJobs.length > 0 ? (
               <div className="space-y-2">
                 {currentJobs.map((job) => (
-                  <div key={job.id} className="fs-card p-3">
-                    <p className="font-mono text-[10px] text-gray-400">
+                  <div key={job.id} className="fs-card border border-transparent p-3 dark:border-gray-700 dark:bg-gray-800">
+                    <p className="font-mono text-[10px] text-gray-400 dark:text-gray-500">
                       {job.jobNumber}
                     </p>
-                    <p className="mt-0.5 text-[13px] font-medium text-gray-900">
+                    <p className="mt-0.5 text-[13px] font-medium text-gray-900 dark:text-gray-200">
                       {job.title}
                     </p>
                     <span
@@ -360,12 +360,12 @@ function TechnicianDetailPanel({ tech, onClose }) {
 
 function StatTile({ icon, label, value }) {
   return (
-    <div className="flex flex-col items-center gap-1 rounded-card border border-black/5 bg-gray-50/60 p-3 text-center">
+    <div className="flex flex-col items-center gap-1 rounded-card border border-black/5 bg-gray-50/60 p-3 text-center dark:border-gray-700 dark:bg-gray-800">
       {icon}
-      <p className="text-[15px] font-bold leading-tight text-gray-900">
+      <p className="text-[15px] font-bold leading-tight text-gray-900 dark:text-gray-100">
         {value}
       </p>
-      <p className="text-[10px] uppercase tracking-wide text-gray-400">
+      <p className="text-[10px] uppercase tracking-wide text-gray-400 dark:text-gray-400">
         {label}
       </p>
     </div>

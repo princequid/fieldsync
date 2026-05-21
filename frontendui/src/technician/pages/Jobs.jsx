@@ -37,7 +37,7 @@ export default function Jobs() {
               className={`shrink-0 rounded-badge border px-3.5 py-1.5 text-[12px] font-medium transition-colors ${
                 active
                   ? "border-[#27AE60] bg-[#27AE60]/10 text-[#27AE60]"
-                  : "border-black/8 bg-white text-gray-500 hover:bg-gray-50"
+                  : "border-black/8 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-800"
               }`}
             >
               {label}
@@ -72,7 +72,7 @@ function TechnicianJobsSkeleton() {
       {[1, 2, 3].map((row) => (
         <div
           key={row}
-          className="mx-3 my-1 flex min-h-20 overflow-hidden rounded-r-[16px] rounded-l-none border border-black/5 bg-white"
+          className="mx-3 my-1 flex min-h-20 overflow-hidden rounded-r-[16px] rounded-l-none border border-black/5 bg-white dark:border-gray-800 dark:bg-gray-900"
           style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
         >
           <div className="w-1 shrink-0 bg-slate-200" />

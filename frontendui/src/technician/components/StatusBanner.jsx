@@ -9,23 +9,23 @@ import {
 const STYLES = {
   pending: {
     shell:
-      "border-l-[4px] border-l-amber-500 bg-gradient-to-r from-amber-50 to-amber-100/70 text-amber-900",
-    iconBg: "bg-amber-200/80 text-amber-700",
+      "border-l-[4px] border-l-amber-500 bg-gradient-to-r from-amber-50 to-amber-100/70 text-amber-900 dark:from-amber-950/40 dark:to-gray-900/80 dark:text-amber-200",
+    iconBg: "bg-amber-200/80 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
   },
   progress: {
     shell:
-      "border-l-[4px] border-l-blue-500 bg-gradient-to-r from-blue-50 to-blue-100/70 text-blue-900",
-    iconBg: "bg-blue-200/80 text-blue-700",
+      "border-l-[4px] border-l-blue-500 bg-gradient-to-r from-blue-50 to-blue-100/70 text-blue-900 dark:from-blue-950/40 dark:to-gray-900/80 dark:text-blue-200",
+    iconBg: "bg-blue-200/80 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
   },
   completed: {
     shell:
-      "border-l-[4px] border-l-green-500 bg-gradient-to-r from-green-50 to-green-100/70 text-green-900",
-    iconBg: "bg-green-200/80 text-green-700",
+      "border-l-[4px] border-l-green-500 bg-gradient-to-r from-green-50 to-green-100/70 text-green-900 dark:from-green-950/40 dark:to-gray-900/80 dark:text-green-200",
+    iconBg: "bg-green-200/80 text-green-700 dark:bg-green-900/50 dark:text-green-300",
   },
   verified: {
     shell:
-      "border-l-[4px] border-l-brand-accent bg-gradient-to-r from-brand-navy to-[#29496d] text-white",
-    iconBg: "bg-white/20 text-white",
+      "border-l-[4px] border-l-brand-accent bg-gradient-to-r from-brand-navy to-[#29496d] text-white dark:from-gray-900 dark:to-brand-navy",
+    iconBg: "bg-white/20 text-white dark:bg-white/10",
   },
 };
 

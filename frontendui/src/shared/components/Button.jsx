@@ -151,6 +151,13 @@ export default function Button({
     e.currentTarget.style.transform = "scale(1)";
   }
 
+  const darkVariantClass =
+    variant === "ghost"
+      ? "dark:!bg-gray-800 dark:!border-gray-700 dark:!text-gray-200 dark:hover:!bg-gray-700"
+      : variant === "danger-ghost"
+        ? "dark:!bg-red-900/20 dark:!border-red-800 dark:!text-red-400"
+        : "";
+
   return (
     <button
       type={type}
@@ -164,8 +171,9 @@ export default function Button({
       onMouseUp={handleMouseUp}
       style={rootStyle}
       className={[
-        "fs-focus-ring",
+        "fs-focus-ring transition-none",
         disabled || loading ? "pointer-events-none" : "",
+        darkVariantClass,
         className,
       ]
         .filter(Boolean)

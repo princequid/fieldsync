@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
@@ -63,6 +65,44 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
+.dark body {
+  background-color: #030712;
+  color: #f9fafb;
+}
+
+/* Theme transition — smooth light/dark switch */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+input,
+textarea,
+select,
+button,
+.fs-focus-ring,
+.fs-btn-press,
+.fs-table-row {
+  transition-property: none;
+}
+
+input,
+textarea,
+select {
+  transition-property: box-shadow, border-color;
+  transition-duration: 150ms;
+}
+
+button.fs-btn-gradient-navy,
+button.fs-btn-gradient-accent,
+.fs-btn-depth {
+  transition-property: transform, opacity, box-shadow;
+  transition-duration: 80ms, 120ms, 120ms;
+}
+
 /* ─── Typography scale ──────────────────────────────────────────────── */
 
 .fs-page-title {
@@ -71,6 +111,10 @@ body {
   line-height: 1.2;
   letter-spacing: -0.025em;
   color: #111827;
+}
+
+.dark .fs-page-title {
+  color: #f9fafb;
 }
 
 .fs-section-title {
@@ -86,6 +130,10 @@ body {
   font-weight: 600;
   line-height: 1.3;
   color: #111827;
+}
+
+.dark .fs-card-title {
+  color: #f3f4f6;
 }
 
 .fs-label {
@@ -110,6 +158,14 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: var(--radius-card, 12px);
   box-shadow: var(--shadow-1);
+}
+
+.dark .fs-card {
+  background-color: #111827;
+  border-color: #1f2937;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .fs-shadow-elevated {
@@ -483,6 +539,67 @@ body {
   bottom: 72px;
 }
 
+/* ─── Admin page canvas (All Jobs, Team, Analytics, New Job) ─────── */
+
+.fs-admin-page-bg {
+  min-height: 100%;
+  background-color: #f0ede8;
+}
+
+.dark .fs-admin-page-bg {
+  background-color: #030712;
+  background-image:
+    radial-gradient(
+      ellipse 100% 70% at 50% -25%,
+      rgba(46, 134, 171, 0.1),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 65% 45% at 100% 15%,
+      rgba(30, 58, 95, 0.16),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 45% 35% at 0% 85%,
+      rgba(46, 134, 171, 0.06),
+      transparent 45%
+    ),
+    linear-gradient(180deg, #030712 0%, #0a0f1a 48%, #030712 100%);
+}
+
+/* Secondary / cancel actions */
+.fs-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  color: #374151;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.fs-btn-secondary:hover {
+  border-color: #2e86ab;
+  color: #2e86ab;
+  background-color: #f8fafc;
+}
+
+.dark .fs-btn-secondary {
+  border-color: #4b5563;
+  background-color: #1f2937;
+  color: #e5e7eb;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.dark .fs-btn-secondary:hover {
+  border-color: #6b7280;
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
 /* ─── Sticky form footer ────────────────────────────────────────────── */
 
 .fs-form-sticky-footer {
@@ -499,6 +616,12 @@ body {
   border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
+.dark .fs-form-sticky-footer {
+  background: rgba(17, 24, 39, 0.94);
+  border-top-color: #374151;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.35);
+}
+
 /* ─── Table row hover (CSS transition, not class toggling) ──────────── */
 
 .fs-table-row {
@@ -511,6 +634,14 @@ body {
 .fs-table-row:hover {
   background-color: #f8fafc;
   box-shadow: inset 2px 0 0 #2e86ab;
+}
+
+.dark .fs-table-row {
+  background-color: #111827;
+}
+
+.dark .fs-table-row:hover {
+  background-color: #1f2937;
 }
 
 /* ─── Modal animation system ────────────────────────────────────────── */
@@ -591,6 +722,14 @@ body {
   flex-shrink: 0;
 }
 
+.dark .fs-modal-header {
+  border-bottom-color: #1f2937;
+}
+
+.dark .fs-modal-footer {
+  border-top-color: #1f2937;
+}
+
 .fs-modal-body {
   padding: 20px;
 }
@@ -602,6 +741,11 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.dark .fs-modal-footer-bar {
+  border-top-color: #374151;
+  background: rgba(17, 24, 39, 0.6);
 }
 
 /* ─── Button depth system ───────────────────────────────────────────── */

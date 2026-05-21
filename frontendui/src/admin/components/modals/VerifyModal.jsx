@@ -96,11 +96,11 @@ export default function VerifyModal({ job, onConfirm, onReject, onClose }) {
           {/* Body */}
           <div className="fs-modal-body space-y-4">
             {/* Completion banner */}
-            <div className="rounded-card border border-green-200 bg-green-50 px-4 py-3">
-              <p className="text-[13px] font-medium text-green-800">
+            <div className="rounded-card border border-green-200 bg-green-50 px-4 py-3 dark:border-green-900 dark:bg-green-950/30">
+              <p className="text-[13px] font-medium text-green-800 dark:text-green-300">
                 {technician?.name ?? "Technician"} marked this job Completed
                 {completedAt && (
-                  <span className="font-normal text-green-700"> · {completedAt}</span>
+                  <span className="font-normal text-green-700 dark:text-green-500"> · {completedAt}</span>
                 )}
               </p>
             </div>
@@ -109,7 +109,7 @@ export default function VerifyModal({ job, onConfirm, onReject, onClose }) {
             {job.completionNote && (
               <div>
                 <p className="fs-label mb-1.5 text-[#94A3B8]">Technician's Note</p>
-                <p className="rounded-card border border-black/5 bg-gray-50 px-4 py-3 text-[13px] text-[#374151]">
+                <p className="rounded-card border border-black/5 bg-gray-50 px-4 py-3 text-[13px] text-[#374151] dark:bg-gray-800 dark:text-gray-300">
                   {job.completionNote}
                 </p>
               </div>
@@ -141,11 +141,11 @@ export default function VerifyModal({ job, onConfirm, onReject, onClose }) {
                 onChange={(e) => setAdminNotes(e.target.value)}
                 rows={3}
                 placeholder="Add any notes before closing…"
-                className="w-full resize-none rounded-input border border-black/8 bg-white px-3 py-2.5 text-[13px] text-[#0F172A] outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/15"
+                className="w-full resize-none rounded-input border border-black/8 bg-white px-3 py-2.5 text-[13px] text-[#0F172A] outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/15 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:placeholder-gray-600"
               />
             </label>
 
-            <p className="text-center text-[11px] text-[#94A3B8]">
+            <p className="text-center text-[11px] text-[#94A3B8] dark:text-gray-500">
               Client will be notified when you verify.
             </p>
           </div>

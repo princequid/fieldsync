@@ -101,15 +101,13 @@ export default function Modal({
         <div
           ref={panelRef}
           className={[
-            "w-full",
+            "w-full overflow-hidden border border-transparent bg-white dark:border-gray-800 dark:bg-gray-900",
             SIZE_MAP[size] ?? SIZE_MAP.md,
             closing ? "animate-modal-card-out" : "animate-modal-card-in",
           ].join(" ")}
           style={{
-            background: "#ffffff",
             borderRadius: "var(--radius-modal, 16px)",
             boxShadow: "var(--shadow-4)",
-            overflow: "hidden",
           }}
           role="dialog"
           aria-modal="true"
@@ -117,7 +115,7 @@ export default function Modal({
           {/* Spec header: 56px tall, #F1F5F9 bottom border */}
           <div className="fs-modal-header">
             {title ? (
-              <h2 className="text-[15px] font-semibold text-[#0F172A]">
+              <h2 className="text-[15px] font-semibold text-[#0F172A] dark:text-gray-50">
                 {title}
               </h2>
             ) : (
@@ -126,7 +124,7 @@ export default function Modal({
             <button
               type="button"
               onClick={animatedClose}
-              className="flex h-7 w-7 items-center justify-center rounded-full text-[#94A3B8] transition-colors hover:bg-[#F1F5F9] hover:text-[#374151]"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-[#94A3B8] transition-colors hover:bg-[#F1F5F9] hover:text-[#374151] dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
               aria-label="Close"
             >
               <X size={16} />

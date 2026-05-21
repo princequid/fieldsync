@@ -1,12 +1,40 @@
 import { useMemo, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  BarChart3,
+  CheckCircle2,
+  Clock3,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { useAdminData } from "../hooks/useAdminData";
 import { MOCK_JOBS, getTechnicians } from "../../shared/utils/mockData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
+import { useTheme } from "../../shared/context/ThemeContext";
 
 const PERIODS = [
   { key: "WEEK", label: "This Week" },
   { key: "MONTH", label: "This Month" },
 ];
+
+const CHART_COLORS = {
+  accent: "#2E86AB",
+  accentDark: "#1d6f94",
+  navy: "#1E3A5F",
+  navyDark: "#162d4a",
+  grid: "#F1F5F9",
+  axis: "#94A3B8",
+  tooltipBorder: "#E5E7EB",
+};
 
 function inPeriod(dateIso, periodKey) {
   const diff = (Date.now() - new Date(dateIso).getTime()) / 86400000;
@@ -26,7 +54,17 @@ function resolutionHours(job) {
 
 export default function Analytics() {
   const { loading, error, refetch } = useAdminData();
+  const { theme } = useTheme();
   const [period, setPeriod] = useState("WEEK");
+  const isDark = theme === "dark";
+  const chartColors = isDark
+    ? {
+        ...CHART_COLORS,
+        grid: "#1f2937",
+        axis: "#9ca3af",
+        tooltipBorder: "#374151",
+      }
+    : CHART_COLORS;
 
   const analytics = useMemo(() => {
     const jobs = MOCK_JOBS.filter((job) => inPeriod(job.updatedAt, period));
@@ -54,6 +92,7 @@ export default function Analytics() {
     const completedByTech = technicians.map((tech) => ({
       id: tech.id,
       name: tech.name.split(" ")[0],
+      fullName: tech.name,
       count: completed.filter((j) => j.technicianId === tech.id).length,
     }));
 
@@ -66,7 +105,12 @@ export default function Analytics() {
         techDurs.length > 0
           ? techDurs.reduce((a, b) => a + b, 0) / techDurs.length
           : 0;
-      return { id: tech.id, name: tech.name.split(" ")[0], avg };
+      return {
+        id: tech.id,
+        name: tech.name.split(" ")[0],
+        fullName: tech.name,
+        avg: Number(avg.toFixed(1)),
+      };
     });
 
     const teamAvg =
@@ -75,6 +119,29 @@ export default function Analytics() {
           avgByTech.filter((t) => t.avg > 0).length
         : 0;
 
+    const tableRows = technicians.map((tech) => {
+      const row = completedByTech.find((t) => t.id === tech.id);
+      const avgRow = avgByTech.find((t) => t.id === tech.id);
+      const techCompleted = completed.filter((j) => j.technicianId === tech.id);
+      const onTimeTech = techCompleted.filter((job) => {
+        const h = resolutionHours(job);
+        return h != null && h <= 8;
+      }).length;
+      const rate =
+        techCompleted.length > 0
+          ? Math.round((onTimeTech / techCompleted.length) * 100)
+          : 0;
+
+      return {
+        id: tech.id,
+        name: tech.name,
+        initials: tech.initials,
+        completed: row?.count ?? 0,
+        avgHours: avgRow?.avg ?? 0,
+        onTimeRate: rate,
+      };
+    });
+
     return {
       completedCount: completed.length,
       avgResolution,
@@ -82,11 +149,13 @@ export default function Analytics() {
       onTimeRate,
       completedByTech,
       avgByTech,
-      teamAvg,
-      maxCompleted: Math.max(...completedByTech.map((t) => t.count), 1),
-      maxAvg: Math.max(...avgByTech.map((t) => t.avg), 1),
+      teamAvg: Number(teamAvg.toFixed(1)),
+      tableRows,
     };
   }, [period]);
+
+  const periodLabel =
+    PERIODS.find((p) => p.key === period)?.label ?? "This Week";
 
   return (
     <AsyncPageContent
@@ -94,280 +163,407 @@ export default function Analytics() {
       error={error}
       thing="analytics"
       onRetry={refetch}
-      className="min-h-screen bg-brand-bg"
+      skeleton={<AnalyticsSkeleton />}
+      className="fs-admin-page-bg min-h-full"
     >
-      <div className="min-h-screen bg-brand-bg px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl space-y-5">
-          {/* Header */}
-          <header className="fs-card px-5 py-5">
-            <h1 className="fs-page-title">Analytics</h1>
-            <p className="mt-1 text-[13px] text-gray-500">
-              Performance insights calculated from job data.
-            </p>
-            <div className="mt-4 flex gap-1.5">
+      <div className="fs-admin-page-bg space-y-6 p-4 sm:p-6">
+        <header className="fs-card overflow-hidden border border-transparent p-5 sm:p-6 dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_1px_0_0_rgba(46,134,171,0.08)_inset,0_4px_24px_rgba(0,0,0,0.25)]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-brand-accent">
+                <BarChart3 size={20} aria-hidden />
+                <span className="fs-label text-brand-accent">Insights</span>
+              </div>
+              <h1 className="fs-page-title mt-2 text-brand-navy dark:text-gray-50">
+                Analytics
+              </h1>
+              <p className="mt-1 max-w-xl text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+                Performance metrics for your field team —{" "}
+                {periodLabel.toLowerCase()}.
+              </p>
+            </div>
+
+            <div
+              className="inline-flex rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] p-1 dark:border-gray-700 dark:bg-gray-800/80 dark:shadow-inner dark:shadow-black/20"
+              role="group"
+              aria-label="Time period"
+            >
               {PERIODS.map(({ key, label }) => (
                 <button
                   key={key}
                   type="button"
                   onClick={() => setPeriod(key)}
-                  className={`rounded-button border px-4 py-2 text-[12px] font-medium transition ${
+                  className={`fs-btn-press min-h-10 rounded-lg px-4 py-2 text-[13px] font-medium transition-all ${
                     period === key
-                      ? "border-brand-navy bg-brand-navy text-white"
-                      : "border-black/8 bg-white text-gray-600 hover:border-brand-accent hover:text-brand-accent"
+                      ? "bg-brand-navy text-white shadow-sm dark:shadow-[0_2px_8px_rgba(30,58,95,0.5)]"
+                      : "text-gray-600 hover:bg-white hover:text-brand-navy dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
                   }`}
                 >
                   {label}
                 </button>
               ))}
             </div>
-          </header>
-
-          {/* KPI tiles */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <KpiTile label="Jobs Completed" value={analytics.completedCount} />
-            <KpiTile
-              label="Avg Resolution Time"
-              value={`${analytics.avgResolution.toFixed(1)}h`}
-            />
-            <KpiTile label="Pending Jobs" value={analytics.pending} />
-            <KpiTile label="On-time Rate" value={`${analytics.onTimeRate}%`} />
           </div>
+        </header>
 
-          {/* Charts */}
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-            <ChartCard title="Jobs Completed per Technician">
-              <BarChart
-                items={analytics.completedByTech}
-                valueKey="count"
-                max={analytics.maxCompleted}
-                barColor="#2e86ab"
-              />
-            </ChartCard>
-            <ChartCard title="Avg Resolution Time per Technician">
-              <BarChart
-                items={analytics.avgByTech}
-                valueKey="avg"
-                max={analytics.maxAvg}
-                barColor="#1e3a5f"
-                formatValue={(v) => `${v.toFixed(1)}h`}
-                highlight={(item) => item.avg > analytics.teamAvg}
-              />
-            </ChartCard>
-          </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <KpiCard
+            label="Jobs Completed"
+            value={analytics.completedCount}
+            icon={CheckCircle2}
+            tone="green"
+            hint="Completed or verified in period"
+          />
+          <KpiCard
+            label="Avg Resolution"
+            value={`${analytics.avgResolution.toFixed(1)}h`}
+            icon={Clock3}
+            tone="blue"
+            hint="Pending to completed"
+          />
+          <KpiCard
+            label="Pending Jobs"
+            value={analytics.pending}
+            icon={Users}
+            tone="amber"
+            hint="Awaiting assignment or start"
+          />
+          <KpiCard
+            label="On-time Rate"
+            value={`${analytics.onTimeRate}%`}
+            icon={TrendingUp}
+            tone="navy"
+            hint="Resolved within 8 hours"
+          />
         </div>
+
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:gap-6">
+          <ChartPanel
+            title="Jobs completed per technician"
+            subtitle="Volume of closed work by team member"
+            legendColor={CHART_COLORS.accent}
+          >
+            <ResponsiveBarChart
+              data={analytics.completedByTech}
+              dataKey="count"
+              valueFormatter={(v) => `${v} jobs`}
+              barColor={chartColors.accent}
+              barColorEnd={chartColors.accentDark}
+              colors={chartColors}
+            />
+          </ChartPanel>
+
+          <ChartPanel
+            title="Avg resolution time"
+            subtitle={`Team average: ${analytics.teamAvg}h — bars above average highlighted`}
+            legendColor={CHART_COLORS.navy}
+          >
+            <ResponsiveBarChart
+              data={analytics.avgByTech}
+              dataKey="avg"
+              valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
+              barColor={chartColors.accent}
+              barColorEnd={chartColors.accentDark}
+              highlightBar={(entry) => entry.avg > analytics.teamAvg}
+              highlightColor={chartColors.navy}
+              highlightColorEnd={chartColors.navyDark}
+              colors={chartColors}
+            />
+          </ChartPanel>
+        </div>
+
+        <section className="fs-card overflow-hidden border border-transparent dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_4px_32px_rgba(0,0,0,0.28)]">
+          <div className="border-b border-[#E5E7EB] px-5 py-4 sm:px-6 dark:border-gray-700/80">
+            <h2 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">
+              Technician performance
+            </h2>
+            <p className="mt-1 text-[13px] text-gray-500 dark:text-gray-400">
+              Side-by-side comparison for {periodLabel.toLowerCase()}
+            </p>
+          </div>
+          <div className="overflow-x-auto dark:bg-gray-950/30">
+            <table className="w-full min-w-160 text-left">
+              <thead>
+                <tr className="border-b border-[#E5E7EB] bg-[#F8FAFC] dark:border-gray-700 dark:bg-gray-800/90">
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] dark:text-gray-400 sm:px-6">
+                    Technician
+                  </th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] dark:text-gray-400">
+                    Completed
+                  </th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] dark:text-gray-400">
+                    Avg time
+                  </th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] dark:text-gray-400 sm:px-6">
+                    On-time
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#F3F4F6] dark:divide-gray-800">
+                {analytics.tableRows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="transition-colors hover:bg-[#F8FAFC] dark:hover:bg-gray-800/70"
+                  >
+                    <td className="px-4 py-3.5 sm:px-6">
+                      <div className="flex items-center gap-3">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-accent text-xs font-bold text-white">
+                          {row.initials}
+                        </span>
+                        <span className="text-[13px] font-medium text-gray-900 dark:text-gray-100">
+                          {row.name}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5 text-[13px] text-gray-700 dark:text-gray-300">
+                      {row.completed}
+                    </td>
+                    <td className="px-4 py-3.5 text-[13px] text-gray-700 dark:text-gray-300">
+                      {row.avgHours > 0 ? `${row.avgHours}h` : "—"}
+                    </td>
+                    <td className="px-4 py-3.5 sm:px-6">
+                      <OnTimeBadge rate={row.onTimeRate} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </AsyncPageContent>
   );
 }
 
-function KpiTile({ label, value }) {
+function AnalyticsSkeleton() {
   return (
-    <div className="fs-card p-5">
-      <p className="fs-label text-gray-400">{label}</p>
-      <p className="mt-2 text-3xl font-bold tracking-tight text-brand-navy">
-        {value}
+    <div className="fs-admin-page-bg space-y-6 p-4 sm:p-6" aria-hidden>
+      <div className="fs-card space-y-3 p-6">
+        <div className="fs-skeleton h-4 w-24 rounded-md" />
+        <div className="fs-skeleton h-8 w-48 rounded-md" />
+        <div className="fs-skeleton h-4 w-72 max-w-full rounded-md" />
+        <div className="fs-skeleton mt-2 h-10 w-56 rounded-xl" />
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="fs-card p-5">
+            <div className="fs-skeleton h-4 w-28 rounded-md" />
+            <div className="fs-skeleton mt-4 h-9 w-20 rounded-md" />
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:gap-6">
+        {[1, 2].map((i) => (
+          <div key={i} className="fs-card p-5">
+            <div className="fs-skeleton h-5 w-48 rounded-md" />
+            <div className="fs-skeleton mt-6 h-52 w-full rounded-xl" />
+          </div>
+        ))}
+      </div>
+      <div className="fs-card p-5">
+        <div className="fs-skeleton h-5 w-40 rounded-md" />
+        <div className="mt-4 space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="fs-skeleton h-12 w-full rounded-lg" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const KPI_TONES = {
+  green: {
+    icon: "bg-green-50 text-green-600 dark:bg-green-900/35 dark:text-green-400",
+    ring: "hover:border-green-200 dark:hover:border-green-800",
+  },
+  blue: {
+    icon: "bg-blue-50 text-blue-600 dark:bg-blue-900/35 dark:text-blue-400",
+    ring: "hover:border-blue-200 dark:hover:border-blue-800",
+  },
+  amber: {
+    icon: "bg-amber-50 text-amber-600 dark:bg-amber-900/35 dark:text-amber-400",
+    ring: "hover:border-amber-200 dark:hover:border-amber-800",
+  },
+  navy: {
+    icon: "bg-slate-100 text-brand-navy dark:bg-slate-800 dark:text-slate-300",
+    ring: "hover:border-brand-navy/20 dark:hover:border-gray-600",
+  },
+};
+
+function KpiCard({ label, value, icon: Icon, tone, hint }) {
+  const styles = KPI_TONES[tone] ?? KPI_TONES.navy;
+
+  return (
+    <article
+      className={`fs-card group border border-transparent p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_14px_rgba(30,58,95,0.08)] dark:border-gray-800/60 dark:shadow-[0_4px_20px_rgba(0,0,0,0.22)] dark:hover:shadow-[0_6px_24px_rgba(0,0,0,0.35)] ${styles.ring}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="fs-label text-gray-500 dark:text-gray-400">{label}</p>
+          <p className="mt-2 text-2xl font-bold tracking-tight text-brand-navy dark:text-gray-50 sm:text-3xl">
+            {value}
+          </p>
+          <p className="mt-2 text-[11px] leading-snug text-gray-400 dark:text-gray-500">
+            {hint}
+          </p>
+        </div>
+        <span
+          className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl shadow-sm transition-transform duration-200 group-hover:scale-105 ${styles.icon}`}
+        >
+          <Icon size={20} aria-hidden />
+        </span>
+      </div>
+    </article>
+  );
+}
+
+function ChartPanel({ title, subtitle, legendColor, children }) {
+  return (
+    <section className="fs-card flex flex-col overflow-hidden border border-transparent transition-shadow duration-200 hover:shadow-[0_4px_14px_rgba(30,58,95,0.06)] dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_4px_24px_rgba(0,0,0,0.22)] dark:hover:shadow-[0_6px_28px_rgba(0,0,0,0.32)]">
+      <div className="border-b border-[#F3F4F6] px-5 py-4 sm:px-6 dark:border-gray-700/80">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <h2 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">
+              {title}
+            </h2>
+            <p className="mt-1 text-[12px] text-gray-500 dark:text-gray-400">
+              {subtitle}
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F8FAFC] px-2.5 py-1 text-[11px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: legendColor }}
+              aria-hidden
+            />
+            Live
+          </span>
+        </div>
+      </div>
+      <div className="h-63 w-full px-2 pb-4 pt-3 sm:h-70 sm:px-4">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function ChartTooltip({ active, payload, label, valueFormatter }) {
+  if (!active || !payload?.length) return null;
+
+  const displayLabel =
+    label ?? payload[0]?.payload?.fullName ?? payload[0]?.payload?.name;
+
+  return (
+    <div className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 shadow-[0_8px_24px_rgba(15,23,42,0.12)] dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+      <p className="text-[12px] font-semibold text-gray-900 dark:text-gray-100">
+        {displayLabel}
+      </p>
+      <p className="mt-0.5 text-[12px] font-medium text-brand-accent">
+        {valueFormatter(payload[0].value)}
       </p>
     </div>
   );
 }
 
-function ChartCard({ title, children }) {
-  return (
-    <section className="fs-card overflow-hidden rounded-[18px] border border-black/5 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_rgba(15,23,42,0.04)] sm:p-5">
-      <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
-        <div>
-          <h2 className="text-[14px] font-semibold tracking-[-0.01em] text-[#0F172A]">
-            {title}
-          </h2>
-          <p className="mt-1 text-[12px] text-[#94A3B8]">
-            Clear, comparable performance by technician.
-          </p>
-        </div>
-        <div className="hidden items-center gap-2 text-[11px] font-medium text-[#64748B] sm:flex">
-          <span className="h-2 w-2 rounded-full bg-[#2577A3]" aria-hidden />
-          Live data
-        </div>
-      </div>
-      <div className="pt-4">{children}</div>
-    </section>
-  );
-}
-
-function BarChart({
-  items,
-  valueKey,
-  max,
+function ResponsiveBarChart({
+  data,
+  dataKey,
+  valueFormatter,
   barColor,
-  formatValue = (v) => v,
-  highlight = () => false,
+  barColorEnd,
+  highlightBar,
+  highlightColor = CHART_COLORS.navy,
+  highlightColorEnd = CHART_COLORS.navyDark,
+  colors = CHART_COLORS,
 }) {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-  const chartWidth = 640;
-  const chartHeight = 260;
-  const margins = { top: 18, right: 22, bottom: 52, left: 44 };
-  const innerWidth = chartWidth - margins.left - margins.right;
-  const innerHeight = chartHeight - margins.top - margins.bottom;
-  const step = innerWidth / Math.max(items.length, 1);
-  const barWidth = Math.min(32, Math.max(18, step * 0.48));
-  const gridTicks = 4;
+  const chartData = data.map((d) => ({
+    ...d,
+    label: d.name,
+  }));
 
-  function getScaledValue(value) {
-    return max > 0 ? (value / max) * innerHeight : 0;
+  if (chartData.length === 0) {
+    return (
+      <div className="flex h-full min-h-55 items-center justify-center text-[13px] text-gray-400 dark:text-gray-500">
+        No data for this period
+      </div>
+    );
   }
 
   return (
-    <div className="relative w-full">
-      <div className="relative aspect-[16/8.2] w-full min-h-55 sm:min-h-60 lg:min-h-65">
-        <svg
-          viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-          className="h-full w-full"
-          role="img"
-          aria-label="Bar chart showing technician performance"
-          preserveAspectRatio="none"
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart
+        data={chartData}
+        margin={{ top: 12, right: 12, left: 0, bottom: 4 }}
+        barCategoryGap="28%"
+      >
+        <defs>
+          <linearGradient id="gradAccent" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={barColor} />
+            <stop offset="100%" stopColor={barColorEnd} />
+          </linearGradient>
+          <linearGradient id="gradNavy" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={highlightColor} />
+            <stop offset="100%" stopColor={highlightColorEnd} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid
+          strokeDasharray="4 4"
+          stroke={colors.grid}
+          vertical={false}
+        />
+        <XAxis
+          dataKey="name"
+          tick={{ fill: colors.axis, fontSize: 11, fontWeight: 500 }}
+          axisLine={{ stroke: colors.tooltipBorder }}
+          tickLine={false}
+          dy={8}
+        />
+        <YAxis
+          tick={{ fill: colors.axis, fontSize: 10, fontWeight: 500 }}
+          axisLine={false}
+          tickLine={false}
+          width={40}
+          allowDecimals={dataKey === "avg"}
+        />
+        <Tooltip
+          cursor={{ fill: "rgba(46, 134, 171, 0.06)", radius: 8 }}
+          content={<ChartTooltip valueFormatter={valueFormatter} />}
+        />
+        <Bar
+          dataKey={dataKey}
+          radius={[8, 8, 0, 0]}
+          maxBarSize={44}
+          animationDuration={400}
         >
-          <title>Technician performance bar chart</title>
-          <defs>
-            <linearGradient id="fs-bar-blue" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#2577A3" />
-              <stop offset="100%" stopColor="#1B6289" />
-            </linearGradient>
-            <linearGradient id="fs-bar-navy" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#1E3A5F" />
-              <stop offset="100%" stopColor="#162D4A" />
-            </linearGradient>
-          </defs>
+          {chartData.map((entry, index) => (
+            <Cell
+              key={`cell-${entry.id ?? index}`}
+              fill={
+                highlightBar?.(entry) ? "url(#gradNavy)" : "url(#gradAccent)"
+              }
+            />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
 
-          {/* Grid and axes */}
-          <g aria-hidden>
-            {Array.from({ length: gridTicks + 1 }, (_, index) => {
-              const y = margins.top + (innerHeight / gridTicks) * index;
-              return (
-                <g key={index}>
-                  <line
-                    x1={margins.left}
-                    y1={y}
-                    x2={chartWidth - margins.right}
-                    y2={y}
-                    stroke={index === gridTicks ? "#E2E8F0" : "#F1F5F9"}
-                    strokeWidth={1}
-                  />
-                  <text
-                    x={margins.left - 10}
-                    y={y + 4}
-                    textAnchor="end"
-                    fill="#94A3B8"
-                    fontSize="10"
-                    fontWeight="500"
-                    fontFamily="Inter, ui-sans-serif, system-ui, sans-serif"
-                  >
-                    {Math.round(max - (max / gridTicks) * index)}
-                  </text>
-                </g>
-              );
-            })}
-          </g>
+function OnTimeBadge({ rate }) {
+  let cls = "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
+  if (rate >= 80)
+    cls = "bg-green-50 text-green-700 dark:bg-green-900/35 dark:text-green-300";
+  else if (rate >= 50)
+    cls = "bg-amber-50 text-amber-700 dark:bg-amber-900/35 dark:text-amber-300";
+  else if (rate > 0)
+    cls = "bg-red-50 text-red-600 dark:bg-red-900/35 dark:text-red-300";
 
-          <line
-            x1={margins.left}
-            y1={chartHeight - margins.bottom}
-            x2={chartWidth - margins.right}
-            y2={chartHeight - margins.bottom}
-            stroke="#CBD5E1"
-            strokeWidth={1}
-          />
-          <line
-            x1={margins.left}
-            y1={margins.top}
-            x2={margins.left}
-            y2={chartHeight - margins.bottom}
-            stroke="#E2E8F0"
-            strokeWidth={1}
-          />
-
-          {items.map((item, index) => {
-            const value = item[valueKey];
-            const barHeight = getScaledValue(value);
-            const slotLeft = margins.left + step * index;
-            const x = slotLeft + (step - barWidth) / 2;
-            const y = chartHeight - margins.bottom - barHeight;
-            const fill = highlight(item)
-              ? "url(#fs-bar-navy)"
-              : barColor === "#1e3a5f"
-                ? "url(#fs-bar-navy)"
-                : "url(#fs-bar-blue)";
-            const isHovered = hoveredIndex === index;
-
-            return (
-              <g key={item.id}>
-                <title>{`${item.name}: ${formatValue(value)}`}</title>
-                <rect
-                  x={x}
-                  y={y}
-                  width={barWidth}
-                  height={Math.max(barHeight, 2)}
-                  rx="10"
-                  fill={fill}
-                  opacity={isHovered ? 1 : 0.92}
-                  style={{
-                    transformBox: "fill-box",
-                    transformOrigin: "center bottom",
-                    transition:
-                      "transform 180ms ease, opacity 180ms ease, filter 180ms ease",
-                    filter: isHovered
-                      ? "drop-shadow(0 10px 16px rgba(15,23,42,0.18))"
-                      : "none",
-                    transform: isHovered ? "scaleY(1.03)" : "scaleY(1)",
-                    cursor: "default",
-                  }}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                />
-
-                <text
-                  x={slotLeft + step / 2}
-                  y={chartHeight - margins.bottom + 18}
-                  textAnchor="middle"
-                  fill="#64748B"
-                  fontSize="11"
-                  fontWeight="600"
-                  fontFamily="Inter, ui-sans-serif, system-ui, sans-serif"
-                >
-                  {item.name}
-                </text>
-
-                <text
-                  x={slotLeft + step / 2}
-                  y={Math.max(y - 8, margins.top + 12)}
-                  textAnchor="middle"
-                  fill="#334155"
-                  fontSize="10"
-                  fontWeight="700"
-                  fontFamily="Inter, ui-sans-serif, system-ui, sans-serif"
-                  opacity={isHovered || value > 0 ? 1 : 0.92}
-                >
-                  {formatValue(value)}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-
-        {hoveredIndex != null && items[hoveredIndex] && (
-          <div
-            className="pointer-events-none absolute inset-x-0 top-3 flex justify-center"
-            aria-hidden
-          >
-            <div className="rounded-[12px] border border-slate-200 bg-white px-3 py-2 shadow-[0_8px_24px_rgba(15,23,42,0.12)]">
-              <p className="text-[11px] font-semibold text-[#0F172A]">
-                {items[hoveredIndex].name}
-              </p>
-              <p className="mt-0.5 text-[11px] text-[#64748B]">
-                {formatValue(items[hoveredIndex][valueKey])}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+  return (
+    <span
+      className={`inline-flex min-w-13 justify-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${cls}`}
+    >
+      {rate}%
+    </span>
   );
 }

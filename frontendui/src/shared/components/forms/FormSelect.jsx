@@ -25,11 +25,11 @@ export default function FormSelect({
     id || (label ? label.toLowerCase().replace(/\s+/g, "-") : "");
 
   const baseContainerClasses =
-    "relative w-full h-10 rounded-[8px] bg-[#F8FAFC] border border-[#E2E8F0] transition-all duration-150 flex items-center";
+    "relative w-full h-10 rounded-[8px] bg-[#F8FAFC] border border-[#E2E8F0] transition-all duration-150 flex items-center dark:bg-gray-800 dark:border-gray-700";
 
   const stateContainerClasses = error
-    ? "border-[#EF4444] bg-[#FEF2F2]"
-    : "focus-within:bg-white focus-within:border-[#2E86AB] focus-within:ring-[0_0_0_3px] focus-within:ring-[rgba(46,134,171,0.15)]";
+    ? "border-[#EF4444] bg-[#FEF2F2] dark:bg-red-900/20 dark:border-red-500"
+    : "focus-within:bg-white focus-within:border-[#2E86AB] focus-within:ring-[0_0_0_3px] focus-within:ring-[rgba(46,134,171,0.15)] dark:focus-within:bg-gray-800 dark:focus-within:border-[#2E86AB]";
 
   const selectClasses =
     "absolute inset-0 w-full h-10 px-3 py-2 text-[13px] text-[#0F172A] bg-transparent border-none rounded-[8px] outline-none cursor-pointer opacity-0 pointer-events-auto";
@@ -44,7 +44,9 @@ export default function FormSelect({
   };
 
   const isPlaceholder = !value;
-  const displayTextColor = isPlaceholder ? "text-[#94A3B8]" : "text-[#0F172A]";
+  const displayTextColor = isPlaceholder
+    ? "text-[#94A3B8] dark:text-gray-500"
+    : "text-[#0F172A] dark:text-gray-100";
 
   const iconColor = value ? "text-[#2E86AB]" : "text-[#94A3B8]";
 
@@ -53,7 +55,7 @@ export default function FormSelect({
       {label && (
         <label
           htmlFor={selectId}
-          className="mb-1.5 block text-[12px] font-medium text-[#374151]"
+          className="mb-1.5 block text-[12px] font-medium text-[#374151] dark:text-gray-300"
         >
           {label}
           {required && (
@@ -113,7 +115,7 @@ export default function FormSelect({
       )}
 
       {!error && helperText && (
-        <p className="mt-1.5 text-[11px] text-[#94A3B8]">{helperText}</p>
+        <p className="mt-1.5 text-[11px] text-[#94A3B8] dark:text-gray-500">{helperText}</p>
       )}
     </div>
   );

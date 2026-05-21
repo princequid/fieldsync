@@ -18,7 +18,7 @@ export default function StartJob() {
   if (!job || job.technicianId !== user?.id) {
     return (
       <div className="p-4 text-center">
-        <p className="text-[14px] font-semibold text-gray-900">Job not found</p>
+        <p className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">Job not found</p>
         <Link
           to="/tech/jobs"
           className="mt-4 inline-block text-[13px] text-brand-accent"
@@ -51,15 +51,15 @@ export default function StartJob() {
       </Link>
 
       <section className="fs-card p-5">
-        <h1 className="text-[18px] font-bold text-gray-900">Start this job?</h1>
-        <p className="mt-2 text-[13px] text-gray-600">
+        <h1 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">Start this job?</h1>
+        <p className="mt-2 text-[13px] text-gray-600 dark:text-gray-400">
           Confirm you have arrived at the site and are ready to begin work on{" "}
-          <span className="font-semibold text-gray-900">{job.title}</span>.
+          <span className="font-semibold text-gray-900 dark:text-gray-100">{job.title}</span>.
         </p>
         {client && (
-          <p className="mt-1.5 text-[12px] text-gray-400">{client.name}</p>
+          <p className="mt-1.5 text-[12px] text-gray-400 dark:text-gray-500">{client.name}</p>
         )}
-        <p className="mt-0.5 text-[12px] text-gray-400">{job.location}</p>
+        <p className="mt-0.5 text-[12px] text-gray-400 dark:text-gray-500">{job.location}</p>
       </section>
 
       <button
