@@ -5,56 +5,78 @@ const ILLUSTRATIONS = {
   "👥": TeamIllustration,
   "🔔": BellIllustration,
   "🔎": SearchIllustration,
+  "👷": TeamIllustration,
+  "🏢": BuildingIllustration,
 };
 
 export default function EmptyState({ icon, title, subtitle, action }) {
   const Illustration = ILLUSTRATIONS[icon] ?? ClipboardIllustration;
 
   return (
-    <div className="mx-auto flex max-w-[400px] flex-col items-center justify-center px-8 py-16 text-center">
+    <div className="mx-auto flex max-w-100 flex-col items-center justify-center px-6 py-12 text-center">
       <Illustration />
-      <p className="mt-6 text-lg font-semibold text-gray-800">{title}</p>
+      <p className="mt-5 text-[16px] font-semibold text-[#374151] dark:text-gray-300">
+        {title}
+      </p>
       {subtitle && (
-        <p className="mt-2 text-[13px] leading-relaxed text-gray-500">
+        <p className="mt-2 max-w-70 text-[14px] leading-relaxed text-[#94A3B8] dark:text-gray-500">
           {subtitle}
         </p>
       )}
-      {action?.to ? (
+      {action?.to && (
         <Link
           to={action.to}
-          className="fs-btn-gradient-navy fs-btn-press fs-focus-ring mt-6 rounded-2xl px-5 py-2.5 text-sm font-medium text-white"
+          className="fs-btn-gradient-navy fs-btn-press fs-focus-ring mt-5 rounded-button px-5 py-2.5 text-[13px] font-medium text-white"
         >
           {action.label}
         </Link>
-      ) : null}
-      {action?.onClick && !action.to ? (
+      )}
+      {action?.onClick && !action.to && (
         <button
           type="button"
           onClick={action.onClick}
-          className="fs-btn-gradient-navy fs-btn-press fs-focus-ring mt-6 rounded-2xl px-5 py-2.5 text-sm font-medium text-white"
+          className="fs-btn-gradient-navy fs-btn-press fs-focus-ring mt-5 rounded-button px-5 py-2.5 text-[13px] font-medium text-white"
         >
           {action.label}
         </button>
-      ) : null}
+      )}
     </div>
   );
 }
 
 function ClipboardIllustration() {
   return (
-    <svg width="120" height="100" viewBox="0 0 120 100" aria-hidden>
-      <rect x="28" y="12" width="64" height="76" rx="8" fill="#F3F4F6" stroke="#E5E7EB" />
-      <rect x="44" y="6" width="32" height="14" rx="4" fill="#2E86AB" opacity="0.3" />
+    <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
+      <rect x="10" y="10" width="100" height="100" rx="24" fill="#F8FAFC" />
+      <rect
+        x="34"
+        y="26"
+        width="52"
+        height="68"
+        rx="10"
+        fill="#EEF2F7"
+        stroke="#CBD5E1"
+        strokeWidth="1.5"
+      />
+      <rect
+        x="44"
+        y="20"
+        width="32"
+        height="10"
+        rx="4"
+        fill="#2E86AB"
+        opacity="0.3"
+      />
       {[0, 1, 2, 3].map((i) => (
         <line
           key={i}
-          x1="40"
-          y1={36 + i * 14}
-          x2="80"
-          y2={36 + i * 14}
-          stroke="#D1D5DB"
+          x1="44"
+          y1={46 + i * 10}
+          x2="76"
+          y2={46 + i * 10}
+          stroke="#94A3B8"
           strokeWidth="2"
-          strokeDasharray="6 4"
+          strokeLinecap="round"
         />
       ))}
     </svg>
@@ -63,37 +85,136 @@ function ClipboardIllustration() {
 
 function TeamIllustration() {
   return (
-    <svg width="120" height="100" viewBox="0 0 120 100" aria-hidden>
-      <circle cx="60" cy="36" r="18" fill="#E5E7EB" />
-      <path d="M30 88c0-16 13-28 30-28s30 12 30 28" fill="#F3F4F6" stroke="#E5E7EB" />
-      <circle cx="88" cy="44" r="10" fill="#2E86AB" opacity="0.35" />
-      <path d="M88 58v6M83 61h10" stroke="#1E3A5F" strokeWidth="2" strokeLinecap="round" />
+    <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
+      <rect x="10" y="10" width="100" height="100" rx="24" fill="#F8FAFC" />
+      <circle
+        cx="60"
+        cy="48"
+        r="14"
+        fill="#DBEAFE"
+        stroke="#93C5FD"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M34 90c0-14 12-24 26-24s26 10 26 24"
+        fill="#EEF2F7"
+        stroke="#CBD5E1"
+        strokeWidth="1.5"
+      />
+      <circle cx="84" cy="56" r="8" fill="#2E86AB" opacity="0.28" />
+      <path
+        d="M84 65v4M82 67h4"
+        stroke="#1E3A5F"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
 function BellIllustration() {
   return (
-    <svg width="120" height="100" viewBox="0 0 120 100" aria-hidden>
+    <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
+      <rect x="10" y="10" width="100" height="100" rx="24" fill="#F8FAFC" />
       <path
-        d="M60 18c-12 0-20 10-20 24v18l-8 10h56l-8-10V42c0-14-8-24-20-24z"
-        fill="#F3F4F6"
+        d="M60 33c-9 0-15 8-15 20v9l-6 8h42l-6-8v-9c0-12-6-20-15-20z"
+        fill="#EEF2F7"
         stroke="#1E3A5F"
-        strokeWidth="2"
+        strokeWidth="1.6"
       />
-      <circle cx="60" cy="78" r="6" fill="#2E86AB" opacity="0.4" />
-      <text x="72" y="30" fontSize="10" fill="#9CA3AF">
-        z
-      </text>
+      <circle cx="60" cy="76" r="4" fill="#2E86AB" opacity="0.42" />
     </svg>
   );
 }
 
 function SearchIllustration() {
   return (
-    <svg width="120" height="100" viewBox="0 0 120 100" aria-hidden>
-      <circle cx="52" cy="44" r="22" fill="none" stroke="#2E86AB" strokeWidth="3" />
-      <line x1="68" y1="60" x2="88" y2="80" stroke="#1E3A5F" strokeWidth="3" strokeLinecap="round" />
+    <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
+      <rect x="10" y="10" width="100" height="100" rx="24" fill="#F8FAFC" />
+      <circle
+        cx="54"
+        cy="54"
+        r="18"
+        fill="none"
+        stroke="#2E86AB"
+        strokeWidth="2.6"
+      />
+      <line
+        x1="66"
+        y1="66"
+        x2="84"
+        y2="84"
+        stroke="#1E3A5F"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function BuildingIllustration() {
+  return (
+    <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
+      <rect x="10" y="10" width="100" height="100" rx="24" fill="#F8FAFC" />
+      <rect
+        x="36"
+        y="28"
+        width="48"
+        height="64"
+        rx="6"
+        fill="#EEF2F7"
+        stroke="#CBD5E1"
+        strokeWidth="1.5"
+      />
+      <rect
+        x="43"
+        y="35"
+        width="10"
+        height="10"
+        rx="2"
+        fill="#DBEAFE"
+        stroke="#93C5FD"
+        strokeWidth="1"
+      />
+      <rect
+        x="58"
+        y="35"
+        width="10"
+        height="10"
+        rx="2"
+        fill="#DBEAFE"
+        stroke="#93C5FD"
+        strokeWidth="1"
+      />
+      <rect
+        x="43"
+        y="50"
+        width="10"
+        height="10"
+        rx="2"
+        fill="#DBEAFE"
+        stroke="#93C5FD"
+        strokeWidth="1"
+      />
+      <rect
+        x="58"
+        y="50"
+        width="10"
+        height="10"
+        rx="2"
+        fill="#DBEAFE"
+        stroke="#93C5FD"
+        strokeWidth="1"
+      />
+      <rect
+        x="49"
+        y="67"
+        width="22"
+        height="25"
+        rx="4"
+        fill="#2E86AB"
+        opacity="0.28"
+      />
     </svg>
   );
 }

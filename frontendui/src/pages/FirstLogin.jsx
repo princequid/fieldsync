@@ -6,47 +6,37 @@ import { getUserById } from "../shared/utils/mockData";
 import Button from "../shared/components/Button";
 import Input from "../shared/components/Input";
 
-const MOCK_INVITE_EMAIL = "kwame@swiftfix.com";
+const MOCK_INVITE_EMAIL   = "kwame@swiftfix.com";
 const MOCK_INVITE_USER_ID = "user-2";
 
 export default function FirstLogin() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const navigate       = useNavigate();
   const { activateFirstLogin, isAuthenticated, user } = useAuth();
 
-  const token = searchParams.get("token") ?? "";
-
-  const inviteEmail = useMemo(() => {
-    if (!token.trim()) return "";
-    return MOCK_INVITE_EMAIL;
-  }, [token]);
-
+  const token       = searchParams.get("token") ?? "";
+  const inviteEmail = useMemo(() => (token.trim() ? MOCK_INVITE_EMAIL : ""), [token]);
   const inviteProfile = inviteEmail ? getUserById(MOCK_INVITE_USER_ID) : null;
 
-  const [password, setPassword] = useState("");
+  const [password,        setPassword]        = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [formError, setFormError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword,    setShowPassword]    = useState(false);
+  const [showConfirm,     setShowConfirm]     = useState(false);
+  const [errors,          setErrors]          = useState({});
+  const [formError,       setFormError]       = useState("");
+  const [isSubmitting,    setIsSubmitting]    = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
-      const path =
-        user?.role === "ADMIN" ? "/admin/dashboard" : "/tech/jobs";
+      const path = user?.role === "ADMIN" ? "/admin/dashboard" : "/tech/jobs";
       navigate(path, { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
 
   function validate() {
     const next = {};
-    if (password.length < 8) {
-      next.password = "Password must be at least 8 characters.";
-    }
-    if (password !== confirmPassword) {
-      next.confirmPassword = "Passwords do not match.";
-    }
+    if (password.length < 8)          next.password        = "Password must be at least 8 characters.";
+    if (password !== confirmPassword)  next.confirmPassword = "Passwords do not match.";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -55,16 +45,13 @@ export default function FirstLogin() {
     event.preventDefault();
     setFormError("");
     if (!validate()) return;
-
     setIsSubmitting(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 400));
       activateFirstLogin(token, inviteEmail, password);
       navigate("/tech/jobs", { replace: true });
     } catch (err) {
-      setFormError(
-        err?.message ?? "Unable to activate your account. Please try again.",
-      );
+      setFormError(err?.message ?? "Unable to activate your account. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -74,17 +61,16 @@ export default function FirstLogin() {
     return (
       <AuthShell>
         <div className="mx-auto w-full max-w-md text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
-            <KeyRound className="text-red-500" size={28} />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
+            <KeyRound className="text-red-500" size={24} />
           </div>
-          <h1 className="text-xl font-bold text-gray-900">Invalid invitation</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            This link is missing a token or has expired. Ask your admin to send a
-            new invitation.
+          <h1 className="text-[18px] font-bold text-gray-900">Invalid invitation</h1>
+          <p className="mt-2 text-[13px] text-gray-500">
+            This link is missing a token or has expired. Ask your admin to send a new invitation.
           </p>
           <Link
             to="/login"
-            className="mt-8 inline-flex min-h-11 items-center justify-center rounded-2xl bg-[#1E3A5F] px-6 text-sm font-semibold text-white"
+            className="fs-btn-gradient-navy fs-btn-press fs-focus-ring mt-7 inline-flex h-11 items-center justify-center rounded-button px-6 text-[13px] font-semibold text-white"
           >
             Back to login
           </Link>
@@ -96,39 +82,34 @@ export default function FirstLogin() {
   return (
     <AuthShell>
       <div className="mx-auto w-full max-w-md">
+        {/* Logo header */}
         <div className="mb-6 flex items-center gap-3">
-          <div className="grid h-12 w-12 place-items-center rounded-xl bg-[#2E86AB] text-lg font-bold text-white">
+          <div className="grid h-10 w-10 place-items-center rounded-card bg-brand-accent text-[14px] font-bold text-white">
             FS
           </div>
           <div>
-            <p className="text-lg font-bold text-gray-900">Welcome to FieldSync</p>
-            <p className="text-sm text-gray-600">Set your password to get started</p>
+            <p className="text-[16px] font-bold text-gray-900">Welcome to FieldSync</p>
+            <p className="text-[12px] text-gray-500">Set your password to get started</p>
           </div>
         </div>
 
-        {inviteProfile ? (
-          <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <p className="text-sm font-medium text-gray-900">
-              {inviteProfile.name}
-            </p>
-            <p className="text-xs text-gray-500">Field Technician · SwiftFix</p>
+        {/* Invite chip */}
+        {inviteProfile && (
+          <div className="mb-5 rounded-card border border-black/5 bg-gray-50 px-4 py-3">
+            <p className="text-[13px] font-medium text-gray-900">{inviteProfile.name}</p>
+            <p className="text-[11px] text-gray-400">Field Technician · SwiftFix</p>
           </div>
-        ) : null}
+        )}
 
-        {formError ? (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {/* Error banner */}
+        {formError && (
+          <div className="mb-5 rounded-button border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700">
             {formError}
           </div>
-        ) : null}
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <Input
-            label="Email"
-            type="email"
-            value={inviteEmail}
-            disabled
-            required
-          />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input label="Email" type="email" value={inviteEmail} disabled required />
 
           <PasswordField
             label="New password"
@@ -155,9 +136,9 @@ export default function FirstLogin() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-[13px] text-gray-500">
           Already have a password?{" "}
-          <Link to="/login" className="font-medium text-[#2E86AB] hover:underline">
+          <Link to="/login" className="font-medium text-brand-accent hover:underline">
             Sign in
           </Link>
         </p>
@@ -168,28 +149,18 @@ export default function FirstLogin() {
 
 function AuthShell({ children }) {
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-[#f5f2ee] px-4 py-10">
-      <div className="mx-auto w-full max-w-lg rounded-[2rem] bg-white p-8 shadow-[0_24px_70px_rgba(30,58,95,0.12)] sm:p-10">
+    <div className="flex min-h-screen flex-col justify-center bg-brand-bg px-4 py-10">
+      <div className="mx-auto w-full max-w-lg rounded-modal bg-white p-8 shadow-3 sm:p-10">
         {children}
       </div>
     </div>
   );
 }
 
-function PasswordField({
-  label,
-  value,
-  onChange,
-  show,
-  onToggle,
-  error,
-  autoComplete,
-}) {
+function PasswordField({ label, value, onChange, show, onToggle, error, autoComplete }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-500">
-        {label}
-      </span>
+      <span className="fs-label mb-1.5 block text-gray-400">{label}</span>
       <div className="relative">
         <input
           type={show ? "text" : "password"}
@@ -197,22 +168,22 @@ function PasswordField({
           onChange={(e) => onChange(e.target.value)}
           autoComplete={autoComplete}
           required
-          className={`w-full rounded-2xl border bg-white px-4 py-3 pr-12 text-sm text-gray-900 outline-none transition focus:ring-2 ${
+          className={`fs-input fs-focus-ring w-full rounded-input border bg-white pr-12 text-gray-900 outline-none transition ${
             error
-              ? "border-red-400 focus:border-red-400 focus:ring-red-400/20"
-              : "border-slate-200 focus:border-[#2E86AB] focus:ring-[#2E86AB]/20"
+              ? "border-red-400 focus:border-red-400"
+              : "border-black/8 focus:border-brand-accent"
           }`}
         />
         <button
           type="button"
           onClick={onToggle}
-          className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-gray-700"
+          className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-400 transition hover:text-gray-700"
           aria-label={show ? "Hide password" : "Show password"}
         >
-          {show ? <EyeOff size={18} /> : <Eye size={18} />}
+          {show ? <EyeOff size={17} /> : <Eye size={17} />}
         </button>
       </div>
-      {error ? <p className="mt-1.5 text-xs text-red-600">{error}</p> : null}
+      {error && <p className="mt-1.5 text-[11px] text-red-600">{error}</p>}
     </label>
   );
 }

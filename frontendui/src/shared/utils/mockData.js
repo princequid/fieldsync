@@ -20,6 +20,7 @@ export const MOCK_USERS = [
     initials: "KA",
     phone: "+233 24 456 7890",
     isActive: true,
+    specialty: "Electrical Systems",
     activeJobs: 2,
     completedThisMonth: 18,
     avgDurationHours: 2.8,
@@ -33,6 +34,7 @@ export const MOCK_USERS = [
     initials: "AB",
     phone: "+233 20 123 4567",
     isActive: true,
+    specialty: "Plumbing & HVAC",
     activeJobs: 1,
     completedThisMonth: 12,
     avgDurationHours: 3.4,
@@ -46,6 +48,7 @@ export const MOCK_USERS = [
     initials: "EO",
     phone: "+233 55 987 6543",
     isActive: true,
+    specialty: "General Maintenance",
     activeJobs: 0,
     completedThisMonth: 22,
     avgDurationHours: 3.8,
@@ -59,35 +62,38 @@ export const MOCK_USERS = [
     initials: "SA",
     phone: "+233 26 333 2211",
     isActive: true,
+    specialty: "Solar & Renewable",
     activeJobs: 3,
     completedThisMonth: 9,
     avgDurationHours: 5.4,
     online: false,
   },
-  // CLIENT users — exist for job assignment but have no UI
+];
+
+export const MOCK_CLIENTS = [
   {
     id: "client-1",
-    name: "Accra Business Centre",
+    companyName: "Accra Business Centre",
     email: "facilities@accrabiz.com",
-    role: "CLIENT",
-    contactName: "Ms. Abena Sarfo",
     phone: "+233 30 291 5555",
+    address: "North Industrial Park, Gate 3, Accra",
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     id: "client-2",
-    name: "Regal Estates Ltd.",
+    companyName: "Regal Estates Ltd.",
     email: "maintenance@regalestates.com",
-    role: "CLIENT",
-    contactName: "Mr. Kojo Asare",
     phone: "+233 24 567 8901",
+    address: "Regal Apartments, Block B, Tema, Accra",
+    createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     id: "client-3",
-    name: "Tema Hub Ltd.",
+    companyName: "Tema Hub Ltd.",
     email: "ops@temahub.com",
-    role: "CLIENT",
-    contactName: "Mrs. Efua Mensah",
     phone: "+233 20 444 5566",
+    address: "Tema Industrial Hub, Tema",
+    createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ];
 
@@ -100,6 +106,9 @@ export const MOCK_JOBS = [
       "Service and regas the central AC unit on the 3rd floor of Building A. Check filters and coolant levels.",
     location: "North Industrial Park, Gate 3, Accra",
     clientId: "client-1",
+    clientEmail: "facilities@accrabiz.com",
+    clientPhone: "+233 30 291 5555",
+    clientAddress: "North Industrial Park, Gate 3, Accra",
     technicianId: "user-2",
     status: "IN_PROGRESS",
     priority: "HIGH",
@@ -130,6 +139,9 @@ export const MOCK_JOBS = [
       "Inspect and fix blocked drainage in the Block B ground floor toilets. Check both male and female facilities.",
     location: "Regal Apartments, Block B, Tema, Accra",
     clientId: "client-2",
+    clientEmail: "maintenance@regalestates.com",
+    clientPhone: "+233 24 567 8901",
+    clientAddress: "Regal Apartments, Block B, Tema, Accra",
     technicianId: "user-3",
     status: "PENDING",
     priority: "MEDIUM",
@@ -153,6 +165,9 @@ export const MOCK_JOBS = [
       "Routine inspection of the backup generator in the basement plant room. Check oil, fuel and run test.",
     location: "Tema Industrial Hub, Tema",
     clientId: "client-3",
+    clientEmail: "ops@temahub.com",
+    clientPhone: "+233 20 444 5566",
+    clientAddress: "Tema Industrial Hub, Tema",
     technicianId: "user-4",
     status: "COMPLETED",
     priority: "LOW",
@@ -192,6 +207,9 @@ export const MOCK_JOBS = [
       "Check main electrical panel for any signs of wear, loose connections, or overheating.",
     location: "Airport Residential, East Legon",
     clientId: "client-1",
+    clientEmail: "facilities@accrabiz.com",
+    clientPhone: "+233 30 291 5555",
+    clientAddress: "North Industrial Park, Gate 3, Accra",
     technicianId: "user-2",
     status: "VERIFIED",
     priority: "MEDIUM",
@@ -237,6 +255,9 @@ export const MOCK_JOBS = [
       "Scheduled maintenance on the lift in Tower 2. Check cables, doors, and emergency systems.",
     location: "Cantonments Office Park, Accra",
     clientId: "client-2",
+    clientEmail: "maintenance@regalestates.com",
+    clientPhone: "+233 24 567 8901",
+    clientAddress: "Regal Apartments, Block B, Tema, Accra",
     technicianId: "user-5",
     status: "PENDING",
     priority: "HIGH",
@@ -279,7 +300,20 @@ export const MOCK_NOTIFICATIONS = [
     isRead: true,
     createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
   },
+  {
+    id: "notif-4",
+    type: "JOB_ASSIGNED",
+    message: "New job #JOB-0042 assigned to Ama Boateng.",
+    jobId: "job-2",
+    isRead: false,
+    createdAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+  },
 ];
+
+// Helper: look up client by ID
+export function getClientById(id) {
+  return MOCK_CLIENTS.find((client) => client.id === id) ?? null;
+}
 
 // Helper: look up user by ID
 export function getUserById(id) {
@@ -298,7 +332,7 @@ export function getTechnicians() {
 
 // Helper: get all clients
 export function getClients() {
-  return MOCK_USERS.filter((u) => u.role === "CLIENT");
+  return MOCK_CLIENTS;
 }
 
 // Helper: get jobs for a specific technician

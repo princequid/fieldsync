@@ -1,22 +1,22 @@
 export default function TechChip({ technician }) {
   if (!technician) {
     return (
-      <span className="inline-flex rounded-full border border-[#E5E7EB] bg-slate-50 px-3 py-1.5 text-[13px] text-gray-500">
+      <span className="inline-flex rounded-badge border border-black/5 bg-gray-50 px-3 py-1 text-[12px] text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500">
         Unassigned
       </span>
     );
   }
 
   return (
-    <div className="inline-flex items-center gap-2.5 rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-      <div className="grid h-8 w-8 place-items-center rounded-full bg-[#2E86AB] text-xs font-semibold text-white">
+    <div className="inline-flex items-center gap-2 rounded-badge border border-black/5 bg-white px-2 py-1 shadow-1 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:shadow-black/20">
+      <div className="grid h-6 w-6 place-items-center rounded-full bg-brand-accent text-[10px] font-bold text-white">
         {technician.initials}
       </div>
       <div className="leading-tight">
-        <div className="text-[13px] font-medium text-gray-900">
+        <div className="text-[12px] font-medium text-gray-900 dark:text-gray-200">
           {technician.name}
         </div>
-        <div className="text-[11px] text-gray-400">
+        <div className="text-[10px] text-gray-400 dark:text-gray-500">
           {technician.online ? "Online" : "Offline"}
         </div>
       </div>

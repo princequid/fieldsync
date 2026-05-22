@@ -7,8 +7,10 @@ import {
   useState,
 } from "react";
 import {
+  MOCK_CLIENTS,
   MOCK_JOBS,
   MOCK_NOTIFICATIONS,
+  MOCK_USERS,
   getTechnicians,
 } from "../../shared/utils/mockData";
 
@@ -18,6 +20,7 @@ const MOCK_FETCH_MS = 300;
 export function AdminDataProvider({ children }) {
   const [jobs, setJobs] = useState([]);
   const [technicians, setTechnicians] = useState([]);
+  const [clients, setClients] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,6 +34,7 @@ export function AdminDataProvider({ children }) {
       await new Promise((resolve) => setTimeout(resolve, MOCK_FETCH_MS));
       setJobs([...MOCK_JOBS]);
       setTechnicians(getTechnicians());
+      setClients([...MOCK_CLIENTS]);
       setNotifications([...MOCK_NOTIFICATIONS]);
     } catch (err) {
       setError(err?.message ?? "Unable to load admin data.");
@@ -119,19 +123,34 @@ export function AdminDataProvider({ children }) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       status: "PENDING",
+      clientEmail: jobData.clientEmail ?? "",
+      clientPhone: jobData.clientPhone ?? "",
+      clientAddress: jobData.clientAddress ?? "",
       ...jobData,
     };
     setJobs((prev) => [newJob, ...prev]);
     return newJob;
   }
 
-  function addTechnician({ firstName, lastName, email, phone }) {
+  function createClient(clientData) {
+    // TODO: replace with Apollo useMutation — createClient({ variables: { input } })
+    const newClient = {
+      id: `client-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      ...clientData,
+    };
+    setClients((prev) => [...prev, newClient]);
+    return newClient;
+  }
+
+  function addTechnician({ firstName, lastName, email, phone, specialty }) {
     // TODO: replace with Apollo useMutation(CREATE_TECHNICIAN) once backend is ready
     const newTech = {
       id: `user-${Date.now()}`,
       name: `${firstName} ${lastName}`,
       email,
       phone: phone ?? "",
+      specialty: specialty?.trim() ?? "",
       role: "TECHNICIAN",
       initials: `${firstName[0]}${lastName[0]}`.toUpperCase(),
       isActive: true,
@@ -140,6 +159,7 @@ export function AdminDataProvider({ children }) {
       avgDurationHours: null,
       online: false,
     };
+    MOCK_USERS.push(newTech);
     setTechnicians((prev) => [...prev, newTech]);
     return newTech;
   }
@@ -147,16 +167,20 @@ export function AdminDataProvider({ children }) {
   function markNotificationRead(notificationId) {
     // TODO: replace with Apollo useMutation(MARK_NOTIFICATION_READ) once backend is ready
     setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === notificationId ? { ...n, isRead: true } : n,
-      ),
+      prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n)),
     );
+  }
+
+  function markAllNotificationsRead() {
+    // TODO: replace with Apollo useMutation(MARK_ALL_NOTIFICATIONS_READ) once backend is ready
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
   }
 
   const value = useMemo(
     () => ({
       jobs,
       technicians,
+      clients,
       notifications,
       loading,
       error,
@@ -166,10 +190,12 @@ export function AdminDataProvider({ children }) {
       cancelJob,
       reassignJob,
       createJob,
+      createClient,
       addTechnician,
       markNotificationRead,
+      markAllNotificationsRead,
     }),
-    [jobs, technicians, notifications, loading, error, refetch],
+    [jobs, technicians, clients, notifications, loading, error, refetch],
   );
 
   return (

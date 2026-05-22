@@ -4,44 +4,74 @@ import { getUserById } from "../../shared/utils/mockData";
 import PriorityBadge from "../../shared/components/PriorityBadge";
 import { formatRelativeDate } from "../../shared/utils/formatDate";
 
-const STRIP_GRADIENTS = {
-  PENDING: "from-amber-400 to-amber-600",
-  IN_PROGRESS: "from-blue-500 to-blue-700",
-  COMPLETED: "from-green-500 to-green-700",
-  VERIFIED: "from-[#1E3A5F] to-[#2E86AB]",
+const STATUS_STRIP = {
+  PENDING: "from-amber-400 to-amber-500",
+  IN_PROGRESS: "from-blue-500 to-blue-600",
+  COMPLETED: "from-green-500 to-green-600",
+  VERIFIED: "from-brand-navy to-brand-accent",
+};
+
+const STATUS_LABEL = {
+  PENDING: { label: "Pending", cls: "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300" },
+  IN_PROGRESS: { label: "In Progress", cls: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" },
+  COMPLETED: { label: "Completed", cls: "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300" },
+  VERIFIED: { label: "Verified", cls: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300" },
 };
 
 export default function JobCard({ job }) {
   const navigate = useNavigate();
   const client = getUserById(job.clientId);
-  const strip = STRIP_GRADIENTS[job.status] ?? STRIP_GRADIENTS.PENDING;
+  const strip = STATUS_STRIP[job.status] ?? STATUS_STRIP.PENDING;
+  const status = STATUS_LABEL[job.status];
+
+  function handleOpen() {
+    window.setTimeout(() => {
+      navigate(`/tech/jobs/${job.id}`);
+    }, 80);
+  }
 
   return (
     <button
       type="button"
-      onClick={() => navigate(`/tech/jobs/${job.id}`)}
-      className="fs-btn-press mx-3 flex w-[calc(100%-24px)] min-h-[72px] overflow-hidden rounded-2xl border border-[#E5E7EB] bg-[#FAFAFA] text-left transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
+      onClick={handleOpen}
+      className="fs-btn-press mx-3 my-1 flex min-h-20 w-[calc(100%-1.5rem)] overflow-hidden rounded-r-[16px] rounded-l-none border border-black/5 bg-white text-left dark:border-gray-800 dark:bg-gray-900"
+      style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
     >
-      <div className={`w-1 shrink-0 bg-gradient-to-b ${strip}`} aria-hidden />
+      {/* Status strip */}
+      <div className={`w-1 shrink-0 bg-linear-to-b ${strip}`} aria-hidden />
+
       <div className="flex min-w-0 flex-1 flex-col justify-center p-4">
-        <p className="text-[14px] font-semibold leading-snug text-gray-900">
-          {job.title}
-        </p>
-        <p className="mt-1 truncate text-[13px] text-gray-500">
+        {/* Title row */}
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-[14px] font-semibold leading-snug text-gray-900 dark:text-gray-100">
+            {job.title}
+          </p>
+          {status && (
+            <span
+              className={`shrink-0 rounded-badge px-2 py-0.5 text-[10px] font-medium ${status.cls}`}
+            >
+              {status.label}
+            </span>
+          )}
+        </div>
+
+        {/* Client */}
+        <p className="mt-1 truncate text-[12px] text-[#64748B] dark:text-gray-400">
           {client?.name ?? "Unknown client"}
         </p>
-        <div className="mt-2 flex min-w-0 items-center gap-1.5 text-[13px] text-gray-500">
-          <MapPin size={14} className="shrink-0 text-gray-400" aria-hidden />
+
+        {/* Location */}
+        <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#64748B] dark:text-gray-400">
+          <MapPin size={13} className="shrink-0 text-[#94A3B8] dark:text-gray-500" aria-hidden />
           <span className="truncate">{job.location}</span>
         </div>
+
+        {/* Footer */}
         <div className="mt-3 flex items-center justify-between gap-2">
           <PriorityBadge priority={job.priority} />
-          <div className="flex shrink-0 items-center gap-1 text-xs font-medium text-gray-600">
-            <span className="text-gray-400">
-              {formatRelativeDate(job.updatedAt)}
-            </span>
-            <span>View</span>
-            <ChevronRight size={14} aria-hidden />
+          <div className="flex items-center gap-1 text-[11px] font-medium text-gray-400 dark:text-gray-500">
+            <span>{formatRelativeDate(job.updatedAt)}</span>
+            <ChevronRight size={13} aria-hidden />
           </div>
         </div>
       </div>

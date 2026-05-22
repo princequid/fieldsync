@@ -1,4 +1,3 @@
-import Loader from "./Loader";
 import ErrorState from "./ErrorState";
 
 /**
@@ -10,13 +9,20 @@ export default function AsyncPageContent({
   error,
   thing = "data",
   onRetry,
+  skeleton = null,
   children,
   className = "min-h-[40vh]",
 }) {
   if (loading) {
+    if (typeof skeleton === "function") return skeleton();
+    if (skeleton) return skeleton;
     return (
-      <div className={className}>
-        <Loader centered />
+      <div className={`${className} p-6`} aria-hidden>
+        <div className="space-y-3">
+          <div className="fs-skeleton h-8 w-48 rounded-md" />
+          <div className="fs-skeleton h-4 w-80 rounded-md" />
+          <div className="fs-skeleton h-32 w-full rounded-card" />
+        </div>
       </div>
     );
   }
