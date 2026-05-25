@@ -19,6 +19,7 @@ import {
 import { useAdminData } from "../hooks/useAdminData";
 import { MOCK_JOBS, getTechnicians } from "../../shared/utils/mockData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
+import { AnalyticsPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
 import { useTheme } from "../../shared/context/ThemeContext";
 
 const PERIODS = [
@@ -163,7 +164,7 @@ export default function Analytics() {
       error={error}
       thing="analytics"
       onRetry={refetch}
-      skeleton={<AnalyticsSkeleton />}
+      skeleton={<AnalyticsPageSkeleton />}
       className="fs-admin-page-bg min-h-full"
     >
       <div className="fs-admin-page-bg space-y-6 p-4 sm:p-6">
@@ -332,43 +333,6 @@ export default function Analytics() {
         </section>
       </div>
     </AsyncPageContent>
-  );
-}
-
-function AnalyticsSkeleton() {
-  return (
-    <div className="fs-admin-page-bg space-y-6 p-4 sm:p-6" aria-hidden>
-      <div className="fs-card space-y-3 p-6">
-        <div className="fs-skeleton h-4 w-24 rounded-md" />
-        <div className="fs-skeleton h-8 w-48 rounded-md" />
-        <div className="fs-skeleton h-4 w-72 max-w-full rounded-md" />
-        <div className="fs-skeleton mt-2 h-10 w-56 rounded-xl" />
-      </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="fs-card p-5">
-            <div className="fs-skeleton h-4 w-28 rounded-md" />
-            <div className="fs-skeleton mt-4 h-9 w-20 rounded-md" />
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:gap-6">
-        {[1, 2].map((i) => (
-          <div key={i} className="fs-card p-5">
-            <div className="fs-skeleton h-5 w-48 rounded-md" />
-            <div className="fs-skeleton mt-6 h-52 w-full rounded-xl" />
-          </div>
-        ))}
-      </div>
-      <div className="fs-card p-5">
-        <div className="fs-skeleton h-5 w-40 rounded-md" />
-        <div className="mt-4 space-y-3">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="fs-skeleton h-12 w-full rounded-lg" />
-          ))}
-        </div>
-      </div>
-    </div>
   );
 }
 

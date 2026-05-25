@@ -5,7 +5,7 @@ import { useAdminData } from "../hooks/useAdminData";
 import AddTechnicianModal from "../components/modals/AddTechnicianModal";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import EmptyState from "../../shared/components/EmptyState";
-import { SkeletonBlock } from "../../shared/components/Skeleton";
+import { TeamPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
 
 export default function TeamManagement() {
   const { technicians, addTechnician, loading, error, refetch } =
@@ -29,7 +29,7 @@ export default function TeamManagement() {
       error={error}
       thing="team"
       onRetry={refetch}
-      skeleton={() => <TeamManagementSkeleton />}
+      skeleton={() => <TeamPageSkeleton />}
       className="fs-admin-page-bg min-h-screen"
     >
       <div className="fs-admin-page-bg min-h-screen px-4 py-6 sm:px-6 lg:px-8">
@@ -197,34 +197,6 @@ export default function TeamManagement() {
         )}
       </div>
     </AsyncPageContent>
-  );
-}
-
-function TeamManagementSkeleton() {
-  return (
-    <div
-      className="fs-admin-page-bg min-h-screen px-4 py-6 sm:px-6 lg:px-8"
-      aria-hidden
-    >
-      <div className="mx-auto max-w-7xl space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <SkeletonBlock className="h-7 w-28 rounded-md" />
-            <SkeletonBlock className="h-4 w-64 rounded-md" />
-          </div>
-          <SkeletonBlock className="h-10 w-36 rounded-button" />
-        </div>
-
-        <div className="fs-card overflow-hidden p-5">
-          <SkeletonBlock className="h-4 w-full rounded-md" />
-          <div className="mt-3 space-y-2">
-            {[1, 2, 3, 4, 5].map((row) => (
-              <SkeletonBlock key={row} className="h-12 w-full rounded-md" />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 

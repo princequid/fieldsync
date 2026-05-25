@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AlertCircle, CheckCircle2, Mail, UserPlus, X } from "lucide-react";
 import Modal from "../../../components/common/Modal";
+import FormTransition from "../../../shared/components/FormTransition";
 
 const INPUT_CLS =
   "w-full h-10 rounded-input border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-[13px] text-[#0F172A] outline-none transition-all duration-150 placeholder:text-[#94A3B8] focus:border-[#2E86AB] focus:bg-white focus:ring-[0_0_0_3px] focus:ring-[rgba(46,134,171,0.15)] dark:border-gray-600 dark:bg-gray-800/90 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-[#2E86AB] dark:focus:bg-gray-800";
@@ -125,6 +126,7 @@ export default function AddTechnicianModal({ onSuccess, onClose }) {
           </p>
         </div>
 
+        <FormTransition submitting={loading}>
         <form onSubmit={handleSubmit} className="space-y-5">
           <fieldset className="space-y-4">
             <legend className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
@@ -225,6 +227,7 @@ export default function AddTechnicianModal({ onSuccess, onClose }) {
             </button>
           </div>
         </form>
+        </FormTransition>
       </div>
     </Modal>
   );

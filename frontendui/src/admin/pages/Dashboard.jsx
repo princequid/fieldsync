@@ -4,9 +4,9 @@ import { useAdminData } from "../hooks/useAdminData";
 import StatCard from "../components/StatCard";
 import Table from "../components/Table";
 import VerifyModal from "../components/modals/VerifyModal";
-import ErrorState from "../../shared/components/ErrorState";
 import EmptyState from "../../shared/components/EmptyState";
-import { SkeletonBlock } from "../../shared/components/Skeleton";
+import AsyncPageContent from "../../shared/components/AsyncPageContent";
+import { DashboardPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
 
 function buildStatCards(jobs) {
   return [
@@ -267,12 +267,16 @@ export default function Dashboard() {
     [technicians, jobs],
   );
 
-  if (loading) return <DashboardSkeleton />;
-  if (error)
-    return <ErrorState thing="dashboard" message={error} onRetry={refetch} />;
-
   return (
-    <div className="min-h-full p-6 dark:bg-gray-950">
+    <AsyncPageContent
+      loading={loading}
+      error={error}
+      thing="dashboard"
+      onRetry={refetch}
+      skeleton={() => <DashboardPageSkeleton />}
+      className="min-h-full"
+    >
+      <div className="min-h-full p-6 dark:bg-gray-950 fs-content-settled">
       <div className="space-y-6">
         {/* Page header */}
         <header>
@@ -400,6 +404,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      </div>
 
       {verifyTarget && (
         <VerifyModal
@@ -409,42 +414,6 @@ export default function Dashboard() {
           onClose={() => setVerifyTarget(null)}
         />
       )}
-    </div>
-  );
-}
-
-function DashboardSkeleton() {
-  return (
-    <div className="min-h-full p-6 dark:bg-gray-950" aria-hidden>
-      <div className="space-y-6">
-        <header className="space-y-2">
-          <SkeletonBlock className="h-7 w-40 rounded-md" />
-          <SkeletonBlock className="h-4 w-72 rounded-md" />
-        </header>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="fs-card rounded-card p-5">
-              <SkeletonBlock className="h-3 w-20 rounded-md" />
-              <SkeletonBlock className="mt-3 h-7 w-12 rounded-md" />
-            </div>
-          ))}
-        </div>
-
-        <section className="fs-card overflow-hidden">
-          <div className="border-b border-black/5 px-5 py-4 dark:border-gray-800">
-            <SkeletonBlock className="h-4 w-32 rounded-md" />
-          </div>
-          <div className="px-5 py-3">
-            <SkeletonBlock className="h-4 w-full rounded-md" />
-          </div>
-          <div className="space-y-2 px-5 pb-5">
-            {[1, 2, 3, 4].map((row) => (
-              <SkeletonBlock key={row} className="h-12 w-full rounded-md" />
-            ))}
-          </div>
-        </section>
-      </div>
-    </div>
+    </AsyncPageContent>
   );
 }
