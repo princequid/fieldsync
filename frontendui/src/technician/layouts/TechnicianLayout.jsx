@@ -6,15 +6,21 @@ import {
   useTechnicianData,
 } from "../hooks/useTechnicianData";
 import { getUserById } from "../../shared/utils/mockData";
-import ErrorState from "../../shared/components/ErrorState";
-import ThemeToggle from "../../shared/components/ThemeToggle";
+import AsyncPageContent from "../../shared/components/AsyncPageContent";
+import TechNavbar from "../components/TechNavbar";
 import PageTransitionWrapper from "../../shared/components/PageTransitionWrapper";
-import { SkeletonBlock } from "../../shared/components/Skeleton";
+import {
+  GenericPageSkeleton,
+  TechJobsPageSkeleton,
+} from "../../shared/components/skeletons/PageSkeletons";
 
 const TABS = [
   { path: "/tech/jobs", label: "My Jobs", Icon: ClipboardList },
   { path: "/tech/profile", label: "Profile", Icon: User },
 ];
+
+const HEADER_HEIGHT = "clamp(54px, 12vw, 60px)";
+const TAB_BAR_BASE_HEIGHT = "clamp(60px, 14vw, 68px)";
 
 function getPageTitle(pathname) {
   if (pathname.endsWith("/profile")) return "Profile";
@@ -37,69 +43,89 @@ export default function TechnicianLayout() {
 
   return (
     <TechnicianDataProvider technicianId={user?.id}>
-      <div className="flex h-screen flex-col overflow-hidden bg-brand-bg dark:bg-gray-950">
-        {/* Top header */}
-        <header className="fs-tech-header flex h-14 shrink-0 items-center justify-between px-4">
-          <div className="w-9 shrink-0" aria-hidden />
-          <h1 className="text-center text-[16px] font-semibold text-white">
-            {title}
-          </h1>
-          <div className="flex shrink-0 items-center gap-2">
-            <ThemeToggle />
-            <div
-              className="grid h-9 w-9 place-items-center rounded-full border-2 border-white/25 text-[12px] font-bold text-white"
-              style={{ backgroundColor: "#27AE60" }}
-              aria-hidden
-            >
-              {userData?.initials ?? "T"}
-            </div>
-          </div>
-        </header>
+      <div className="flex h-screen flex-col overflow-hidden bg-[#F0EDE8] dark:bg-gray-950">
+        {/* Top navbar */}
+        <TechNavbar pageTitle={title} />
 
         {/* Main scroll area */}
         <TechMainContent transitionKey={location.key} />
 
-        {/* Bottom navigation */}
-        <nav
-          className="shrink-0 border-t border-transparent bg-white dark:border-gray-800 dark:bg-gray-900"
-          style={{
-            height: "64px",
-            boxShadow: "0 -1px 0 #F1F5F9, 0 -4px 12px rgba(0,0,0,0.04)",
-          }}
-        >
-          <div className="flex h-full">
-            {TABS.map(({ path, label, Icon }) => {
-              const active = isTabActive(location.pathname, path);
-              return (
-                <Link
-                  key={path}
-                  to={path}
-                  className="fs-focus-ring flex h-full flex-1 flex-col items-center justify-center gap-0.5 transition-all duration-150"
-                >
-                  <span
-                    className={`flex h-9 w-9 items-center justify-center rounded-[10px] transition-colors duration-150 ${
-                      active ? "bg-[rgba(39,174,96,0.1)]" : ""
-                    }`}
-                  >
-                    <Icon
-                      size={20}
-                      className={active ? "text-[#27AE60]" : "text-[#94A3B8] dark:text-gray-600"}
-                    />
-                  </span>
-                  <span
-                    className={`text-[11px] font-medium transition-colors duration-150 ${
-                      active ? "text-[#27AE60]" : "text-[#94A3B8] dark:text-gray-600"
-                    }`}
-                  >
-                    {label}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
+        {/* Bottom navigation rendered inside provider via NavTabs */}
+        <NavTabs currentPath={location.pathname} />
       </div>
     </TechnicianDataProvider>
+  );
+}
+
+function NavTabs({ currentPath }) {
+  return (
+    <nav
+      className="shrink-0 bg-white dark:bg-gray-900 dark:border-gray-800"
+      style={{
+        height: `calc(${TAB_BAR_BASE_HEIGHT} + env(safe-area-inset-bottom))`,
+        borderTop: "1px solid #F1F5F9",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        boxSizing: "border-box",
+        boxShadow: "0 -1px 0 rgba(0,0,0,0.04), 0 -4px 12px rgba(0,0,0,0.03)",
+      }}
+    >
+      <div className="grid h-full grid-cols-2">
+        {TABS.map(({ path, label, Icon }) => {
+          const active = isTabActive(currentPath, path);
+          return (
+            <Link
+              key={path}
+              to={path}
+              className="fs-focus-ring flex h-full min-h-11 flex-col items-center justify-center gap-0.5 px-1 transition-all duration-150 ease-in-out"
+            >
+              <span className="flex w-full flex-col items-center justify-center gap-0.5 text-center">
+                <span
+                  className={`font-medium transition-colors duration-150 ${
+                    active
+                      ? "text-[#2E86AB]"
+                      : "text-[#94A3B8] dark:text-gray-600"
+                  }`}
+                  style={{
+                    fontSize: "clamp(8px, 2.1vw, 10px)",
+                    lineHeight: 1,
+                    maxWidth: "clamp(44px, 12vw, 60px)",
+                    width: "100%",
+                    whiteSpace: "nowrap",
+                    textAlign: "center",
+                  }}
+                >
+                  {label}
+                </span>
+              </span>
+              <span
+                className={`flex items-center justify-center rounded-[9px] transition-colors duration-150 ${
+                  active ? "bg-[rgba(46,134,171,0.12)]" : ""
+                }`}
+                style={{
+                  width: "clamp(32px, 8vw, 38px)",
+                  height: "clamp(32px, 8vw, 38px)",
+                }}
+              >
+                <Icon
+                  size={"clamp(16px, 4vw, 18px)"}
+                  className={
+                    active
+                      ? "text-[#2E86AB]"
+                      : "text-[#94A3B8] dark:text-gray-600"
+                  }
+                />
+              </span>
+              {active && (
+                <span
+                  style={{ height: 3, width: 16 }}
+                  className="mt-1 rounded-full bg-[#2E86AB] mx-auto"
+                />
+              )}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 
@@ -108,55 +134,32 @@ function TechMainContent({ transitionKey }) {
   const { loading, error, refetch } = useTechnicianData();
 
   return (
-    <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-3">
-      {loading ? (
-        <TechLayoutSkeleton pathname={location.pathname} />
-      ) : error ? (
-        <ErrorState thing="jobs" message={error} onRetry={refetch} />
-      ) : (
+    <main
+      className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden"
+      style={{
+        paddingBottom:
+          "calc(clamp(60px, 14vw, 68px) + env(safe-area-inset-bottom) + 8px)",
+      }}
+    >
+      <AsyncPageContent
+        loading={loading}
+        error={error}
+        thing="jobs"
+        onRetry={refetch}
+        skeleton={() => {
+          const pathname = location.pathname;
+          return pathname === "/tech" || pathname.startsWith("/tech/jobs") ? (
+            <TechJobsPageSkeleton />
+          ) : (
+            <GenericPageSkeleton className="px-3 py-4" />
+          );
+        }}
+        className="min-h-[40vh]"
+      >
         <PageTransitionWrapper transitionKey={transitionKey}>
           <Outlet />
         </PageTransitionWrapper>
-      )}
+      </AsyncPageContent>
     </main>
-  );
-}
-
-function TechLayoutSkeleton({ pathname }) {
-  const showJobCards =
-    pathname === "/tech" || pathname.startsWith("/tech/jobs");
-
-  if (!showJobCards) {
-    return (
-      <div className="space-y-4 px-3 py-4">
-        <SkeletonBlock className="h-20 rounded-[16px]" />
-        <SkeletonBlock className="h-20 rounded-[16px]" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-2 px-3 py-4" aria-hidden>
-      <div className="flex gap-2">
-        <SkeletonBlock className="h-7 w-16 rounded-badge" />
-        <SkeletonBlock className="h-7 w-20 rounded-badge" />
-        <SkeletonBlock className="h-7 w-24 rounded-badge" />
-      </div>
-
-      {[1, 2, 3].map((row) => (
-        <div
-          key={row}
-          className="mx-0.5 my-1 flex min-h-20 overflow-hidden rounded-r-[16px] rounded-l-none border border-black/5 bg-white dark:border-gray-800 dark:bg-gray-900"
-          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
-        >
-          <div className="h-auto w-1 shrink-0 bg-slate-200" />
-          <div className="flex-1 space-y-2.5 p-4">
-            <SkeletonBlock className="h-3.5 w-2/3 rounded-md" />
-            <SkeletonBlock className="h-3 w-1/2 rounded-md" />
-            <SkeletonBlock className="h-3 w-2/5 rounded-md" />
-          </div>
-        </div>
-      ))}
-    </div>
   );
 }

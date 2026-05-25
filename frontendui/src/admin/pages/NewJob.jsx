@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Info } from "lucide-react";
 import { useAdminData } from "../../admin/hooks/useAdminData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
+import FormTransition from "../../shared/components/FormTransition";
+import { NewJobPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
 import { getTechnicians, getUserById } from "../../shared/utils/mockData";
 
 const PRIORITY_OPTIONS = [
@@ -162,6 +164,7 @@ export default function NewJob() {
       error={error}
       thing="form data"
       onRetry={refetch}
+      skeleton={() => <NewJobPageSkeleton />}
       className="fs-admin-page-bg min-h-screen"
     >
       <div className="fs-admin-page-bg min-h-screen p-6 pb-28">
@@ -177,6 +180,7 @@ export default function NewJob() {
             </div>
           )}
 
+          <FormTransition submitting={isSubmitting}>
           <form onSubmit={handleSubmit} className="mt-7 space-y-5">
             <FormField label="Job Title" error={errors.title} required>
               <input
@@ -337,6 +341,7 @@ export default function NewJob() {
               </button>
             </div>
           </form>
+          </FormTransition>
         </div>
       </div>
     </AsyncPageContent>

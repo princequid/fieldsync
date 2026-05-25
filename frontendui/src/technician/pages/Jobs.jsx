@@ -1,4 +1,5 @@
 ﻿import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { useAuth } from "../../shared/context/AuthContext";
 import { useTechnicianData } from "../hooks/useTechnicianData";
 import JobCard from "../components/JobCard";
@@ -88,8 +89,8 @@ function TechnicianJobsSkeleton() {
             <SkeletonBlock className="h-3 w-1/2 rounded-md" />
             <SkeletonBlock className="h-3 w-2/5 rounded-md" />
           </div>
-        </div>
-      ))}
+        )}
+      </div>
     </div>
   );
 }

@@ -37,6 +37,37 @@ export default function StartJob() {
       setNetworkError(true);
     } finally {
       setLoading(false);
+  const { user } = useAuth();
+  const { jobs, updateJobStatus } = useTechnicianData(user?.id);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const job = useMemo(() => jobs.find((j) => j.id === id), [jobs, id]);
+  const client = job ? getUserById(job.clientId) : null;
+
+  if (!job || job.technicianId !== user?.id) {
+    return (
+      <div className="p-4 text-center">
+        <p className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">
+          Job not found
+        </p>
+        <Link
+          to="/tech/jobs"
+          className="mt-4 inline-block text-[13px] text-brand-accent"
+        >
+          Back to My Jobs
+        </Link>
+      </div>
+    );
+  }
+
+  async function handleStart() {
+    setIsSubmitting(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      updateJobStatus(job.id, "IN_PROGRESS", "Technician arrived on site");
+      navigate(`/tech/jobs/${job.id}`, { replace: true });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -57,12 +88,16 @@ export default function StartJob() {
           <div className="shrink-0">
             <PriorityBadge priority={job.priority} />
           </div>
-        </div>
-
-        <p className="text-sm text-gray-600 leading-relaxed border-t border-slate-100 pt-3">
-          {job.description}
-        </p>
-      </section>
+          <h1
+            className="mt-6 text-[22px] font-bold text-[#0F172A] dark:text-gray-50"
+            style={{ letterSpacing: "-0.5px" }}
+          >
+            Start this job?
+          </h1>
+          <p className="mt-2 text-[13px] text-[#374151] dark:text-gray-300">
+            Confirm you have arrived at the site and are ready to begin work on{" "}
+            <span className="font-semibold">{job.title}</span>.
+          </p>
 
       <a
         href={mapsUrl}
@@ -86,13 +121,6 @@ export default function StartJob() {
             <Clock size={13} className="text-gray-400" aria-hidden />
             <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Assigned</p>
           </div>
-          <p className="text-sm font-semibold text-gray-900">{formatFullDate(job.createdAt)}</p>
-        </div>
-        <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400 mb-1">Category</p>
-          <p className="text-sm font-semibold text-gray-900 capitalize">{job.category ?? "—"}</p>
-        </div>
-      </div>
 
       {networkError ? (
         <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
@@ -100,16 +128,6 @@ export default function StartJob() {
             <WifiOff size={15} className="text-red-500" aria-hidden />
             <p className="text-sm font-semibold text-red-700">Connection failed</p>
           </div>
-          <p className="text-xs text-red-500 leading-relaxed">
-            Couldn&apos;t reach the server. Check your connection and try again.
-          </p>
-          <button
-            type="button"
-            onClick={handleStart}
-            className="mt-3 h-10 px-4 rounded-xl bg-red-100 text-sm font-semibold text-red-700 active:scale-[0.98] transition-transform"
-          >
-            Retry
-          </button>
         </div>
       ) : null}
 

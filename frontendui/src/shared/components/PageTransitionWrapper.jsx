@@ -1,27 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import { scrollAppToTop } from "./ScrollToTop";
 
-const EXIT_MS = 150;
+const ENTER_MS = 280;
 
+/**
+ * Smooth route transitions — single enter animation per navigation,
+ * no full hide/show flash.
+ */
 export default function PageTransitionWrapper({
   transitionKey,
   children,
   className = "",
 }) {
   const [displayedChildren, setDisplayedChildren] = useState(children);
-  const [phase, setPhase] = useState("pre-enter");
+  const [animating, setAnimating] = useState(false);
   const latestChildrenRef = useRef(children);
-  const timeoutRef = useRef(null);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
     latestChildrenRef.current = children;
   }, [children]);
-
-  useEffect(() => {
-    const raf = window.requestAnimationFrame(() => setPhase("entered"));
-    return () => window.cancelAnimationFrame(raf);
-  }, []);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -31,39 +29,22 @@ export default function PageTransitionWrapper({
     }
 
     scrollAppToTop();
+    setAnimating(true);
+    setDisplayedChildren(latestChildrenRef.current);
 
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-    }
-
-    setPhase("exiting");
-
-    timeoutRef.current = window.setTimeout(() => {
-      setDisplayedChildren(latestChildrenRef.current);
-      setPhase("pre-enter");
-      requestAnimationFrame(() => {
-        setPhase("entered");
-      });
-    }, EXIT_MS);
-
-    return () => {
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
-      }
-    };
+    const timer = window.setTimeout(() => setAnimating(false), ENTER_MS);
+    return () => window.clearTimeout(timer);
   }, [transitionKey]);
 
   return (
     <div
-      className={`${className} ${phase === "entered" ? "animate-slide-up" : ""}`.trim()}
-      style={{
-        opacity: phase === "pre-enter" || phase === "exiting" ? 0 : 1,
-        transform: phase === "pre-enter" ? "translateY(6px)" : "translateY(0)",
-        transition:
-          phase === "exiting"
-            ? "opacity 150ms ease-out"
-            : "opacity 220ms ease-out, transform 220ms ease-out",
-      }}
+      className={[
+        "fs-page-transition",
+        animating ? "fs-page-transition--enter" : "",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       {displayedChildren}
     </div>

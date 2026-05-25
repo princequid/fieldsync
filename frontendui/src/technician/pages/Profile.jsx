@@ -45,6 +45,14 @@ export default function Profile() {
   const verified = jobs.filter((job) => job.status === "VERIFIED").length;
   const specialisations = profile?.specialisations ?? [];
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(presenceStorageKey, isActive ? "active" : "offline");
+    } catch {
+      // Ignore storage failures so UI still works.
+    }
+  }, [isActive, presenceStorageKey]);
+
   function handleSignOut() {
     logout();
     navigate("/login", { replace: true });
@@ -65,11 +73,12 @@ export default function Profile() {
             </div>
             <button
               type="button"
-              onClick={() => setAvailable((v) => !v)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 ${
-                available
-                  ? "bg-green-50 border-green-200 text-green-700"
-                  : "bg-slate-100 border-slate-200 text-slate-500"
+              onClick={() => setIsActive((current) => !current)}
+              aria-pressed={isActive}
+              className={`inline-flex h-11 items-center justify-center rounded-badge border px-4 text-[13px] font-semibold transition-colors ${
+                isActive
+                  ? "bg-[#EFF6FF] dark:bg-blue-900/30 text-[#2E86AB] dark:text-blue-300 border-[#BFDBFE] dark:border-blue-800"
+                  : "bg-[#F8FAFC] dark:bg-gray-800 text-[#64748B] dark:text-gray-300 border-[#E2E8F0] dark:border-gray-700"
               }`}
             >
               <span
@@ -100,6 +109,30 @@ export default function Profile() {
             <p className="text-xs text-gray-400 mt-1">Active now</p>
           </div>
         </div>
+        <div
+          className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
+          style={{ border: "1px solid #F1F5F9" }}
+        >
+          <p className="text-[22px] font-bold text-[#2E86AB]">{completed}</p>
+          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500 uppercase tracking-wide">
+            Completed
+          </p>
+        </div>
+        <div
+          className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
+          style={{ border: "1px solid #F1F5F9" }}
+        >
+          <p
+            className="text-[22px] font-bold"
+            style={{ color: verified > 0 ? "#F59E0B" : "#0F172A" }}
+          >
+            {verified}
+          </p>
+          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500 uppercase tracking-wide">
+            Verified
+          </p>
+        </div>
+      </div>
 
         <section className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100">
@@ -140,9 +173,22 @@ export default function Profile() {
                 <SpecialisationPill key={s} label={s} />
               ))}
             </div>
-          ) : (
-            <div className="px-4 py-4">
-              <p className="text-sm text-gray-400">No specialisations assigned yet.</p>
+          )}
+          {profile?.email && (
+            <div
+              className="flex items-center"
+              style={{
+                height: 52,
+                padding: "0 16px",
+                borderBottom: "1px solid #F8FAFC",
+              }}
+            >
+              <div className="h-7 w-7 rounded-full grid place-items-center bg-[#F8FAFC] dark:bg-gray-800 mr-4">
+                <Mail size={16} className="text-[#94A3B8]" />
+              </div>
+              <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
+                {profile.email}
+              </div>
             </div>
           )}
           <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center gap-2">
@@ -158,8 +204,10 @@ export default function Profile() {
           onClick={() => setShowSignOut(true)}
           className="w-full h-12 rounded-2xl border border-red-100 bg-red-50 flex items-center justify-center gap-2 text-sm font-medium text-red-600 hover:bg-red-100 transition-colors active:scale-[0.98]"
         >
-          <LogOut size={15} aria-hidden />
-          Sign Out
+          <div className="flex items-center justify-center gap-2">
+            <LogOut size={16} />
+            Sign out
+          </div>
         </button>
       </div>
 

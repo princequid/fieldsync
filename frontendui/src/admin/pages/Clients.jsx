@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useAdminData } from "../hooks/useAdminData";
 import AddClientModal from "../components/AddClientModal";
 import Button from "../../shared/components/Button";
-import Loader from "../../shared/components/Loader";
-import ErrorState from "../../shared/components/ErrorState";
+import AsyncPageContent from "../../shared/components/AsyncPageContent";
+import { ClientsPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
 import EmptyState from "../../shared/components/EmptyState";
 import { formatRelativeDate } from "../../shared/utils/formatDate";
 
@@ -14,22 +14,16 @@ export default function Clients() {
   const { clients, createClient, loading, error, refetch } = useAdminData();
   const [showAddModal, setShowAddModal] = useState(false);
 
-  if (loading) {
-    return <Loader centered size="lg" />;
-  }
-
-  if (error) {
-    return (
-      <ErrorState
-        thing="clients"
-        message="Failed to load clients"
-        onRetry={refetch}
-      />
-    );
-  }
-
   return (
-    <div className="space-y-6 p-6">
+    <AsyncPageContent
+      loading={loading}
+      error={error ? "Failed to load clients" : null}
+      thing="clients"
+      onRetry={refetch}
+      skeleton={() => <ClientsPageSkeleton />}
+      className="min-h-full"
+    >
+      <div className="space-y-6 p-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-50">Clients</h1>
@@ -118,6 +112,7 @@ export default function Clients() {
           onClose={() => setShowAddModal(false)}
         />
       )}
-    </div>
+      </div>
+    </AsyncPageContent>
   );
 }

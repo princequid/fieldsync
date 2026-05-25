@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Check, Eye, EyeOff, Info, LoaderCircle } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
+import FormTransition from "../../shared/components/FormTransition";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -112,6 +113,7 @@ export default function LoginForm() {
             </div>
           )}
 
+          <FormTransition submitting={isSubmitting}>
           <form onSubmit={handleSubmit} className="mt-7 space-y-4">
             <label className="block">
               <span className="fs-label mb-1.5 block text-gray-400 dark:text-gray-500">Email</span>
@@ -183,6 +185,7 @@ export default function LoginForm() {
               )}
             </button>
           </form>
+          </FormTransition>
 
           <div className="mt-5 flex items-start gap-2 rounded-button border border-dashed border-black/8 bg-gray-50/70 px-4 py-3 text-[12px] text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500">
             <Info

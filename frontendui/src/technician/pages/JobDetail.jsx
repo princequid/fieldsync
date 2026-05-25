@@ -216,6 +216,11 @@ function JobActionBar({ job, jobId, navigate }) {
   return (
     <div className="sticky bottom-0 z-10 bg-white/95 border-t border-slate-100 px-4 py-4 backdrop-blur-sm">
       <div className="flex h-12 w-full items-center justify-center rounded-2xl bg-slate-100 text-sm font-medium text-slate-500">
+    <div
+      className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm dark:bg-gray-900/96"
+      style={shellStyle}
+    >
+      <div className="flex h-13 w-full items-center justify-center rounded-[12px] bg-brand-navy text-[16px] font-semibold text-white/80">
         This job is closed
       </div>
     </div>
@@ -227,6 +232,14 @@ function StatTile({ label, value }) {
     <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
       <p className="text-xs font-medium uppercase tracking-wide text-gray-400">{label}</p>
       <div className="mt-1.5 text-sm font-semibold text-gray-900">{value}</div>
+    <div
+      className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
+      style={{ border: "1px solid #F1F5F9" }}
+    >
+      <p className="fs-label text-gray-400 dark:text-gray-500">{label}</p>
+      <div className="mt-1 text-[13px] font-mono text-[#374151] dark:text-gray-300">
+        {value}
+      </div>
     </div>
   );
 }

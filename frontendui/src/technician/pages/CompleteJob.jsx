@@ -5,6 +5,13 @@ import { getUserById } from "../../shared/utils/mockData";
 import { useTechnicianData } from "../hooks/useTechnicianData";
 import { formatElapsed } from "../../shared/utils/formatDate";
 import Button from "../../shared/components/Button";
+import { useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, Camera } from "lucide-react";
+import { useAuth } from "../../shared/context/AuthContext";
+import { useTechnicianData } from "../hooks/useTechnicianData";
+import ErrorState from "../../shared/components/ErrorState";
+import FormTransition from "../../shared/components/FormTransition";
 
 export default function CompleteJob() {
   const { id } = useParams();
@@ -125,6 +132,8 @@ export default function CompleteJob() {
           />
         </label>
       </div>
+    );
+  }
 
       {import.meta.env.DEV ? (
         <label className="flex items-center gap-2 text-xs text-gray-400">
