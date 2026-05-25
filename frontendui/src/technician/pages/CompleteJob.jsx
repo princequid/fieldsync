@@ -1,10 +1,3 @@
-﻿import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { CheckCircle2, Clock, WifiOff, FileText } from "lucide-react";
-import { getUserById } from "../../shared/utils/mockData";
-import { useTechnicianData } from "../hooks/useTechnicianData";
-import { formatElapsed } from "../../shared/utils/formatDate";
-import Button from "../../shared/components/Button";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Camera } from "lucide-react";
@@ -16,120 +9,6 @@ import FormTransition from "../../shared/components/FormTransition";
 export default function CompleteJob() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { jobs, updateJobStatus } = useTechnicianData();
-  const job = useMemo(() => jobs.find((j) => j.id === id), [jobs, id]);
-  const [note, setNote] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [networkError, setNetworkError] = useState(false);
-  const [simulateFail, setSimulateFail] = useState(false);
-
-  if (!job) {
-    navigate("/tech/jobs", { replace: true });
-    return null;
-  }
-
-  const client = getUserById(job.clientId);
-  const inProgressEntry = job.statusHistory?.find((e) => e.status === "IN_PROGRESS");
-  const elapsedTime = inProgressEntry ? formatElapsed(inProgressEntry.changedAt) : null;
-
-  async function handleSubmit() {
-    setLoading(true);
-    setNetworkError(false);
-    try {
-      if (import.meta.env.DEV && simulateFail) throw new Error("Simulated network failure");
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      updateJobStatus(id, "COMPLETED", note.trim() || null);
-      setSuccess(true);
-    } catch {
-      setNetworkError(true);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (success) {
-    return (
-      <div className="flex min-h-full flex-col items-center justify-center px-4 py-12 text-center">
-        <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-green-50">
-          <CheckCircle2 size={40} className="text-[#27AE60]" aria-hidden />
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900">Job Submitted!</h1>
-        <p className="mt-2 max-w-xs text-sm text-gray-500 leading-relaxed">
-          <span className="font-semibold text-gray-700">{job.title}</span> has been marked as
-          completed and is awaiting admin verification.
-        </p>
-        <div className="mt-8 w-full max-w-xs space-y-3">
-          <button
-            type="button"
-            onClick={() => navigate("/tech/jobs")}
-            className="w-full h-12 rounded-2xl bg-[#27AE60] text-sm font-semibold text-white active:scale-[0.98] transition-transform"
-          >
-            Back to My Jobs
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4 px-4 pb-8 pt-5">
-
-      {/* page title */}
-      <div>
-        <h1 className="text-xl font-bold text-gray-900">Complete Job</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Add a note and submit for verification</p>
-      </div>
-
-      {/* job summary */}
-      <section className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
-            <CheckCircle2 size={18} className="text-[#27AE60]" aria-hidden />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-gray-900 leading-snug">{job.title}</p>
-            <p className="text-sm text-gray-400 mt-0.5">{client?.name ?? "Unknown client"}</p>
-            {elapsedTime ? (
-              <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-400">
-                <Clock size={11} aria-hidden />
-                <span>{elapsedTime} elapsed</span>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </section>
-
-      {/* network error */}
-      {networkError ? (
-        <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
-          <div className="flex items-center gap-2 mb-1.5">
-            <WifiOff size={15} className="text-red-500" aria-hidden />
-            <p className="text-sm font-semibold text-red-700">Connection failed</p>
-          </div>
-          <p className="text-xs text-red-500 leading-relaxed">
-            Your note is saved locally. Retry when you&apos;re back online.
-          </p>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="mt-3 h-10 px-4 rounded-xl bg-red-100 text-sm font-semibold text-red-700 active:scale-[0.98] transition-transform"
-          >
-            Retry
-          </button>
-        </div>
-      ) : null}
-
-      {/* note input */}
-      <div>
-        <label className="block">
-          <div className="flex items-center gap-2 mb-2">
-            <FileText size={14} className="text-gray-400" aria-hidden />
-            <span className="text-sm font-medium text-gray-700">
-              Completion Note{" "}
-              <span className="font-normal text-gray-400">(optional)</span>
-            </span>
-          </div>
   const { user } = useAuth();
   const { jobs, updateJobStatus } = useTechnicianData(user?.id);
 
@@ -137,13 +16,16 @@ export default function CompleteJob() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [simulateNetworkError, setSimulateNetworkError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const job = useMemo(() => jobs.find((j) => j.id === id), [jobs, id]);
 
   if (!job || job.technicianId !== user?.id) {
     return (
       <div className="p-4 text-center">
-        <p className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">Job not found</p>
+        <p className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">
+          Job not found
+        </p>
         <Link
           to="/tech/jobs"
           className="mt-4 inline-block text-[13px] text-brand-accent"
@@ -163,7 +45,7 @@ export default function CompleteJob() {
       if (simulateNetworkError)
         throw new Error("Network error. Please try again.");
       updateJobStatus(job.id, "COMPLETED", note.trim() || null);
-      navigate(`/tech/jobs/${job.id}`, { replace: true });
+      setShowSuccess(true);
     } catch (err) {
       setSubmitError(err?.message ?? "Unable to submit completion.");
     } finally {
@@ -171,118 +53,166 @@ export default function CompleteJob() {
     }
   }
 
-  return (
-    <div className="space-y-5 p-4 pb-8">
-      <Link
-        to={`/tech/jobs/${job.id}`}
-        className="fs-focus-ring flex h-11 items-center gap-2 text-[13px] font-medium text-brand-accent"
-      >
-        <ArrowLeft size={16} aria-hidden />
-        Back
-      </Link>
-
-      <section className="fs-card p-5">
-        <h1 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">
-          Mark job complete
-        </h1>
-        <p className="mt-1 text-[13px] text-gray-500 dark:text-gray-400">{job.title}</p>
-      </section>
-
-      {submitError && (
-        <ErrorState
-          thing="completion"
-          message={submitError}
-          onRetry={() => setSubmitError(null)}
-        />
-      )}
-
-      <FormTransition submitting={isSubmitting}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <label className="block">
-          <span className="fs-label mb-1.5 block text-gray-400 dark:text-gray-500">
-            Completion note{" "}
-            <span className="normal-case text-gray-300">(optional)</span>
-          </span>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            rows={4}
-            placeholder="Describe the work you completed…"
-            className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-300 outline-none focus:border-[#27AE60] focus:ring-2 focus:ring-[#27AE60]/15 transition-shadow"
-          />
-        </label>
-      </div>
-
-      {/* dev toggle */}
-      {import.meta.env.DEV ? (
-        <label className="flex items-center gap-2 text-xs text-gray-400">
-          <input
-            type="checkbox"
-            checked={simulateFail}
-            onChange={(e) => setSimulateFail(e.target.checked)}
-          />
-          Simulate network error
-        </label>
-      ) : null}
-
-      {/* submit */}
-      <Button
-        variant="success"
-        fullWidth
-        loading={loading}
-        onClick={handleSubmit}
-        className="!h-14 !rounded-2xl !text-base !font-semibold"
-      >
-        Submit as Complete
-      </Button>
-
-      <p className="text-center text-xs text-gray-400">
-        Admin will verify before the job is officially closed
-      </p>
-    </div>
-  );
-}
-            placeholder="Describe work completed…"
-            className="w-full resize-y rounded-input border border-black/8 bg-white px-3 py-3 text-[16px] text-gray-900 outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/15 md:text-[13px] dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:placeholder-gray-600"
-            style={{ minHeight: "80px" }}
-          />
-        </label>
-
-        {/* Photo upload placeholder */}
-        <div className="fs-card flex h-28 flex-col items-center justify-center border-dashed p-4">
-          <Camera className="text-gray-300 dark:text-gray-600" size={28} aria-hidden />
-          <p className="mt-2 text-[11px] text-gray-400 dark:text-gray-500">
-            Photo upload (coming soon)
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen bg-[#F0EDE8] dark:bg-gray-950 flex items-center justify-center p-6">
+        <div className="w-full max-w-md rounded-[12px] bg-white dark:bg-gray-900 p-6 text-center">
+          <div className="mx-auto mb-4 flex h-18 w-18 items-center justify-center rounded-full bg-[#DCFCE7] dark:bg-green-900/30">
+            <svg
+              width="72"
+              height="72"
+              viewBox="0 0 72 72"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="36"
+                cy="36"
+                r="34"
+                fill="none"
+                stroke="#DCFCE7"
+                strokeWidth="0"
+              />
+              <path
+                id="check"
+                d="M22 37l8 8 20-20"
+                stroke="#22C55E"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                strokeDasharray="100"
+                strokeDashoffset="100"
+                style={{ animation: "drawCheck 500ms ease-out forwards" }}
+              />
+              <style>{`@keyframes drawCheck{to{stroke-dashoffset:0}}`}</style>
+            </svg>
+          </div>
+          <h2
+            className="text-[22px] font-bold text-[#15803D] dark:text-green-400"
+            style={{ letterSpacing: "-0.5px" }}
+          >
+            Job Submitted!
+          </h2>
+          <p
+            className="mt-3 text-[14px] text-[#374151] dark:text-gray-400 mx-auto"
+            style={{ maxWidth: 280 }}
+          >
+            Thanks — your completion has been sent. Your admin will verify this
+            job before it's closed.
           </p>
+          <button
+            onClick={() => navigate("/tech/jobs")}
+            className="mt-4 w-full h-12 rounded-[12px] text-white"
+            style={{ background: "linear-gradient(180deg,#2E86AB,#1A6FA8)" }}
+          >
+            Back to My Jobs
+          </button>
         </div>
+      </div>
+    );
+  }
 
-        {import.meta.env.DEV && (
-          <label className="flex items-center gap-2 text-[12px] text-gray-400 dark:text-gray-500">
-            <input
-              type="checkbox"
-              checked={simulateNetworkError}
-              onChange={(e) => setSimulateNetworkError(e.target.checked)}
-            />
-            Simulate network error
-          </label>
+  return (
+    <div className="min-h-screen bg-[#F0EDE8] dark:bg-gray-950">
+      <div
+        className="max-w-md mx-auto mt-6 bg-white dark:bg-gray-900 rounded-[12px]"
+        style={{ margin: "0 24px" }}
+      >
+        <div style={{ padding: 20 }}>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-[16px] font-semibold text-[#0F172A] dark:text-gray-50">
+                Mark job complete
+              </h1>
+              <p className="mt-1 text-[12px] text-[#64748B] dark:text-gray-400">
+                {job.title}
+              </p>
+            </div>
+            <div className="ml-3">
+              <span className="inline-block bg-[#EFF6FF] dark:bg-blue-900/30 text-[#2E86AB] font-mono text-[10px] px-3 py-1 rounded-badge">
+                {job.elapsed ?? "—"}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div style={{ height: 1, background: "#F1F5F9" }} />
+
+        {submitError && (
+          <div
+            className="p-4"
+            style={{ background: "#FEF2F2", borderLeft: "4px solid #EF4444" }}
+          >
+            <div className="flex items-start gap-3">
+              <div className="mt-1 text-[#EF4444]">
+                <Camera size={16} />
+              </div>
+              <div>
+                <p className="text-[13px] font-semibold text-[#991B1B]">
+                  Connection failed
+                </p>
+                <p className="text-[12px] text-[#DC2626]">{submitError}</p>
+              </div>
+              <div className="ml-auto">
+                <button
+                  onClick={() => {
+                    setSubmitError(null);
+                  }}
+                  className="h-9 px-3 rounded border border-[#EF4444] text-[#EF4444]"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="fs-btn-press fs-focus-ring relative flex h-14 w-full items-center justify-center overflow-hidden rounded-[12px] bg-linear-to-b from-[#22C55E] to-[#16A34A] text-[16px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          <span
-            className="pointer-events-none absolute inset-x-0 top-0 h-[40%]"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(255,255,255,0.15), transparent)",
-            }}
-          />
-          {isSubmitting ? "Submitting..." : "Submit as Complete"}
-        </button>
-      </form>
-      </FormTransition>
+        <div style={{ padding: 16 }}>
+          <FormTransition submitting={isSubmitting}>
+            <form onSubmit={handleSubmit}>
+              <label className="block">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-semibold uppercase tracking-widest text-[#64748B] dark:text-gray-400">
+                    Completion Note
+                  </span>
+                  <span className="text-[11px] text-[#94A3B8]">optional</span>
+                </div>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Describe the work you completed…"
+                  className="w-full resize-y rounded-input border border-black/8 bg-white px-3 py-3 text-[13px] text-gray-900 outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/15 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:placeholder-gray-600"
+                  style={{ minHeight: 100, marginTop: 8 }}
+                />
+              </label>
+
+              <div
+                className="mt-4"
+                style={{
+                  background: "white",
+                  padding: 16,
+                  borderTop: "1px solid #F1F5F9",
+                }}
+              >
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full h-13 rounded-[12px] text-white font-semibold"
+                  style={{
+                    background: "linear-gradient(180deg,#22C55E,#16A34A)",
+                    boxShadow: "0 2px 8px rgba(34,197,94,0.35)",
+                  }}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit as Complete"}
+                </button>
+                <p className="mt-3 text-center text-[12px] text-[#94A3B8] dark:text-gray-500">
+                  Your admin will verify before the job is closed
+                </p>
+              </div>
+            </form>
+          </FormTransition>
+        </div>
+      </div>
     </div>
   );
 }

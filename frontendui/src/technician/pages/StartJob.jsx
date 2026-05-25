@@ -1,11 +1,3 @@
-﻿import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { MapPin, Clock, Play, WifiOff, ChevronRight } from "lucide-react";
-import { getUserById } from "../../shared/utils/mockData";
-import { useTechnicianData } from "../hooks/useTechnicianData";
-import { formatFullDate } from "../../shared/utils/formatDate";
-import Button from "../../shared/components/Button";
-import PriorityBadge from "../../shared/components/PriorityBadge";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -16,33 +8,6 @@ import { getUserById } from "../../shared/utils/mockData";
 export default function StartJob() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { jobs, updateJobStatus } = useTechnicianData();
-  const job = useMemo(() => jobs.find((j) => j.id === id), [jobs, id]);
-
-  const [loading, setLoading] = useState(false);
-  const [networkError, setNetworkError] = useState(false);
-  const [simulateFail, setSimulateFail] = useState(false);
-
-  if (!job) {
-    navigate("/tech/jobs", { replace: true });
-    return null;
-  }
-
-  const client = getUserById(job.clientId);
-  const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(job.location)}`;
-
-  async function handleStart() {
-    setLoading(true);
-    setNetworkError(false);
-    try {
-      if (import.meta.env.DEV && simulateFail) throw new Error("Simulated failure");
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      updateJobStatus(id, "IN_PROGRESS", null);
-      navigate(`/tech/jobs/${id}`, { replace: true });
-    } catch {
-      setNetworkError(true);
-    } finally {
-      setLoading(false);
   const { user } = useAuth();
   const { jobs, updateJobStatus } = useTechnicianData(user?.id);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,7 +18,9 @@ export default function StartJob() {
   if (!job || job.technicianId !== user?.id) {
     return (
       <div className="p-4 text-center">
-        <p className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">Job not found</p>
+        <p className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">
+          Job not found
+        </p>
         <Link
           to="/tech/jobs"
           className="mt-4 inline-block text-[13px] text-brand-accent"
@@ -76,152 +43,121 @@ export default function StartJob() {
   }
 
   return (
-    <div className="space-y-4 px-4 pb-8 pt-5">
-
-      {/* page title */}
-      <div>
-        <h1 className="text-xl font-bold text-gray-900">Start Job</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Review the details before you begin</p>
-      </div>
-
-      {/* job card */}
-      <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">{job.id}</p>
-            <h2 className="text-base font-bold text-gray-900 leading-snug">{job.title}</h2>
-            <p className="text-sm text-gray-400 mt-0.5">{client?.name ?? "Unknown client"}</p>
-          </div>
-          <div className="shrink-0">
-            <PriorityBadge priority={job.priority} />
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-600 leading-relaxed border-t border-slate-100 pt-3">
-          {job.description}
-        </p>
-      </section>
-
-      {/* location */}
-      <a
-        href={mapsUrl}
-        target="_blank"
-        rel="noreferrer"
-        className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
+    <div className="min-h-[60vh] bg-[#F0EDE8] dark:bg-gray-950 flex items-start justify-center py-8 px-6">
+      <div
+        className="w-full max-w-md rounded-[16px] bg-white dark:bg-gray-900 shadow-2 p-6"
+        style={{ margin: "0 24px" }}
       >
-        <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
-          <MapPin size={18} className="text-[#27AE60]" aria-hidden />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Location</p>
-          <p className="text-sm font-medium text-[#2E86AB] mt-0.5 truncate">{job.location}</p>
-        </div>
-        <ChevronRight size={16} className="text-gray-300 shrink-0" aria-hidden />
-      </a>
+        <Link
+          to={`/tech/jobs/${job.id}`}
+          className="fs-focus-ring flex items-center gap-2 text-[13px] font-medium text-[#2E86AB] mb-3"
+        >
+          <ArrowLeft size={16} aria-hidden />
+          Back
+        </Link>
 
-      {/* meta tiles */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Clock size={13} className="text-gray-400" aria-hidden />
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Assigned</p>
-          </div>
-          <p className="text-sm font-semibold text-gray-900">{formatFullDate(job.createdAt)}</p>
-        </div>
-        <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400 mb-1">Category</p>
-          <p className="text-sm font-semibold text-gray-900 capitalize">{job.category ?? "—"}</p>
-        </div>
-      </div>
-
-      {/* network error */}
-      {networkError ? (
-        <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
-          <div className="flex items-center gap-2 mb-1.5">
-            <WifiOff size={15} className="text-red-500" aria-hidden />
-            <p className="text-sm font-semibold text-red-700">Connection failed</p>
-          </div>
-          <p className="text-xs text-red-500 leading-relaxed">
-            Couldn&apos;t reach the server. Check your connection and try again.
-          </p>
-          <button
-            type="button"
-            onClick={handleStart}
-            className="mt-3 h-10 px-4 rounded-xl bg-red-100 text-sm font-semibold text-red-700 active:scale-[0.98] transition-transform"
+        <div className="flex flex-col items-center text-center">
+          <div
+            className="rounded-full grid place-items-center"
+            aria-hidden
+            style={{
+              width: 72,
+              height: 72,
+              background: "linear-gradient(180deg,#EFF6FF,#DBEAFE)",
+              boxShadow: "0 0 0 8px rgba(46,134,171,0.08)",
+              border: "1px solid #BFDBFE",
+            }}
           >
-            Retry
-          </button>
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#2E86AB"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 4v4h6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8h6V4z" />
+            </svg>
+          </div>
+          <h1
+            className="mt-6 text-[22px] font-bold text-[#0F172A] dark:text-gray-50"
+            style={{ letterSpacing: "-0.5px" }}
+          >
+            Start this job?
+          </h1>
+          <p className="mt-2 text-[13px] text-[#374151] dark:text-gray-300">
+            Confirm you have arrived at the site and are ready to begin work on{" "}
+            <span className="font-semibold">{job.title}</span>.
+          </p>
+
+          <div
+            className="mt-4 w-full rounded-[12px] bg-[#F8FAFC] dark:bg-gray-800 border p-4"
+            style={{ border: "1px solid #F1F5F9" }}
+          >
+            <p className="text-[14px] font-semibold text-[#374151] dark:text-gray-200">
+              {job.title}
+            </p>
+            <p className="mt-1 text-[12px] text-[#64748B] dark:text-gray-400">
+              {job.location}
+            </p>
+          </div>
+
+          <div className="mt-5 w-full">
+            <div className="space-y-2">
+              {[
+                "Update status to In Progress",
+                "Notify your admin",
+                "Start the job timer",
+              ].map((text) => (
+                <div key={text} className="flex items-center gap-3">
+                  <div className="h-5 w-5 rounded-full grid place-items-center bg-[#EFF6FF] dark:bg-blue-900/30">
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#2E86AB"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                  <p className="text-[13px] text-[#374151] dark:text-gray-300">
+                    {text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 w-full">
+            <button
+              type="button"
+              onClick={handleStart}
+              disabled={isSubmitting}
+              className="w-full h-13 rounded-[12px] text-white font-semibold"
+              style={{
+                background: "linear-gradient(180deg,#2E86AB,#1A6FA8)",
+                boxShadow: "0 2px 8px rgba(46,134,171,0.35)",
+              }}
+            >
+              {isSubmitting ? "Starting..." : "Start Job Now"}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="w-full h-12 mt-2 rounded-[12px] bg-white dark:bg-gray-800 border text-[#374151] dark:text-gray-300"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-      ) : null}
-
-      {/* dev toggle */}
-      {import.meta.env.DEV ? (
-        <label className="flex items-center gap-2 text-xs text-gray-400">
-          <input
-            type="checkbox"
-            checked={simulateFail}
-            onChange={(e) => setSimulateFail(e.target.checked)}
-          />
-          Simulate network error
-        </label>
-      ) : null}
-
-      {/* CTA */}
-      <Button
-        variant="primary"
-        fullWidth
-        loading={loading}
-        onClick={handleStart}
-        className="!h-14 !rounded-2xl !text-base !font-semibold"
-      >
-        <span className="flex items-center justify-center gap-2">
-          <Play size={16} aria-hidden />
-          Start This Job
-        </span>
-      </Button>
-
-      <p className="text-center text-xs text-gray-400">
-        Your start time will be recorded when you confirm
-      </p>
-    </div>
-  );
-}
-    <div className="space-y-5 p-4">
-      <Link
-        to={`/tech/jobs/${job.id}`}
-        className="fs-focus-ring flex h-11 items-center gap-2 text-[13px] font-medium text-brand-accent"
-      >
-        <ArrowLeft size={16} aria-hidden />
-        Back
-      </Link>
-
-      <section className="fs-card p-5">
-        <h1 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">Start this job?</h1>
-        <p className="mt-2 text-[13px] text-gray-600 dark:text-gray-400">
-          Confirm you have arrived at the site and are ready to begin work on{" "}
-          <span className="font-semibold text-gray-900 dark:text-gray-100">{job.title}</span>.
-        </p>
-        {client && (
-          <p className="mt-1.5 text-[12px] text-gray-400 dark:text-gray-500">{client.name}</p>
-        )}
-        <p className="mt-0.5 text-[12px] text-gray-400 dark:text-gray-500">{job.location}</p>
-      </section>
-
-      <button
-        type="button"
-        onClick={handleStart}
-        disabled={isSubmitting}
-        className="fs-btn-press fs-focus-ring relative flex h-14 w-full items-center justify-center overflow-hidden rounded-[12px] bg-linear-to-b from-[#2E86AB] to-[#1A6FA8] text-[16px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
-      >
-        <span
-          className="pointer-events-none absolute inset-x-0 top-0 h-[40%]"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,0.15), transparent)",
-          }}
-        />
-        {isSubmitting ? "Starting..." : "Confirm Start Job"}
-      </button>
+      </div>
     </div>
   );
 }

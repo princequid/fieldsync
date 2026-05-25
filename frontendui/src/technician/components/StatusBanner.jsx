@@ -9,23 +9,23 @@ import {
 const STYLES = {
   pending: {
     shell:
-      "border-l-[4px] border-l-amber-500 bg-gradient-to-r from-amber-50 to-amber-100/70 text-amber-900 dark:from-amber-950/40 dark:to-gray-900/80 dark:text-amber-200",
-    iconBg: "bg-amber-200/80 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
+      "border-l-[4px] border-l-[#F59E0B] bg-gradient-to-r from-[#FFFBEB] to-[#FEFCE8] text-[#92400E] dark:from-amber-950/40 dark:to-amber-950/20 dark:border-amber-600",
+    iconBg: "bg-[rgba(245,158,11,0.15)] text-[#92400E] dark:bg-amber-900/30",
   },
   progress: {
     shell:
-      "border-l-[4px] border-l-blue-500 bg-gradient-to-r from-blue-50 to-blue-100/70 text-blue-900 dark:from-blue-950/40 dark:to-gray-900/80 dark:text-blue-200",
-    iconBg: "bg-blue-200/80 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
+      "border-l-[4px] border-l-[#3B82F6] bg-gradient-to-r from-[#EFF6FF] to-[#EFF6FF] text-[#1D4ED8] dark:from-blue-950/40 dark:to-blue-950/20 dark:border-blue-600",
+    iconBg: "bg-[rgba(59,130,246,0.15)] text-[#1D4ED8] dark:bg-blue-900/30",
   },
   completed: {
     shell:
-      "border-l-[4px] border-l-green-500 bg-gradient-to-r from-green-50 to-green-100/70 text-green-900 dark:from-green-950/40 dark:to-gray-900/80 dark:text-green-200",
-    iconBg: "bg-green-200/80 text-green-700 dark:bg-green-900/50 dark:text-green-300",
+      "border-l-[4px] border-l-[#22C55E] bg-gradient-to-r from-[#F0FDF4] to-[#DCFCE7] text-green-900 dark:from-green-950/40 dark:to-green-950/20 dark:border-l-[#16A34A]",
+    iconBg: "bg-[rgba(34,197,94,0.15)] text-green-700 dark:bg-green-900/30",
   },
   verified: {
     shell:
-      "border-l-[4px] border-l-brand-accent bg-gradient-to-r from-brand-navy to-[#29496d] text-white dark:from-gray-900 dark:to-brand-navy",
-    iconBg: "bg-white/20 text-white dark:bg-white/10",
+      "border-l-[4px] border-l-[#1E3A5F] bg-gradient-to-r from-[#1E3A5F] to-[#162D4A] text-white",
+    iconBg: "bg-white/10 text-white",
   },
 };
 
@@ -48,10 +48,12 @@ export default function StatusBanner({ job }) {
   if (job.status === "PENDING") {
     return (
       <BannerShell cls={STYLES.pending.shell} iconBg={STYLES.pending.iconBg}>
-        <Timer size={19} className="shrink-0" aria-hidden />
+        <Timer size={20} className="shrink-0" aria-hidden />
         <div>
-          <p className="text-[13px] font-semibold">Waiting for you to start</p>
-          <p className="mt-0.5 text-[11px] opacity-80">
+          <p className="text-[14px] font-semibold text-[#92400E] dark:text-amber-300">
+            Waiting for you to start
+          </p>
+          <p className="mt-1 text-[12px] text-[#B45309] dark:text-amber-400">
             Tap the button below when you arrive on-site
           </p>
         </div>
@@ -62,10 +64,12 @@ export default function StatusBanner({ job }) {
   if (job.status === "IN_PROGRESS" && inProgressEntry) {
     return (
       <BannerShell cls={STYLES.progress.shell} iconBg={STYLES.progress.iconBg}>
-        <Wrench size={19} className="shrink-0" aria-hidden />
+        <Wrench size={20} className="shrink-0" aria-hidden />
         <div>
-          <p className="text-[13px] font-semibold">You&apos;re on this job</p>
-          <p className="mt-0.5 text-[11px] opacity-80">
+          <p className="text-[14px] font-semibold text-[#1D4ED8] dark:text-blue-300">
+            You&apos;re on this job
+          </p>
+          <p className="mt-1 text-[12px] text-[#3B82F6] dark:text-blue-400">
             Started at {formatTime(inProgressEntry.changedAt)} ·{" "}
             {formatElapsed(inProgressEntry.changedAt)}
           </p>
@@ -80,12 +84,12 @@ export default function StatusBanner({ job }) {
         cls={STYLES.completed.shell}
         iconBg={STYLES.completed.iconBg}
       >
-        <CheckCircle2 size={19} className="shrink-0" aria-hidden />
+        <CheckCircle2 size={20} className="shrink-0" aria-hidden />
         <div>
-          <p className="text-[13px] font-semibold">
+          <p className="text-[14px] font-semibold text-green-800 dark:text-green-300">
             Awaiting admin verification
           </p>
-          <p className="mt-0.5 text-[11px] opacity-80">
+          <p className="mt-1 text-[12px] text-green-700 dark:text-green-500">
             Completed at {formatTime(completedEntry.changedAt)}
           </p>
         </div>
@@ -96,10 +100,12 @@ export default function StatusBanner({ job }) {
   if (job.status === "VERIFIED" && verifiedEntry) {
     return (
       <BannerShell cls={STYLES.verified.shell} iconBg={STYLES.verified.iconBg}>
-        <Trophy size={19} className="shrink-0" aria-hidden />
+        <Trophy size={20} className="shrink-0" aria-hidden />
         <div>
-          <p className="text-[13px] font-semibold">Job Verified and Closed</p>
-          <p className="mt-0.5 text-[11px] text-white/70">
+          <p className="text-[14px] font-semibold text-white">
+            Job Verified and Closed
+          </p>
+          <p className="mt-1 text-[12px] text-white/90">
             Admin verified on {formatFullDate(verifiedEntry.changedAt)}
           </p>
         </div>
@@ -116,10 +122,12 @@ function BannerShell({ children, cls, iconBg }) {
   return (
     <div className="px-3 pt-3">
       <div
-        className={`fs-card flex items-start gap-3 rounded-[14px] px-3.5 py-3 ${cls}`}
+        className={`fs-card flex items-start gap-3 rounded-[16px] p-4 ${cls}`}
+        style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
       >
         <span
-          className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full ${iconBg}`}
+          className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full ${iconBg}`}
+          style={{ width: 36, height: 36 }}
         >
           {icon}
         </span>

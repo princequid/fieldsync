@@ -1,82 +1,8 @@
-﻿import { useMemo, useState } from "react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { useAuth } from "../../shared/context/AuthContext";
 import { useTechnicianData } from "../hooks/useTechnicianData";
 import JobCard from "../components/JobCard";
 import EmptyState from "../../shared/components/EmptyState";
-
-const STATUS_ORDER = {
-  IN_PROGRESS: 0,
-  PENDING: 1,
-  COMPLETED: 2,
-  VERIFIED: 3,
-};
-
-const FILTERS = [
-  { key: "ALL", label: "All" },
-  { key: "IN_PROGRESS", label: "Active" },
-  { key: "PENDING", label: "Pending" },
-  { key: "DONE", label: "Done" },
-];
-
-function countFor(jobs, key) {
-  if (key === "ALL") return jobs.length;
-  if (key === "DONE")
-    return jobs.filter(
-      (j) => j.status === "COMPLETED" || j.status === "VERIFIED"
-    ).length;
-  return jobs.filter((j) => j.status === key).length;
-}
-
-function sortJobs(jobs) {
-  return [...jobs].sort(
-    (a, b) =>
-      (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99)
-  );
-}
-
-export default function TechJobs() {
-  const { user } = useAuth();
-  const { jobs } = useTechnicianData(user?.id);
-  const [activeFilter, setActiveFilter] = useState("ALL");
-
-  const filtered = useMemo(() => {
-    let result = [...jobs];
-    if (activeFilter === "IN_PROGRESS")
-      result = result.filter((j) => j.status === "IN_PROGRESS");
-    else if (activeFilter === "PENDING")
-      result = result.filter((j) => j.status === "PENDING");
-    else if (activeFilter === "DONE")
-      result = result.filter(
-        (j) => j.status === "COMPLETED" || j.status === "VERIFIED"
-      );
-    return sortJobs(result);
-  }, [jobs, activeFilter]);
-
-  const emptyMessage = (
-    <EmptyState
-      icon="📋"
-      title="No jobs assigned"
-      subtitle="Your admin will assign jobs to you. Check back soon."
-    />
-  );
-
-  return (
-    <div className="pb-6">
-      {/* header summary */}
-      <div className="px-4 pt-5 pb-3">
-        <h1 className="text-xl font-semibold text-gray-900">My Jobs</h1>
-        <p className="text-sm text-gray-400 mt-0.5">
-          {jobs.length} job{jobs.length !== 1 ? "s" : ""} assigned to you
-        </p>
-      </div>
-
-      {/* filter pills */}
-      <div className="flex gap-2 px-4 pb-4 overflow-x-auto scrollbar-none">
-        {FILTERS.map(({ key, label }) => {
-          const count = countFor(jobs, key);
-          const isActive = activeFilter === key;
-import { SkeletonBlock } from "../../shared/components/Skeleton";
 
 const FILTERS = [
   { key: "ALL", label: "All" },
@@ -96,79 +22,112 @@ export default function Jobs() {
     [jobs, filter],
   );
 
+  const counts = useMemo(() => {
+    const map = { ALL: jobs.length, PENDING: 0, IN_PROGRESS: 0, COMPLETED: 0 };
+    jobs.forEach((j) => {
+      if (j.status === "PENDING") map.PENDING += 1;
+      if (j.status === "IN_PROGRESS") map.IN_PROGRESS += 1;
+      if (j.status === "COMPLETED") map.COMPLETED += 1;
+    });
+    return map;
+  }, [jobs]);
+
+  const buttonsRef = useRef(null);
+  const indicatorRef = useRef(null);
+
+  useEffect(() => {
+    const buttonsContainer = buttonsRef.current;
+    const indicator = indicatorRef.current;
+    if (!buttonsContainer || !indicator) return;
+    const buttons = Array.from(buttonsContainer.querySelectorAll("button"));
+    const activeIndex = buttons.findIndex(
+      (b) => b.getAttribute("data-key") === filter,
+    );
+    const activeButton = buttons[activeIndex] || buttons[0];
+    if (!activeButton) {
+      indicator.style.opacity = "0";
+      return;
+    }
+    const left = activeButton.offsetLeft;
+    const width = activeButton.offsetWidth;
+    indicator.style.left = `${left}px`;
+    indicator.style.width = `${width}px`;
+    indicator.style.opacity = "1";
+  }, [filter, counts]);
+
   return (
-    <div className="space-y-4 py-4">
-      <div className="flex gap-1.5 overflow-x-auto px-3 pb-0.5">
-        {FILTERS.map(({ key, label }) => {
-          const active = filter === key;
-          return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setActiveFilter(key)}
-              className={`flex items-center gap-1.5 shrink-0 h-9 px-4 rounded-full text-sm font-medium transition-all duration-150 ${
-                isActive
-                  ? "bg-[#27AE60] text-white shadow-sm"
-                  : "bg-white border border-slate-200 text-gray-600 hover:border-slate-300"
-              }`}
+    <div className="bg-transparent">
+      {/* Filter row */}
+      <div
+        className="bg-white dark:bg-gray-900 border-b"
+        style={{
+          borderBottom: "1px solid #F1F5F9",
+          boxShadow: "0 1px 0 rgba(0,0,0,0.04)",
+        }}
+      >
+        <div className="relative px-4 py-3">
+          <div className="relative">
+            <div
+              ref={indicatorRef}
+              className="absolute top-3 h-10 rounded-badge bg-[#2E86AB] opacity-0 pointer-events-none transition-all duration-200"
+              style={{ zIndex: 0 }}
+            />
+            <div
+              ref={buttonsRef}
+              className="grid grid-cols-4 gap-2 relative z-10"
             >
-              {label}
-              <span
-                className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${
-                  isActive
-                    ? "bg-white/20 text-white"
-                    : "bg-slate-100 text-gray-500"
-                }`}
-              >
-                {count}
-              </span>
-              onClick={() => setFilter(key)}
-              className={`shrink-0 rounded-badge border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-150 ${
-                active
-                  ? "border-[#27AE60] bg-[#27AE60]/10 text-[#27AE60]"
-                  : "border-black/8 bg-white text-gray-500 hover:border-black/12 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500 dark:hover:border-gray-600 dark:hover:bg-gray-700/80"
-              }`}
-            >
-              {label}
-            </button>
-          );
-        })}
+              {FILTERS.map(({ key, label }) => {
+                const active = filter === key;
+                const count = counts[key] ?? 0;
+                return (
+                  <button
+                    key={key}
+                    data-key={key}
+                    type="button"
+                    onClick={() => setFilter(key)}
+                    className={`w-full rounded-badge px-2 py-2 text-[13px] transition-all duration-150 ${
+                      active
+                        ? "bg-[#2E86AB] text-white font-semibold shadow-[0_1px_4px_rgba(46,134,171,0.3)]"
+                        : "bg-[#F1F5F9] dark:bg-gray-800 text-[#64748B] dark:text-gray-400"
+                    }`}
+                    style={{ borderRadius: 20 }}
+                  >
+                    <span className="flex flex-col items-center justify-center gap-0.5 whitespace-nowrap sm:flex-row sm:gap-1">
+                      <span>{label}</span>
+                      <span
+                        className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 ${
+                          active
+                            ? "bg-transparent text-white"
+                            : "bg-[rgba(0,0,0,0.06)] text-[10px] text-[#0F172A] dark:bg-gray-700 dark:text-gray-200"
+                        }`}
+                      >
+                        <span className="text-[10px] font-medium">{count}</span>
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {filteredJobs.length === 0 ? (
-      {/* job list */}
-      {jobs.length === 0 ? (
-        emptyMessage
-      ) : filtered.length === 0 ? (
-        emptyMessage
-      ) : (
-        <ul className="space-y-3 px-4">
-          {filtered.map((job) => (
-            <li key={job.id}>
-              <JobCard job={job} />
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
       {/* Job list */}
-      {loading ? (
-        <TechnicianJobsSkeleton />
-      ) : filteredJobs.length === 0 ? (
-        <EmptyState
-          icon="📋"
-          title="No jobs in this view"
-          subtitle="Try another filter or check back later for new assignments."
-        />
-      ) : (
-        <div className="space-y-2.5 fs-content-settled">
-          {filteredJobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
-      )}
+      <div className="pt-3 pb-3">
+        {filteredJobs.length === 0 ? (
+          <EmptyState
+            icon="📋"
+            title="No jobs assigned"
+            subtitle="Try another filter or check back later for new assignments."
+          />
+        ) : (
+          <div className="space-y-2.5 fs-content-settled">
+            {filteredJobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
