@@ -5,6 +5,7 @@ import { getClientById, getUserById } from "../../shared/utils/mockData";
 import TechChip from "../components/TechChip";
 import { useAdminData } from "../hooks/useAdminData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
+import { JobDetailPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
 import EmptyState from "../../shared/components/EmptyState";
 import VerifyModal from "../components/modals/VerifyModal";
 import ReassignModal from "../components/modals/ReassignModal";
@@ -68,6 +69,7 @@ export default function JobDetail() {
       error={error}
       thing="job"
       onRetry={refetch}
+      skeleton={() => <JobDetailPageSkeleton />}
       className="min-h-screen bg-brand-bg"
     >
       {!job ? (

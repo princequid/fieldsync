@@ -6,10 +6,13 @@ import {
   useTechnicianData,
 } from "../hooks/useTechnicianData";
 import { getUserById } from "../../shared/utils/mockData";
-import ErrorState from "../../shared/components/ErrorState";
+import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import ThemeToggle from "../../shared/components/ThemeToggle";
 import PageTransitionWrapper from "../../shared/components/PageTransitionWrapper";
-import { SkeletonBlock } from "../../shared/components/Skeleton";
+import {
+  GenericPageSkeleton,
+  TechJobsPageSkeleton,
+} from "../../shared/components/skeletons/PageSkeletons";
 
 const TABS = [
   { path: "/tech/jobs", label: "My Jobs", Icon: ClipboardList },
@@ -109,54 +112,25 @@ function TechMainContent({ transitionKey }) {
 
   return (
     <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-3">
-      {loading ? (
-        <TechLayoutSkeleton pathname={location.pathname} />
-      ) : error ? (
-        <ErrorState thing="jobs" message={error} onRetry={refetch} />
-      ) : (
+      <AsyncPageContent
+        loading={loading}
+        error={error}
+        thing="jobs"
+        onRetry={refetch}
+        skeleton={() => {
+          const pathname = location.pathname;
+          return pathname === "/tech" || pathname.startsWith("/tech/jobs") ? (
+            <TechJobsPageSkeleton />
+          ) : (
+            <GenericPageSkeleton className="px-3 py-4" />
+          );
+        }}
+        className="min-h-[40vh]"
+      >
         <PageTransitionWrapper transitionKey={transitionKey}>
           <Outlet />
         </PageTransitionWrapper>
-      )}
+      </AsyncPageContent>
     </main>
-  );
-}
-
-function TechLayoutSkeleton({ pathname }) {
-  const showJobCards =
-    pathname === "/tech" || pathname.startsWith("/tech/jobs");
-
-  if (!showJobCards) {
-    return (
-      <div className="space-y-4 px-3 py-4">
-        <SkeletonBlock className="h-20 rounded-[16px]" />
-        <SkeletonBlock className="h-20 rounded-[16px]" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-2 px-3 py-4" aria-hidden>
-      <div className="flex gap-2">
-        <SkeletonBlock className="h-7 w-16 rounded-badge" />
-        <SkeletonBlock className="h-7 w-20 rounded-badge" />
-        <SkeletonBlock className="h-7 w-24 rounded-badge" />
-      </div>
-
-      {[1, 2, 3].map((row) => (
-        <div
-          key={row}
-          className="mx-0.5 my-1 flex min-h-20 overflow-hidden rounded-r-[16px] rounded-l-none border border-black/5 bg-white dark:border-gray-800 dark:bg-gray-900"
-          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
-        >
-          <div className="h-auto w-1 shrink-0 bg-slate-200" />
-          <div className="flex-1 space-y-2.5 p-4">
-            <SkeletonBlock className="h-3.5 w-2/3 rounded-md" />
-            <SkeletonBlock className="h-3 w-1/2 rounded-md" />
-            <SkeletonBlock className="h-3 w-2/5 rounded-md" />
-          </div>
-        </div>
-      ))}
-    </div>
   );
 }

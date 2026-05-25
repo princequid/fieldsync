@@ -11,6 +11,7 @@ import { ArrowLeft, Camera } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
 import { useTechnicianData } from "../hooks/useTechnicianData";
 import ErrorState from "../../shared/components/ErrorState";
+import FormTransition from "../../shared/components/FormTransition";
 
 export default function CompleteJob() {
   const { id } = useParams();
@@ -195,6 +196,7 @@ export default function CompleteJob() {
         />
       )}
 
+      <FormTransition submitting={isSubmitting}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <label className="block">
           <span className="fs-label mb-1.5 block text-gray-400 dark:text-gray-500">
@@ -280,6 +282,7 @@ export default function CompleteJob() {
           {isSubmitting ? "Submitting..." : "Submit as Complete"}
         </button>
       </form>
+      </FormTransition>
     </div>
   );
 }

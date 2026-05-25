@@ -7,7 +7,7 @@ import Table from "../../admin/components/Table";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import EmptyState from "../../shared/components/EmptyState";
 import VerifyModal from "../components/modals/VerifyModal";
-import { SkeletonBlock } from "../../shared/components/Skeleton";
+import { AllJobsPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
 
 const PAGE_SIZE = 20;
 
@@ -112,7 +112,7 @@ export default function AllJobs() {
       error={error}
       thing="jobs"
       onRetry={refetch}
-      skeleton={() => <AllJobsSkeleton />}
+      skeleton={() => <AllJobsPageSkeleton />}
       className="fs-admin-page-bg min-h-screen"
     >
       <div className="fs-admin-page-bg min-h-screen px-4 py-6 sm:px-6 lg:px-8">
@@ -295,37 +295,5 @@ export default function AllJobs() {
         />
       )}
     </AsyncPageContent>
-  );
-}
-
-function AllJobsSkeleton() {
-  return (
-    <div
-      className="fs-admin-page-bg min-h-screen px-4 py-6 sm:px-6 lg:px-8"
-      aria-hidden
-    >
-      <div className="mx-auto max-w-7xl space-y-5">
-        <header className="fs-card space-y-2 border border-transparent px-5 py-5 dark:border-gray-800 dark:bg-gray-900">
-          <SkeletonBlock className="h-7 w-40 rounded-md" />
-          <SkeletonBlock className="h-4 w-72 rounded-md" />
-        </header>
-
-        <section className="fs-card border border-transparent p-5 dark:border-gray-800 dark:bg-gray-900">
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((card) => (
-              <div
-                key={card}
-                className="rounded-card border border-black/6 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
-                style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
-              >
-                <SkeletonBlock className="h-4 w-1/3 rounded-md" />
-                <SkeletonBlock className="mt-2 h-3 w-1/2 rounded-md" />
-                <SkeletonBlock className="mt-3 h-3 w-1/4 rounded-md" />
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </div>
   );
 }

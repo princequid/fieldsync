@@ -87,7 +87,7 @@ const FILTERS = [
 
 export default function Jobs() {
   const { user } = useAuth();
-  const { jobs, loading } = useTechnicianData(user?.id);
+  const { jobs } = useTechnicianData(user?.id);
   const [filter, setFilter] = useState("ALL");
 
   const filteredJobs = useMemo(
@@ -98,7 +98,6 @@ export default function Jobs() {
 
   return (
     <div className="space-y-4 py-4">
-      {/* Filter chips */}
       <div className="flex gap-1.5 overflow-x-auto px-3 pb-0.5">
         {FILTERS.map(({ key, label }) => {
           const active = filter === key;
@@ -124,10 +123,10 @@ export default function Jobs() {
                 {count}
               </span>
               onClick={() => setFilter(key)}
-              className={`shrink-0 rounded-badge border px-3.5 py-1.5 text-[12px] font-medium transition-colors ${
+              className={`shrink-0 rounded-badge border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-150 ${
                 active
                   ? "border-[#27AE60] bg-[#27AE60]/10 text-[#27AE60]"
-                  : "border-black/8 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-800"
+                  : "border-black/8 bg-white text-gray-500 hover:border-black/12 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500 dark:hover:border-gray-600 dark:hover:bg-gray-700/80"
               }`}
             >
               {label}
@@ -136,6 +135,7 @@ export default function Jobs() {
         })}
       </div>
 
+      {filteredJobs.length === 0 ? (
       {/* job list */}
       {jobs.length === 0 ? (
         emptyMessage
@@ -163,33 +163,12 @@ export default function Jobs() {
           subtitle="Try another filter or check back later for new assignments."
         />
       ) : (
-        <div className="space-y-2.5">
+        <div className="space-y-2.5 fs-content-settled">
           {filteredJobs.map((job) => (
             <JobCard key={job.id} job={job} />
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function TechnicianJobsSkeleton() {
-  return (
-    <div className="space-y-2" aria-hidden>
-      {[1, 2, 3].map((row) => (
-        <div
-          key={row}
-          className="mx-3 my-1 flex min-h-20 overflow-hidden rounded-r-[16px] rounded-l-none border border-black/5 bg-white dark:border-gray-800 dark:bg-gray-900"
-          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
-        >
-          <div className="w-1 shrink-0 bg-slate-200" />
-          <div className="flex-1 space-y-2.5 p-4">
-            <SkeletonBlock className="h-4 w-2/3 rounded-md" />
-            <SkeletonBlock className="h-3 w-1/2 rounded-md" />
-            <SkeletonBlock className="h-3 w-2/5 rounded-md" />
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
