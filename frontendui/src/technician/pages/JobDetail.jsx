@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, MapPin, Phone } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, Building } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
 import { useTechnicianData } from "../hooks/useTechnicianData";
 import { getUserById } from "../../shared/utils/mockData";
@@ -32,7 +32,9 @@ export default function TechJobDetail() {
   if (!job) {
     return (
       <div className="flex min-h-64 flex-col items-center justify-center px-4 text-center">
-        <p className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">Job not found</p>
+        <p className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">
+          Job not found
+        </p>
         <button
           type="button"
           onClick={() => navigate("/tech/jobs")}
@@ -68,7 +70,9 @@ export default function TechJobDetail() {
         <div className="space-y-3 p-4">
           {/* Job card */}
           <section className="fs-card p-4">
-            <h2 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">{job.title}</h2>
+            <h2 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">
+              {job.title}
+            </h2>
             <p className="mt-1 text-[12px] text-gray-400 dark:text-gray-500">
               {client?.name ?? "Unknown client"}
             </p>
@@ -84,7 +88,7 @@ export default function TechJobDetail() {
             rel="noreferrer"
             className="fs-card flex h-11 items-center gap-3 px-4"
           >
-            <MapPin size={16} className="shrink-0 text-[#27AE60]" aria-hidden />
+            <MapPin size={16} className="shrink-0 text-[#2E86AB]" aria-hidden />
             <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-brand-accent">
               {job.location}
             </span>
@@ -93,14 +97,16 @@ export default function TechJobDetail() {
           {/* Contact */}
           {client && (
             <section className="fs-card p-4">
-              <p className="fs-label text-gray-400 dark:text-gray-500">Contact</p>
+              <p className="fs-label text-gray-400 dark:text-gray-500">
+                Contact
+              </p>
               <p className="mt-2 text-[13px] font-medium text-gray-900 dark:text-gray-100">
                 {client.contactName ?? client.name}
               </p>
               {client.phone && (
                 <a
                   href={`tel:${client.phone.replace(/\s/g, "")}`}
-                  className="mt-2 flex h-11 items-center gap-2 text-[13px] font-medium text-[#27AE60]"
+                  className="mt-2 flex h-11 items-center gap-2 text-[13px] font-medium text-[#2E86AB]"
                 >
                   <Phone size={16} aria-hidden />
                   {client.phone}
@@ -121,7 +127,9 @@ export default function TechJobDetail() {
           {/* Status history */}
           {showTimeline && history.length > 0 && (
             <section className="fs-card p-4">
-              <p className="fs-label text-gray-400 dark:text-gray-500">Status History</p>
+              <p className="fs-label text-gray-400 dark:text-gray-500">
+                Status History
+              </p>
               <ul className="mt-4 space-y-4">
                 {history.map((entry, index) => (
                   <li key={`${entry.status}-${entry.changedAt}-${index}`}>
@@ -227,9 +235,12 @@ function JobActionBar({ job, jobId, navigate }) {
 
 function StatTile({ label, value }) {
   return (
-    <div className="fs-card p-3">
+    <div
+      className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
+      style={{ border: "1px solid #F1F5F9" }}
+    >
       <p className="fs-label text-gray-400 dark:text-gray-500">{label}</p>
-      <div className="mt-1 text-[13px] font-semibold text-gray-900 dark:text-gray-100">
+      <div className="mt-1 text-[13px] font-mono text-[#374151] dark:text-gray-300">
         {value}
       </div>
     </div>

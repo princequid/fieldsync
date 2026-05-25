@@ -18,7 +18,9 @@ export default function StartJob() {
   if (!job || job.technicianId !== user?.id) {
     return (
       <div className="p-4 text-center">
-        <p className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">Job not found</p>
+        <p className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">
+          Job not found
+        </p>
         <Link
           to="/tech/jobs"
           className="mt-4 inline-block text-[13px] text-brand-accent"
@@ -41,42 +43,121 @@ export default function StartJob() {
   }
 
   return (
-    <div className="space-y-5 p-4">
-      <Link
-        to={`/tech/jobs/${job.id}`}
-        className="fs-focus-ring flex h-11 items-center gap-2 text-[13px] font-medium text-brand-accent"
+    <div className="min-h-[60vh] bg-[#F0EDE8] dark:bg-gray-950 flex items-start justify-center py-8 px-6">
+      <div
+        className="w-full max-w-md rounded-[16px] bg-white dark:bg-gray-900 shadow-2 p-6"
+        style={{ margin: "0 24px" }}
       >
-        <ArrowLeft size={16} aria-hidden />
-        Back
-      </Link>
+        <Link
+          to={`/tech/jobs/${job.id}`}
+          className="fs-focus-ring flex items-center gap-2 text-[13px] font-medium text-[#2E86AB] mb-3"
+        >
+          <ArrowLeft size={16} aria-hidden />
+          Back
+        </Link>
 
-      <section className="fs-card p-5">
-        <h1 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">Start this job?</h1>
-        <p className="mt-2 text-[13px] text-gray-600 dark:text-gray-400">
-          Confirm you have arrived at the site and are ready to begin work on{" "}
-          <span className="font-semibold text-gray-900 dark:text-gray-100">{job.title}</span>.
-        </p>
-        {client && (
-          <p className="mt-1.5 text-[12px] text-gray-400 dark:text-gray-500">{client.name}</p>
-        )}
-        <p className="mt-0.5 text-[12px] text-gray-400 dark:text-gray-500">{job.location}</p>
-      </section>
+        <div className="flex flex-col items-center text-center">
+          <div
+            className="rounded-full grid place-items-center"
+            aria-hidden
+            style={{
+              width: 72,
+              height: 72,
+              background: "linear-gradient(180deg,#EFF6FF,#DBEAFE)",
+              boxShadow: "0 0 0 8px rgba(46,134,171,0.08)",
+              border: "1px solid #BFDBFE",
+            }}
+          >
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#2E86AB"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 4v4h6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8h6V4z" />
+            </svg>
+          </div>
+          <h1
+            className="mt-6 text-[22px] font-bold text-[#0F172A] dark:text-gray-50"
+            style={{ letterSpacing: "-0.5px" }}
+          >
+            Start this job?
+          </h1>
+          <p className="mt-2 text-[13px] text-[#374151] dark:text-gray-300">
+            Confirm you have arrived at the site and are ready to begin work on{" "}
+            <span className="font-semibold">{job.title}</span>.
+          </p>
 
-      <button
-        type="button"
-        onClick={handleStart}
-        disabled={isSubmitting}
-        className="fs-btn-press fs-focus-ring relative flex h-14 w-full items-center justify-center overflow-hidden rounded-[12px] bg-linear-to-b from-[#2E86AB] to-[#1A6FA8] text-[16px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
-      >
-        <span
-          className="pointer-events-none absolute inset-x-0 top-0 h-[40%]"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,0.15), transparent)",
-          }}
-        />
-        {isSubmitting ? "Starting..." : "Confirm Start Job"}
-      </button>
+          <div
+            className="mt-4 w-full rounded-[12px] bg-[#F8FAFC] dark:bg-gray-800 border p-4"
+            style={{ border: "1px solid #F1F5F9" }}
+          >
+            <p className="text-[14px] font-semibold text-[#374151] dark:text-gray-200">
+              {job.title}
+            </p>
+            <p className="mt-1 text-[12px] text-[#64748B] dark:text-gray-400">
+              {job.location}
+            </p>
+          </div>
+
+          <div className="mt-5 w-full">
+            <div className="space-y-2">
+              {[
+                "Update status to In Progress",
+                "Notify your admin",
+                "Start the job timer",
+              ].map((text) => (
+                <div key={text} className="flex items-center gap-3">
+                  <div className="h-5 w-5 rounded-full grid place-items-center bg-[#EFF6FF] dark:bg-blue-900/30">
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#2E86AB"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                  <p className="text-[13px] text-[#374151] dark:text-gray-300">
+                    {text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 w-full">
+            <button
+              type="button"
+              onClick={handleStart}
+              disabled={isSubmitting}
+              className="w-full h-13 rounded-[12px] text-white font-semibold"
+              style={{
+                background: "linear-gradient(180deg,#2E86AB,#1A6FA8)",
+                boxShadow: "0 2px 8px rgba(46,134,171,0.35)",
+              }}
+            >
+              {isSubmitting ? "Starting..." : "Start Job Now"}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="w-full h-12 mt-2 rounded-[12px] bg-white dark:bg-gray-800 border text-[#374151] dark:text-gray-300"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
