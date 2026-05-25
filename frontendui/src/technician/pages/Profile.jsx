@@ -1,36 +1,9 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTechnicianData } from "../hooks/useTechnicianData";
+import { LogOut, Mail, Phone, Wrench } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
 import { getUserById } from "../../shared/utils/mockData";
-import { LogOut, Mail, Phone, MapPin, Lock, Zap, Droplets, Wind, Shield, Flame, Wrench, Wifi } from "lucide-react";
-
-const SPECIALISATION_STYLES = {
-  Electrical: { bg: "bg-blue-50", text: "text-blue-800", border: "border-blue-200", icon: <Zap size={12} /> },
-  Plumbing: { bg: "bg-green-50", text: "text-green-800", border: "border-green-200", icon: <Droplets size={12} /> },
-  HVAC: { bg: "bg-amber-50", text: "text-amber-800", border: "border-amber-200", icon: <Wind size={12} /> },
-  Security: { bg: "bg-purple-50", text: "text-purple-800", border: "border-purple-200", icon: <Shield size={12} /> },
-  "Fire safety": { bg: "bg-red-50", text: "text-red-800", border: "border-red-200", icon: <Flame size={12} /> },
-  Mechanical: { bg: "bg-slate-100", text: "text-slate-700", border: "border-slate-200", icon: <Wrench size={12} /> },
-  Networking: { bg: "bg-cyan-50", text: "text-cyan-800", border: "border-cyan-200", icon: <Wifi size={12} /> },
-};
-
-function SpecialisationPill({ label }) {
-  const style = SPECIALISATION_STYLES[label] ?? {
-    bg: "bg-slate-100",
-    text: "text-slate-700",
-    border: "border-slate-200",
-    icon: <Wrench size={12} />,
-  };
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${style.bg} ${style.text} ${style.border}`}
-    >
-      {style.icon}
-      {label}
-    </span>
-  );
-}
+import { useTechnicianData } from "../hooks/useTechnicianData";
 
 export default function Profile() {
   const { user, logout } = useAuth();
@@ -38,12 +11,25 @@ export default function Profile() {
   const profile = getUserById(user?.id);
   const { jobs } = useTechnicianData(user?.id);
   const [showSignOut, setShowSignOut] = useState(false);
-  const [available, setAvailable] = useState(profile?.available ?? true);
+  const presenceStorageKey = `fieldsync_tech_presence_${user?.id ?? "unknown"}`;
+  const [isActive, setIsActive] = useState(() => {
+    try {
+      const stored = localStorage.getItem(presenceStorageKey);
+      if (stored === "active") return true;
+      if (stored === "offline") return false;
+    } catch {
+      // Ignore storage failures and use profile fallback.
+    }
+    return Boolean(profile?.online);
+  });
 
-  const activeJobs = jobs.filter((job) => job.status === "PENDING" || job.status === "IN_PROGRESS").length;
-  const completed = jobs.filter((job) => job.status === "COMPLETED" || job.status === "VERIFIED").length;
+  const activeJobs = jobs.filter(
+    (job) => job.status === "PENDING" || job.status === "IN_PROGRESS",
+  ).length;
+  const completed = jobs.filter(
+    (job) => job.status === "COMPLETED" || job.status === "VERIFIED",
+  ).length;
   const verified = jobs.filter((job) => job.status === "VERIFIED").length;
-  const specialisations = profile?.specialisations ?? [];
 
   useEffect(() => {
     try {
@@ -59,18 +45,41 @@ export default function Profile() {
   }
 
   return (
-    <div className="pb-10">
-      <div className="mx-4 mt-6 rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
-        <div className="h-16 bg-gradient-to-r from-[#1E3A5F] to-[#2E86AB]" />
-        <div className="px-5 pb-5 -mt-8">
-          <div className="w-16 h-16 rounded-full border-4 border-white bg-[#27AE60] flex items-center justify-center mb-3 shadow-sm">
-            <span className="text-xl font-bold text-white">{profile?.initials ?? "T"}</span>
+    <div
+      style={{ background: "#F0EDE8" }}
+      className="min-h-screen dark:bg-gray-950"
+    >
+      {/* Header */}
+      <div
+        className="bg-white dark:bg-gray-900"
+        style={{ borderBottom: "1px solid #F1F5F9", padding: 24 }}
+      >
+        <div className="flex flex-col items-center">
+          <div
+            className="rounded-full grid place-items-center"
+            aria-hidden
+            style={{
+              width: 72,
+              height: 72,
+              background: "linear-gradient(135deg,#2E86AB,#1A6FA8)",
+              border: "3px solid #2E86AB",
+              boxShadow: "0 0 0 3px #FFFFFF, 0 0 0 6px #2E86AB",
+            }}
+          >
+            <span className="text-white text-[24px] font-bold">
+              {profile?.initials ?? "T"}
+            </span>
           </div>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h1 className="text-lg font-bold text-gray-900 leading-tight">{profile?.name ?? user?.email}</h1>
-              <p className="text-xs text-gray-400 mt-0.5">{profile?.employeeId ?? "Field Technician"} · SwiftFix</p>
-            </div>
+          <h1
+            className="mt-3 text-[18px] font-bold text-[#0F172A] dark:text-gray-50"
+            style={{ letterSpacing: "-0.3px" }}
+          >
+            {profile?.name ?? user?.email}
+          </h1>
+          <p className="mt-1 text-[13px] text-[#64748B] dark:text-gray-400">
+            {profile?.specialty ?? "Field Technician"}
+          </p>
+          <div className="mt-3">
             <button
               type="button"
               onClick={() => setIsActive((current) => !current)}
@@ -81,33 +90,24 @@ export default function Profile() {
                   : "bg-[#F8FAFC] dark:bg-gray-800 text-[#64748B] dark:text-gray-300 border-[#E2E8F0] dark:border-gray-700"
               }`}
             >
-              <span
-                className={`relative inline-flex w-8 h-4 rounded-full transition-colors duration-200 ${
-                  available ? "bg-[#27AE60]" : "bg-slate-300"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white transition-transform duration-200 ${
-                    available ? "translate-x-4" : "translate-x-0"
-                  }`}
-                />
-              </span>
-              {available ? "Available" : "Unavailable"}
+              {isActive ? "Active" : "Offline"}
             </button>
           </div>
         </div>
       </div>
 
-      <div className="space-y-3 px-4 mt-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <p className="text-2xl font-bold text-[#27AE60]">{completed}</p>
-            <p className="text-xs text-gray-400 mt-1">Completed</p>
-          </div>
-          <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <p className="text-2xl font-bold text-[#2E86AB]">{activeJobs}</p>
-            <p className="text-xs text-gray-400 mt-1">Active now</p>
-          </div>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3" style={{ margin: "8px 12px 0" }}>
+        <div
+          className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
+          style={{ border: "1px solid #F1F5F9" }}
+        >
+          <p className="text-[22px] font-bold text-[#0F172A] dark:text-gray-50">
+            {activeJobs}
+          </p>
+          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500 uppercase tracking-wide">
+            Active
+          </p>
         </div>
         <div
           className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
@@ -134,44 +134,32 @@ export default function Profile() {
         </div>
       </div>
 
-        <section className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-100">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Contact info</p>
-          </div>
-          <InfoRow
-            icon={<Mail size={14} className="text-[#2E86AB]" />}
-            iconBg="bg-blue-50"
-            label="Email"
-            value={profile?.email ?? user?.email ?? "—"}
-          />
-          <InfoRow
-            icon={<Phone size={14} className="text-[#27AE60]" />}
-            iconBg="bg-green-50"
-            label="Phone"
-            value={profile?.phone || "—"}
-          />
-          <InfoRow
-            icon={<MapPin size={14} className="text-slate-400" />}
-            iconBg="bg-slate-100"
-            label="Base location"
-            value={profile?.location ?? "Accra, Ghana"}
-            last
-          />
-        </section>
-
-        <section className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Specialisations</p>
-            <span className="flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">
-              <Lock size={10} aria-hidden />
-              Admin only
-            </span>
-          </div>
-          {specialisations.length > 0 ? (
-            <div className="px-4 py-4 flex flex-wrap gap-2">
-              {specialisations.map((s) => (
-                <SpecialisationPill key={s} label={s} />
-              ))}
+      {/* Info section */}
+      <div style={{ margin: "8px 12px 0" }}>
+        <div
+          className="rounded-[12px] bg-white dark:bg-gray-900"
+          style={{ border: "1px solid #F1F5F9" }}
+        >
+          {profile?.specialty && (
+            <div
+              className="flex items-center"
+              style={{
+                height: 52,
+                padding: "0 16px",
+                borderBottom: "1px solid #F8FAFC",
+              }}
+            >
+              <div className="h-7 w-7 rounded-full grid place-items-center bg-[#F8FAFC] dark:bg-gray-800 mr-4">
+                <Wrench size={16} className="text-[#94A3B8]" />
+              </div>
+              <div>
+                <div className="text-[11px] uppercase tracking-wide text-[#94A3B8]">
+                  Specialty
+                </div>
+                <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
+                  {profile.specialty}
+                </div>
+              </div>
             </div>
           )}
           {profile?.email && (
@@ -191,18 +179,38 @@ export default function Profile() {
               </div>
             </div>
           )}
-          <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center gap-2">
-            <Lock size={11} className="text-gray-300 shrink-0" aria-hidden />
-            <p className="text-xs text-gray-400">
-              Specialisations are assigned by your admin and cannot be edited here.
-            </p>
-          </div>
-        </section>
+          {profile?.phone && (
+            <div
+              className="flex items-center"
+              style={{ height: 52, padding: "0 16px" }}
+            >
+              <div className="h-7 w-7 rounded-full grid place-items-center bg-[#F8FAFC] dark:bg-gray-800 mr-4">
+                <Phone size={16} className="text-[#94A3B8]" />
+              </div>
+              <div>
+                <div className="text-[11px] uppercase tracking-wide text-[#94A3B8]">
+                  Phone
+                </div>
+                <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
+                  {profile.phone}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
+      {/* Sign-out button */}
+      <div style={{ margin: "12px" }}>
         <button
           type="button"
           onClick={() => setShowSignOut(true)}
-          className="w-full h-12 rounded-2xl border border-red-100 bg-red-50 flex items-center justify-center gap-2 text-sm font-medium text-red-600 hover:bg-red-100 transition-colors active:scale-[0.98]"
+          className="w-full h-12 rounded-[12px] text-[14px] font-medium"
+          style={{
+            background: "#FEF2F2",
+            border: "1px solid #FECACA",
+            color: "#DC2626",
+          }}
         >
           <div className="flex items-center justify-center gap-2">
             <LogOut size={16} />
@@ -211,82 +219,68 @@ export default function Profile() {
         </button>
       </div>
 
+      {/* Sign-out confirmation sheet */}
       {showSignOut && (
-        <SignOutSheet onConfirm={handleSignOut} onClose={() => setShowSignOut(false)} />
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center"
+          style={{ background: "rgba(0,0,0,0.5)" }}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 480,
+              background: "white",
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              padding: 20,
+              paddingBottom: 36,
+            }}
+            className="dark:bg-gray-900"
+          >
+            <div
+              className="mx-auto w-10 h-1.5 rounded-full"
+              style={{ background: "#E2E8F0", marginBottom: 12 }}
+            />
+            <h2 className="text-[18px] font-bold text-[#0F172A] dark:text-gray-50 text-center">
+              Sign Out?
+            </h2>
+            <p className="mt-2 text-[14px] text-[#64748B] dark:text-gray-400 text-center">
+              You will need to sign in again to access your jobs.
+            </p>
+            <div className="mt-5">
+              <button
+                onClick={handleSignOut}
+                className="w-full h-12 rounded-[12px] text-white font-semibold"
+                style={{
+                  background: "linear-gradient(180deg,#EF4444,#DC2626)",
+                }}
+              >
+                Yes, Sign Out
+              </button>
+              <button
+                onClick={() => setShowSignOut(false)}
+                className="w-full h-12 mt-2 rounded-[12px] bg-[#F8FAFC] text-[#374151]"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
 }
 
-function InfoRow({ icon, iconBg, label, value, last }) {
-  return (
-    <div className={`flex items-center gap-3 px-4 py-3.5 ${!last ? "border-b border-slate-100" : ""}`}>
-      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}>
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-xs text-gray-400">{label}</p>
-        <p className="text-sm text-gray-800 mt-0.5 truncate">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function SignOutSheet({ onConfirm, onClose }) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    requestAnimationFrame(() => setVisible(true));
-  }, []);
-
-  function handleClose() {
-    setVisible(false);
-    setTimeout(onClose, 280);
-  }
-
-  return (
-    <>
-      <div
-        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
-        onClick={handleClose}
-      />
-      <div
-        className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl bg-white px-4 pb-10 pt-4 shadow-2xl transition-transform duration-300 ease-out ${
-          visible ? "translate-y-0" : "translate-y-full"
-        }`}
-      >
-        <div className="mx-auto mb-5 h-1 w-8 rounded-full bg-slate-200" />
-        <h2 className="text-center text-xl font-bold text-gray-900">Sign Out?</h2>
-        <p className="mt-2 text-center text-sm text-gray-400">
-          You&apos;ll need to log back in to see your jobs.
-        </p>
-        <div className="mt-6 space-y-3">
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="w-full rounded-2xl bg-red-600 text-sm font-semibold text-white hover:bg-red-700 transition-colors active:scale-[0.98]"
-            style={{ minHeight: "52px" }}
-          >
-            Yes, Sign Out
-          </button>
-          <button
-            type="button"
-            onClick={handleClose}
-            className="w-full rounded-2xl border border-slate-200 bg-white text-sm font-medium text-gray-700 hover:bg-slate-50 transition-colors"
-            style={{ minHeight: "52px" }}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </>
-  );
-}
-
 function ProfileStatTile({ label, value, accent }) {
   return (
-    <div className="rounded-2xl border border-black/6 bg-white p-3 text-center dark:border-gray-800 dark:bg-gray-900" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-      <p className="text-[18px] font-bold leading-tight" style={{ color: accent }}>
+    <div
+      className="rounded-card border border-black/6 bg-white p-3 text-center dark:border-gray-800 dark:bg-gray-900"
+      style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}
+    >
+      <p
+        className="text-[18px] font-bold leading-tight"
+        style={{ color: accent }}
+      >
         {value}
       </p>
       <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
