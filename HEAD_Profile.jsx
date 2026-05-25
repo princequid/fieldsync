@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTechnicianData } from "../hooks/useTechnicianData";
 import { useAuth } from "../../shared/context/AuthContext";
@@ -7,9 +7,9 @@ import { LogOut, Mail, Phone, MapPin, Lock, Zap, Droplets, Wind, Shield, Flame, 
 
 const SPECIALISATION_STYLES = {
   Electrical: { bg: "bg-blue-50", text: "text-blue-800", border: "border-blue-200", icon: <Zap size={12} /> },
-  Plumbing: { bg: "bg-green-50", text: "text-green-800", border: "border-green-200", icon: <Droplets size={12} /> },
-  HVAC: { bg: "bg-amber-50", text: "text-amber-800", border: "border-amber-200", icon: <Wind size={12} /> },
-  Security: { bg: "bg-purple-50", text: "text-purple-800", border: "border-purple-200", icon: <Shield size={12} /> },
+  Plumbing:   { bg: "bg-green-50", text: "text-green-800", border: "border-green-200", icon: <Droplets size={12} /> },
+  HVAC:       { bg: "bg-amber-50", text: "text-amber-800", border: "border-amber-200", icon: <Wind size={12} /> },
+  Security:   { bg: "bg-purple-50", text: "text-purple-800", border: "border-purple-200", icon: <Shield size={12} /> },
   "Fire safety": { bg: "bg-red-50", text: "text-red-800", border: "border-red-200", icon: <Flame size={12} /> },
   Mechanical: { bg: "bg-slate-100", text: "text-slate-700", border: "border-slate-200", icon: <Wrench size={12} /> },
   Networking: { bg: "bg-cyan-50", text: "text-cyan-800", border: "border-cyan-200", icon: <Wifi size={12} /> },
@@ -32,26 +32,44 @@ function SpecialisationPill({ label }) {
   );
 }
 
+export default function TechProfile() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const { jobs } = useTechnicianData(user?.id);
+  const userData = getUserById(user?.id);
+  const [showSheet, setShowSheet] = useState(false);
+
+  // availability toggle GÇö reads from userData, technician can flip it locally
+  const [available, setAvailable] = useState(userData?.available ?? true);
+
+  const completedThisMonth = userData?.completedThisMonth ?? 0;
+  const avgDuration = userData?.avgDurationHours ?? null;
+  const activeNow = jobs.filter(
+    (j) => j.status === "IN_PROGRESS" || j.status === "PENDING"
+  ).length;
+
+  const specialisations = userData?.specialisations ?? [];
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { LogOut, Mail, Phone, Wrench } from "lucide-react";
+import { useAuth } from "../../shared/context/AuthContext";
+import { getUserById } from "../../shared/utils/mockData";
+import { useTechnicianData } from "../hooks/useTechnicianData";
+
 export default function Profile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const profile = getUserById(user?.id);
   const { jobs } = useTechnicianData(user?.id);
   const [showSignOut, setShowSignOut] = useState(false);
-  const [available, setAvailable] = useState(profile?.available ?? true);
 
-  const activeJobs = jobs.filter((job) => job.status === "PENDING" || job.status === "IN_PROGRESS").length;
-  const completed = jobs.filter((job) => job.status === "COMPLETED" || job.status === "VERIFIED").length;
+  const activeJobs = jobs.filter(
+    (job) => job.status === "PENDING" || job.status === "IN_PROGRESS",
+  ).length;
+  const completed = jobs.filter(
+    (job) => job.status === "COMPLETED" || job.status === "VERIFIED",
+  ).length;
   const verified = jobs.filter((job) => job.status === "VERIFIED").length;
-  const specialisations = profile?.specialisations ?? [];
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(presenceStorageKey, isActive ? "active" : "offline");
-    } catch {
-      // Ignore storage failures so UI still works.
-    }
-  }, [isActive, presenceStorageKey]);
 
   function handleSignOut() {
     logout();
@@ -60,27 +78,42 @@ export default function Profile() {
 
   return (
     <div className="pb-10">
+
+      {/* hero card */}
       <div className="mx-4 mt-6 rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+
+        {/* coloured top band */}
         <div className="h-16 bg-gradient-to-r from-[#1E3A5F] to-[#2E86AB]" />
+
         <div className="px-5 pb-5 -mt-8">
+          {/* avatar with ring */}
           <div className="w-16 h-16 rounded-full border-4 border-white bg-[#27AE60] flex items-center justify-center mb-3 shadow-sm">
-            <span className="text-xl font-bold text-white">{profile?.initials ?? "T"}</span>
+            <span className="text-xl font-bold text-white">
+              {userData?.initials ?? "T"}
+            </span>
           </div>
+
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h1 className="text-lg font-bold text-gray-900 leading-tight">{profile?.name ?? user?.email}</h1>
-              <p className="text-xs text-gray-400 mt-0.5">{profile?.employeeId ?? "Field Technician"} Â· SwiftFix</p>
+              <h1 className="text-lg font-bold text-gray-900 leading-tight">
+                {userData?.name ?? user?.email}
+              </h1>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {userData?.employeeId ?? "Field Technician"} -+ SwiftFix
+              </p>
             </div>
+
+            {/* availability toggle GÇö technician can tap this */}
             <button
               type="button"
-              onClick={() => setIsActive((current) => !current)}
-              aria-pressed={isActive}
-              className={`inline-flex h-11 items-center justify-center rounded-badge border px-4 text-[13px] font-semibold transition-colors ${
-                isActive
-                  ? "bg-[#EFF6FF] dark:bg-blue-900/30 text-[#2E86AB] dark:text-blue-300 border-[#BFDBFE] dark:border-blue-800"
-                  : "bg-[#F8FAFC] dark:bg-gray-800 text-[#64748B] dark:text-gray-300 border-[#E2E8F0] dark:border-gray-700"
+              onClick={() => setAvailable((v) => !v)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 ${
+                available
+                  ? "bg-green-50 border-green-200 text-green-700"
+                  : "bg-slate-100 border-slate-200 text-slate-500"
               }`}
             >
+              {/* toggle track */}
               <span
                 className={`relative inline-flex w-8 h-4 rounded-full transition-colors duration-200 ${
                   available ? "bg-[#27AE60]" : "bg-slate-300"
@@ -99,41 +132,20 @@ export default function Profile() {
       </div>
 
       <div className="space-y-3 px-4 mt-3">
+
+        {/* stats */}
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <p className="text-2xl font-bold text-[#27AE60]">{completed}</p>
-            <p className="text-xs text-gray-400 mt-1">Completed</p>
+            <p className="text-2xl font-bold text-[#27AE60]">{completedThisMonth}</p>
+            <p className="text-xs text-gray-400 mt-1">Completed this month</p>
           </div>
           <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <p className="text-2xl font-bold text-[#2E86AB]">{activeJobs}</p>
-            <p className="text-xs text-gray-400 mt-1">Active now</p>
+            <p className="text-2xl font-bold text-[#2E86AB]">{activeNow}</p>
+            <p className="text-xs text-gray-400 mt-1">Active jobs now</p>
           </div>
         </div>
-        <div
-          className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
-          style={{ border: "1px solid #F1F5F9" }}
-        >
-          <p className="text-[22px] font-bold text-[#2E86AB]">{completed}</p>
-          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500 uppercase tracking-wide">
-            Completed
-          </p>
-        </div>
-        <div
-          className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
-          style={{ border: "1px solid #F1F5F9" }}
-        >
-          <p
-            className="text-[22px] font-bold"
-            style={{ color: verified > 0 ? "#F59E0B" : "#0F172A" }}
-          >
-            {verified}
-          </p>
-          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500 uppercase tracking-wide">
-            Verified
-          </p>
-        </div>
-      </div>
 
+        {/* contact info */}
         <section className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100">
             <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Contact info</p>
@@ -142,23 +154,24 @@ export default function Profile() {
             icon={<Mail size={14} className="text-[#2E86AB]" />}
             iconBg="bg-blue-50"
             label="Email"
-            value={profile?.email ?? user?.email ?? "â€”"}
+            value={userData?.email ?? user?.email ?? "GÇö"}
           />
           <InfoRow
             icon={<Phone size={14} className="text-[#27AE60]" />}
             iconBg="bg-green-50"
             label="Phone"
-            value={profile?.phone || "â€”"}
+            value={userData?.phone || "GÇö"}
           />
           <InfoRow
             icon={<MapPin size={14} className="text-slate-400" />}
             iconBg="bg-slate-100"
             label="Base location"
-            value={profile?.location ?? "Accra, Ghana"}
+            value={userData?.location ?? "Accra, Ghana"}
             last
           />
         </section>
 
+        {/* specialisations GÇö read only, set by admin */}
         <section className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
             <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Specialisations</p>
@@ -167,30 +180,20 @@ export default function Profile() {
               Admin only
             </span>
           </div>
+
           {specialisations.length > 0 ? (
             <div className="px-4 py-4 flex flex-wrap gap-2">
               {specialisations.map((s) => (
                 <SpecialisationPill key={s} label={s} />
               ))}
             </div>
-          )}
-          {profile?.email && (
-            <div
-              className="flex items-center"
-              style={{
-                height: 52,
-                padding: "0 16px",
-                borderBottom: "1px solid #F8FAFC",
-              }}
-            >
-              <div className="h-7 w-7 rounded-full grid place-items-center bg-[#F8FAFC] dark:bg-gray-800 mr-4">
-                <Mail size={16} className="text-[#94A3B8]" />
-              </div>
-              <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
-                {profile.email}
-              </div>
+          ) : (
+            <div className="px-4 py-4">
+              <p className="text-sm text-gray-400">No specialisations assigned yet.</p>
             </div>
           )}
+
+          {/* admin notice */}
           <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center gap-2">
             <Lock size={11} className="text-gray-300 shrink-0" aria-hidden />
             <p className="text-xs text-gray-400">
@@ -199,20 +202,109 @@ export default function Profile() {
           </div>
         </section>
 
+        {/* sign out */}
         <button
           type="button"
-          onClick={() => setShowSignOut(true)}
+          onClick={() => setShowSheet(true)}
           className="w-full h-12 rounded-2xl border border-red-100 bg-red-50 flex items-center justify-center gap-2 text-sm font-medium text-red-600 hover:bg-red-100 transition-colors active:scale-[0.98]"
         >
-          <div className="flex items-center justify-center gap-2">
-            <LogOut size={16} />
-            Sign out
-          </div>
+          <LogOut size={15} aria-hidden />
+          Sign Out
         </button>
       </div>
 
+      {showSheet && (
+        <SignOutSheet onConfirm={handleSignOut} onClose={() => setShowSheet(false)} />
+    <div className="space-y-4 p-4">
+      {/* Profile card */}
+      <section className="fs-card flex items-center gap-4 p-5">
+        <div
+          className="grid h-16 w-16 shrink-0 place-items-center rounded-full border-[3px] border-[#27AE60] text-[17px] font-bold text-white"
+          style={{ backgroundColor: "#27AE60", boxShadow: "0 0 0 3px #FFFFFF" }}
+        >
+          {profile?.initials ?? "T"}
+        </div>
+        <div>
+          <h1 className="text-[16px] font-bold text-gray-900 dark:text-gray-100">
+            {profile?.name ?? user?.email}
+          </h1>
+          <p className="text-[12px] text-gray-400 dark:text-gray-500">
+            {profile?.specialty ?? "Field Technician"}
+          </p>
+        </div>
+      </section>
+
+      <section className="grid grid-cols-3 gap-2.5">
+        <ProfileStatTile label="Active" value={activeJobs} accent="#2E86AB" />
+        <ProfileStatTile label="Completed" value={completed} accent="#22C55E" />
+        <ProfileStatTile label="Verified" value={verified} accent="#1E3A5F" />
+      </section>
+
+      {/* Contact info */}
+      <section className="fs-card divide-y divide-black/5 dark:divide-gray-800">
+        {profile?.specialty && (
+          <div className="flex items-center gap-3 px-4 py-3 text-[13px] text-gray-700 dark:text-gray-300">
+            <Wrench size={16} className="text-gray-400 dark:text-gray-500" aria-hidden />
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                Specialty
+              </p>
+              <p className="mt-0.5 font-medium">{profile.specialty}</p>
+            </div>
+          </div>
+        )}
+        {profile?.email && (
+          <div className="flex items-center gap-3 px-4 py-3 text-[13px] text-gray-700 dark:text-gray-300">
+            <Mail size={16} className="text-gray-400 dark:text-gray-500" aria-hidden />
+            {profile.email}
+          </div>
+        )}
+        {profile?.phone && (
+          <div className="flex items-center gap-3 px-4 py-3 text-[13px] text-gray-700 dark:text-gray-300">
+            <Phone size={16} className="text-gray-400 dark:text-gray-500" aria-hidden />
+            {profile.phone}
+          </div>
+        )}
+      </section>
+
+      {/* Sign-out button */}
+      <button
+        type="button"
+        onClick={() => setShowSignOut(true)}
+        className="fs-btn-press fs-focus-ring flex h-11 w-full items-center justify-center gap-2 rounded-button border border-red-200 bg-white text-[13px] font-medium text-red-600 dark:border-red-800 dark:bg-gray-900 dark:text-red-400"
+      >
+        <LogOut size={16} aria-hidden />
+        Sign out
+      </button>
+
+      {/* Sign-out confirmation sheet */}
       {showSignOut && (
-        <SignOutSheet onConfirm={handleSignOut} onClose={() => setShowSignOut(false)} />
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/35 p-4 backdrop-blur-sm sm:items-center">
+          <div className="animate-sheet-up w-full max-w-sm rounded-modal border border-black/6 bg-white p-5 shadow-4 dark:border-gray-700 dark:bg-gray-900">
+            <h2 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">
+              Sign out?
+            </h2>
+            <p className="mt-2 text-[13px] text-gray-500 dark:text-gray-400">
+              You will need to sign in again to access your jobs.
+            </p>
+            <div className="mt-5 flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setShowSignOut(false)}
+                className="fs-btn-press fs-focus-ring flex-1 rounded-button border border-black/8 bg-white py-2.5 text-[13px] font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="fs-btn-press fs-focus-ring flex-1 rounded-button bg-red-600 py-2.5 text-[13px] font-medium text-white"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -282,11 +374,16 @@ function SignOutSheet({ onConfirm, onClose }) {
     </>
   );
 }
-
 function ProfileStatTile({ label, value, accent }) {
   return (
-    <div className="rounded-2xl border border-black/6 bg-white p-3 text-center dark:border-gray-800 dark:bg-gray-900" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-      <p className="text-[18px] font-bold leading-tight" style={{ color: accent }}>
+    <div
+      className="rounded-card border border-black/6 bg-white p-3 text-center dark:border-gray-800 dark:bg-gray-900"
+      style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}
+    >
+      <p
+        className="text-[18px] font-bold leading-tight"
+        style={{ color: accent }}
+      >
         {value}
       </p>
       <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
