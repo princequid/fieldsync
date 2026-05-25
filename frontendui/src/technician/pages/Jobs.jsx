@@ -92,12 +92,12 @@ export default function Jobs() {
                     }`}
                     style={{ borderRadius: 20 }}
                   >
-                    <span className="flex items-center justify-center gap-1 whitespace-nowrap">
+                    <span className="flex flex-col items-center justify-center gap-0.5 whitespace-nowrap sm:flex-row sm:gap-1">
                       <span>{label}</span>
                       <span
                         className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 ${
                           active
-                            ? "bg-[rgba(255,255,255,0.25)] text-white"
+                            ? "bg-transparent text-white"
                             : "bg-[rgba(0,0,0,0.06)] text-[10px] text-[#0F172A] dark:bg-gray-700 dark:text-gray-200"
                         }`}
                       >

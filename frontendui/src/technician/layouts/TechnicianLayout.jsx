@@ -58,12 +58,6 @@ export default function TechnicianLayout() {
 }
 
 function NavTabs({ currentPath }) {
-  const { jobs } = useTechnicianData();
-
-  const activeJobCount = (jobs || []).filter(
-    (job) => job.status === "PENDING" || job.status === "IN_PROGRESS",
-  ).length;
-
   return (
     <nav
       className="shrink-0 bg-white dark:bg-gray-900 dark:border-gray-800"
@@ -75,38 +69,32 @@ function NavTabs({ currentPath }) {
         boxShadow: "0 -1px 0 rgba(0,0,0,0.04), 0 -4px 12px rgba(0,0,0,0.03)",
       }}
     >
-      <div className="flex h-full">
+      <div className="grid h-full grid-cols-2">
         {TABS.map(({ path, label, Icon }) => {
           const active = isTabActive(currentPath, path);
-          const countLabel = path === "/tech/jobs" ? activeJobCount : "1";
           return (
             <Link
               key={path}
               to={path}
-              className="fs-focus-ring w-1/2 flex h-full min-h-11 flex-col items-center justify-center gap-0.5 px-1 transition-all duration-150 ease-in-out"
+              className="fs-focus-ring flex h-full min-h-11 flex-col items-center justify-center gap-0.5 px-1 transition-all duration-150 ease-in-out"
             >
-              <span className="flex flex-col items-center justify-center gap-0.5 sm:flex-row sm:gap-1.5">
+              <span className="flex w-full flex-col items-center justify-center gap-0.5 text-center">
                 <span
                   className={`font-medium transition-colors duration-150 ${
-                    active ? "text-[#2E86AB]" : "text-[#94A3B8] dark:text-gray-600"
+                    active
+                      ? "text-[#2E86AB]"
+                      : "text-[#94A3B8] dark:text-gray-600"
                   }`}
                   style={{
-                    fontSize: "clamp(9px, 2.6vw, 11px)",
+                    fontSize: "clamp(8px, 2.1vw, 10px)",
                     lineHeight: 1,
-                    maxWidth: "100%",
+                    maxWidth: "clamp(44px, 12vw, 60px)",
+                    width: "100%",
                     whiteSpace: "nowrap",
+                    textAlign: "center",
                   }}
                 >
                   {label}
-                </span>
-                <span
-                  className={`inline-flex items-center justify-center rounded-badge px-2 py-0.5 text-[10px] font-semibold transition-colors duration-150 ${
-                    active
-                      ? "bg-[rgba(46,134,171,0.12)] text-[#2E86AB]"
-                      : "bg-[#F1F5F9] text-[#64748B] dark:bg-gray-800 dark:text-gray-400"
-                  }`}
-                >
-                  {countLabel}
                 </span>
               </span>
               <span
@@ -114,19 +102,24 @@ function NavTabs({ currentPath }) {
                   active ? "bg-[rgba(46,134,171,0.12)]" : ""
                 }`}
                 style={{
-                  width: "clamp(30px, 8vw, 36px)",
-                  height: "clamp(30px, 8vw, 36px)",
+                  width: "clamp(32px, 8vw, 38px)",
+                  height: "clamp(32px, 8vw, 38px)",
                 }}
               >
                 <Icon
-                  size={18}
+                  size={"clamp(16px, 4vw, 18px)"}
                   className={
-                    active ? "text-[#2E86AB]" : "text-[#94A3B8] dark:text-gray-600"
+                    active
+                      ? "text-[#2E86AB]"
+                      : "text-[#94A3B8] dark:text-gray-600"
                   }
                 />
               </span>
               {active && (
-                <span style={{ height: 3, width: 16 }} className="mt-1 rounded-full bg-[#2E86AB] mx-auto" />
+                <span
+                  style={{ height: 3, width: 16 }}
+                  className="mt-1 rounded-full bg-[#2E86AB] mx-auto"
+                />
               )}
             </Link>
           );

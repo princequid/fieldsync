@@ -26,13 +26,13 @@ export default function TechNavbar({ pageTitle }) {
 
   if (isRoot) {
     if (pathname === "/tech/jobs") {
-      const count = (jobs || []).length;
       title = "My Jobs";
-      subtitle = `${count} assigned job${count === 1 ? "" : "s"}`;
+      subtitle = "";
     }
     if (pathname === "/tech/profile") {
       title = "Profile";
-      subtitle = user?.role === "TECHNICIAN" ? "Field Technician" : (user?.role ?? "");
+      subtitle =
+        user?.role === "TECHNICIAN" ? "Field Technician" : (user?.role ?? "");
     }
   } else {
     if (job) {
@@ -70,7 +70,10 @@ export default function TechNavbar({ pageTitle }) {
   );
 
   const avatar = (
-    <div className="flex items-center justify-center" style={{ width: 60, height: 60 }}>
+    <div
+      className="flex items-center justify-center"
+      style={{ width: 60, height: 60 }}
+    >
       <div
         aria-hidden
         style={{
@@ -84,7 +87,9 @@ export default function TechNavbar({ pageTitle }) {
           boxShadow: "0 0 0 2px rgba(46,134,171,0.4)",
         }}
       >
-        <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>{user?.initials ?? "T"}</span>
+        <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>
+          {user?.initials ?? "T"}
+        </span>
       </div>
     </div>
   );
@@ -115,7 +120,10 @@ export default function TechNavbar({ pageTitle }) {
         <div className="w-15 h-15 flex items-center justify-center relative">
           <div
             className="absolute inset-0 flex items-center justify-center transition-opacity duration-200"
-            style={{ opacity: isRoot ? 1 : 0, pointerEvents: isRoot ? "auto" : "none" }}
+            style={{
+              opacity: isRoot ? 1 : 0,
+              pointerEvents: isRoot ? "auto" : "none",
+            }}
           >
             {logo}
           </div>
@@ -124,7 +132,12 @@ export default function TechNavbar({ pageTitle }) {
             onClick={() => navigate(-1)}
             aria-label="Back"
             className="absolute inset-0 flex items-center justify-center bg-transparent border-0 p-0"
-            style={{ cursor: "pointer", pointerEvents: isRoot ? "none" : "auto", opacity: isRoot ? 0 : 1, transition: "opacity 200ms" }}
+            style={{
+              cursor: "pointer",
+              pointerEvents: isRoot ? "none" : "auto",
+              opacity: isRoot ? 0 : 1,
+              transition: "opacity 200ms",
+            }}
           >
             <div
               className="flex items-center justify-center"
@@ -133,11 +146,16 @@ export default function TechNavbar({ pageTitle }) {
                 height: 36,
                 borderRadius: 9999,
                 background: "rgba(255,255,255,0.1)",
-                transition: "transform 180ms cubic-bezier(0.34,1.56,0.64,1), background 120ms",
+                transition:
+                  "transform 180ms cubic-bezier(0.34,1.56,0.64,1), background 120ms",
               }}
-              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.92)")}
+              onMouseDown={(e) =>
+                (e.currentTarget.style.transform = "scale(0.92)")
+              }
               onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.transform = "scale(1)")
+              }
             >
               <ChevronLeft size={20} color="rgba(255,255,255,0.9)" />
             </div>
@@ -145,29 +163,77 @@ export default function TechNavbar({ pageTitle }) {
         </div>
 
         {/* Centre zone */}
-        <div className="flex-1 flex items-center justify-center px-2 text-center overflow-hidden relative" style={{ minWidth: 0 }}>
+        <div
+          className="flex-1 flex items-center justify-center px-2 text-center overflow-hidden relative"
+          style={{ minWidth: 0 }}
+        >
           {/* Root title/subtitle */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200" style={{ opacity: isRoot ? 1 : 0, pointerEvents: isRoot ? "auto" : "none" }}>
-            <div className="text-white font-semibold truncate" style={{ fontSize: 16, letterSpacing: "-0.3px" }} title={title}>{title}</div>
-            <div className="text-white/60 text-[11px] truncate" style={{ marginTop: 2 }} title={subtitle}>{subtitle}</div>
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200"
+            style={{
+              opacity: isRoot ? 1 : 0,
+              pointerEvents: isRoot ? "auto" : "none",
+            }}
+          >
+            <div
+              className="text-white font-semibold truncate"
+              style={{ fontSize: 16, letterSpacing: "-0.3px" }}
+              title={title}
+            >
+              {title}
+            </div>
+            <div
+              className="text-white/60 text-[11px] truncate"
+              style={{ marginTop: 2 }}
+              title={subtitle}
+            >
+              {subtitle}
+            </div>
           </div>
 
           {/* Detail title/subtitle */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200" style={{ opacity: isRoot ? 0 : 1, pointerEvents: isRoot ? "none" : "auto" }}>
-            <div className="text-white font-semibold truncate" style={{ fontSize: 15, letterSpacing: "-0.2px" }} title={title}>{title}</div>
-            <div className="text-white/60 text-[11px] truncate" style={{ marginTop: 2 }} title={subtitle}>{subtitle}</div>
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200"
+            style={{
+              opacity: isRoot ? 0 : 1,
+              pointerEvents: isRoot ? "none" : "auto",
+            }}
+          >
+            <div
+              className="text-white font-semibold truncate"
+              style={{ fontSize: 15, letterSpacing: "-0.2px" }}
+              title={title}
+            >
+              {title}
+            </div>
+            <div
+              className="text-white/60 text-[11px] truncate"
+              style={{ marginTop: 2 }}
+              title={subtitle}
+            >
+              {subtitle}
+            </div>
           </div>
         </div>
 
         {/* Right zone */}
         <div className="w-15 h-15 flex items-center justify-center relative">
-          <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-200" style={{ opacity: isRoot ? 1 : 0, pointerEvents: isRoot ? "auto" : "none" }}>
+          <div
+            className="absolute inset-0 flex items-center justify-center transition-opacity duration-200"
+            style={{
+              opacity: isRoot ? 1 : 0,
+              pointerEvents: isRoot ? "auto" : "none",
+            }}
+          >
             {avatar}
           </div>
 
           {/* Options button */}
           {!isRoot && job ? (
-            <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-200" style={{ opacity: 1, pointerEvents: "auto" }}>
+            <div
+              className="absolute inset-0 flex items-center justify-center transition-opacity duration-200"
+              style={{ opacity: 1, pointerEvents: "auto" }}
+            >
               <button
                 onClick={() => console.log("options")}
                 aria-label="More"
