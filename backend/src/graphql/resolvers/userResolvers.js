@@ -8,11 +8,12 @@ const { validateEmail, validatePassword } = require("../../utils/validators");
 
 const userResolvers = {
   Query: {
-    users: async (_, args, context) => {
+    users: async (_, { role }, context) => {
       if (!context.user || context.user.role !== "ADMIN") {
         throw new Error("Not authorized");
       }
-      return await User.find();
+      const filter = role ? { role } : {};
+      return await User.find(filter);
     },
 
     me: async (_, args, context) => {

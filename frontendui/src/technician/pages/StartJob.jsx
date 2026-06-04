@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
 import { useTechnicianData } from "../hooks/useTechnicianData";
-import { getUserById } from "../../shared/utils/mockData";
 
 export default function StartJob() {
   const { id } = useParams();
@@ -13,7 +12,7 @@ export default function StartJob() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const job = useMemo(() => jobs.find((j) => j.id === id), [jobs, id]);
-  const client = job ? getUserById(job.clientId) : null;
+  const client = job?.client ?? null;
 
   if (!job || job.technicianId !== user?.id) {
     return (

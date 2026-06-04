@@ -1,179 +1,217 @@
+import { createContext, useCallback, useContext, useMemo } from "react";
+import { useQuery, useMutation } from "@apollo/client/react";
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import {
-  MOCK_CLIENTS,
-  MOCK_JOBS,
-  MOCK_NOTIFICATIONS,
-  MOCK_USERS,
-  getTechnicians,
-} from "../../shared/utils/mockData";
+  GET_JOBS,
+  GET_NOTIFICATIONS,
+  GET_USERS,
+  CREATE_JOB,
+  UPDATE_JOB_STATUS,
+  CANCEL_JOB,
+  REASSIGN_JOB,
+  REJECT_JOB_COMPLETION,
+  REGISTER_MUTATION,
+  MARK_NOTIFICATION_READ,
+  MARK_ALL_NOTIFICATIONS_READ,
+} from "../../graphql/operations";
 
 const AdminDataContext = createContext(null);
-const MOCK_FETCH_MS = 300;
+
+// Derive initials from a full name string
+function toInitials(name = "") {
+  return name
+    .split(" ")
+    .map((n) => n[0] ?? "")
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+// Normalize a backend User object to include display-helper fields
+function normalizeUser(user) {
+  if (!user) return null;
+  return {
+    ...user,
+    initials: toInitials(user.name),
+    companyName: user.name,
+    phone: null,
+    address: null,
+    online: false,
+    activeJobs: 0,
+    completedThisMonth: 0,
+    avgDurationHours: null,
+    isActive: true,
+  };
+}
+
+// Normalize a backend Job object to the shape components expect
+function normalizeJob(job) {
+  if (!job) return null;
+  return {
+    ...job,
+    technicianId: job.technician?.id ?? null,
+    clientId: job.client?.id ?? null,
+    clientEmail: job.client?.email ?? null,
+    clientPhone: null,
+    clientAddress: null,
+    priority: job.priority ?? "MEDIUM",
+    jobNumber: `#${job.id.slice(-6).toUpperCase()}`,
+    completionNote: job.completionNote ?? null,
+    statusHistory: [],
+    technician: normalizeUser(job.technician),
+    client: normalizeUser(job.client),
+    createdBy: normalizeUser(job.createdBy),
+  };
+}
+
+// Normalize a backend Notification
+function normalizeNotification(n) {
+  if (!n) return null;
+  return {
+    ...n,
+    jobId: n.job?.id ?? null,
+    type: "STATUS_CHANGED",
+  };
+}
 
 export function AdminDataProvider({ children }) {
-  const [jobs, setJobs] = useState([]);
-  const [technicians, setTechnicians] = useState([]);
-  const [clients, setClients] = useState([]);
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const jobsQuery = useQuery(GET_JOBS, { fetchPolicy: "cache-and-network" });
+  const techsQuery = useQuery(GET_USERS, {
+    variables: { role: "TECHNICIAN" },
+    fetchPolicy: "cache-and-network",
+  });
+  const clientsQuery = useQuery(GET_USERS, {
+    variables: { role: "CLIENT" },
+    fetchPolicy: "cache-and-network",
+  });
+  const notifsQuery = useQuery(GET_NOTIFICATIONS, {
+    fetchPolicy: "cache-and-network",
+  });
 
-  const refetch = useCallback(async () => {
-    // TODO: replace with Apollo useQuery(GET_ADMIN_DASHBOARD) once backend is ready
-    setLoading(true);
-    setError(null);
+  const [createJobMutation] = useMutation(CREATE_JOB, {
+    refetchQueries: [{ query: GET_JOBS }],
+  });
+  const [updateStatusMutation] = useMutation(UPDATE_JOB_STATUS, {
+    refetchQueries: [{ query: GET_JOBS }],
+  });
+  const [cancelJobMutation] = useMutation(CANCEL_JOB, {
+    refetchQueries: [{ query: GET_JOBS }],
+  });
+  const [reassignJobMutation] = useMutation(REASSIGN_JOB, {
+    refetchQueries: [{ query: GET_JOBS }],
+  });
+  const [rejectJobMutation] = useMutation(REJECT_JOB_COMPLETION, {
+    refetchQueries: [{ query: GET_JOBS }],
+  });
+  const [registerMutation] = useMutation(REGISTER_MUTATION, {
+    refetchQueries: [
+      { query: GET_USERS, variables: { role: "TECHNICIAN" } },
+      { query: GET_USERS, variables: { role: "CLIENT" } },
+    ],
+  });
+  const [markReadMutation] = useMutation(MARK_NOTIFICATION_READ, {
+    refetchQueries: [{ query: GET_NOTIFICATIONS }],
+  });
+  const [markAllReadMutation] = useMutation(MARK_ALL_NOTIFICATIONS_READ, {
+    refetchQueries: [{ query: GET_NOTIFICATIONS }],
+  });
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, MOCK_FETCH_MS));
-      setJobs([...MOCK_JOBS]);
-      setTechnicians(getTechnicians());
-      setClients([...MOCK_CLIENTS]);
-      setNotifications([...MOCK_NOTIFICATIONS]);
-    } catch (err) {
-      setError(err?.message ?? "Unable to load admin data.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const loading =
+    jobsQuery.loading ||
+    techsQuery.loading ||
+    clientsQuery.loading ||
+    notifsQuery.loading;
 
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
+  const error =
+    jobsQuery.error?.message ||
+    techsQuery.error?.message ||
+    clientsQuery.error?.message ||
+    notifsQuery.error?.message ||
+    null;
 
-  function verifyJob(jobId) {
-    // TODO: replace with Apollo useMutation(VERIFY_JOB) once backend is ready
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === jobId
-          ? {
-              ...j,
-              status: "VERIFIED",
-              updatedAt: new Date().toISOString(),
-              statusHistory: [
-                {
-                  status: "VERIFIED",
-                  changedByName: "Akosua Mensah",
-                  changedAt: new Date().toISOString(),
-                  note: null,
-                },
-                ...(j.statusHistory ?? []),
-              ],
-            }
-          : j,
-      ),
-    );
+  const jobs = useMemo(
+    () => (jobsQuery.data?.jobs ?? []).map(normalizeJob),
+    [jobsQuery.data],
+  );
+
+  const technicians = useMemo(
+    () => (techsQuery.data?.users ?? []).map(normalizeUser),
+    [techsQuery.data],
+  );
+
+  const clients = useMemo(
+    () => (clientsQuery.data?.users ?? []).map(normalizeUser),
+    [clientsQuery.data],
+  );
+
+  const notifications = useMemo(
+    () => (notifsQuery.data?.notifications ?? []).map(normalizeNotification),
+    [notifsQuery.data],
+  );
+
+  const refetch = useCallback(() => {
+    jobsQuery.refetch();
+    techsQuery.refetch();
+    clientsQuery.refetch();
+    notifsQuery.refetch();
+  }, [jobsQuery, techsQuery, clientsQuery, notifsQuery]);
+
+  async function verifyJob(jobId) {
+    await updateStatusMutation({ variables: { jobId, status: "VERIFIED" } });
   }
 
-  function rejectJob(jobId) {
-    // TODO: replace with Apollo useMutation(REJECT_JOB_COMPLETION) once backend is ready
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === jobId
-          ? { ...j, status: "IN_PROGRESS", updatedAt: new Date().toISOString() }
-          : j,
-      ),
-    );
+  async function rejectJob(jobId) {
+    await rejectJobMutation({ variables: { jobId } });
   }
 
-  function cancelJob(jobId) {
-    // TODO: replace with Apollo useMutation(CANCEL_JOB) once backend is ready
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === jobId
-          ? { ...j, status: "CANCELLED", updatedAt: new Date().toISOString() }
-          : j,
-      ),
-    );
+  async function cancelJob(jobId) {
+    await cancelJobMutation({ variables: { jobId } });
   }
 
-  function reassignJob(jobId, newTechnicianId) {
-    // TODO: replace with Apollo useMutation(REASSIGN_JOB) once backend is ready
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === jobId
-          ? {
-              ...j,
-              technicianId: newTechnicianId,
-              updatedAt: new Date().toISOString(),
-            }
-          : j,
-      ),
-    );
+  async function reassignJob(jobId, newTechnicianId) {
+    await reassignJobMutation({ variables: { jobId, technicianId: newTechnicianId } });
   }
 
-  function createJob(jobData) {
-    // TODO: replace with Apollo useMutation(CREATE_JOB) once backend is ready
-    const newJob = {
-      id: `job-${Date.now()}`,
-      jobNumber: `#JOB-${String(jobs.length + 41).padStart(4, "0")}`,
-      statusHistory: [
-        {
-          status: "PENDING",
-          changedByName: "Akosua Mensah",
-          changedAt: new Date().toISOString(),
-        },
-      ],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      status: "PENDING",
-      clientEmail: jobData.clientEmail ?? "",
-      clientPhone: jobData.clientPhone ?? "",
-      clientAddress: jobData.clientAddress ?? "",
-      ...jobData,
-    };
-    setJobs((prev) => [newJob, ...prev]);
-    return newJob;
+  async function createJob(jobData) {
+    const { data } = await createJobMutation({
+      variables: {
+        title: jobData.title,
+        description: jobData.description,
+        location: jobData.location,
+        technicianId: jobData.technicianId,
+        clientId: jobData.clientId,
+        priority: jobData.priority ?? "MEDIUM",
+      },
+    });
+    return normalizeJob(data?.createJob);
   }
 
-  function createClient(clientData) {
-    // TODO: replace with Apollo useMutation — createClient({ variables: { input } })
-    const newClient = {
-      id: `client-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      ...clientData,
-    };
-    setClients((prev) => [...prev, newClient]);
-    return newClient;
+  async function createClient({ companyName, email }) {
+    const password = `Client@${Date.now()}`;
+    const { data } = await registerMutation({
+      variables: { name: companyName, email, password, role: "CLIENT" },
+    });
+    return normalizeUser(data?.register?.user);
   }
 
-  function addTechnician({ firstName, lastName, email, phone, specialty }) {
-    // TODO: replace with Apollo useMutation(CREATE_TECHNICIAN) once backend is ready
-    const newTech = {
-      id: `user-${Date.now()}`,
-      name: `${firstName} ${lastName}`,
-      email,
-      phone: phone ?? "",
-      specialty: specialty?.trim() ?? "",
-      role: "TECHNICIAN",
-      initials: `${firstName[0]}${lastName[0]}`.toUpperCase(),
-      isActive: true,
-      activeJobs: 0,
-      completedThisMonth: 0,
-      avgDurationHours: null,
-      online: false,
-    };
-    MOCK_USERS.push(newTech);
-    setTechnicians((prev) => [...prev, newTech]);
-    return newTech;
+  async function addTechnician({ firstName, lastName, email }) {
+    const password = `Tech@${Date.now()}`;
+    const { data } = await registerMutation({
+      variables: {
+        name: `${firstName} ${lastName}`,
+        email,
+        password,
+        role: "TECHNICIAN",
+      },
+    });
+    return normalizeUser(data?.register?.user);
   }
 
-  function markNotificationRead(notificationId) {
-    // TODO: replace with Apollo useMutation(MARK_NOTIFICATION_READ) once backend is ready
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n)),
-    );
+  async function markNotificationRead(notificationId) {
+    await markReadMutation({ variables: { notificationId } });
   }
 
-  function markAllNotificationsRead() {
-    // TODO: replace with Apollo useMutation(MARK_ALL_NOTIFICATIONS_READ) once backend is ready
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  async function markAllNotificationsRead() {
+    await markAllReadMutation();
   }
 
   const value = useMemo(
@@ -195,6 +233,7 @@ export function AdminDataProvider({ children }) {
       markNotificationRead,
       markAllNotificationsRead,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [jobs, technicians, clients, notifications, loading, error, refetch],
   );
 

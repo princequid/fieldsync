@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Mail, Phone, Wrench } from "lucide-react";
+import { LogOut, Mail, Phone } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
-import { getUserById } from "../../shared/utils/mockData";
 import { useTechnicianData } from "../hooks/useTechnicianData";
+
+function toInitials(name = "") {
+  return name.split(" ").map((n) => n[0] ?? "").join("").toUpperCase().slice(0, 2) || "T";
+}
 
 export default function Profile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const profile = getUserById(user?.id);
   const { jobs } = useTechnicianData(user?.id);
   const [showSignOut, setShowSignOut] = useState(false);
   const presenceStorageKey = `fieldsync_tech_presence_${user?.id ?? "unknown"}`;
@@ -18,9 +20,9 @@ export default function Profile() {
       if (stored === "active") return true;
       if (stored === "offline") return false;
     } catch {
-      // Ignore storage failures and use profile fallback.
+      // Ignore storage failures.
     }
-    return Boolean(profile?.online);
+    return false;
   });
 
   const activeJobs = jobs.filter(
@@ -67,17 +69,17 @@ export default function Profile() {
             }}
           >
             <span className="text-white text-[24px] font-bold">
-              {profile?.initials ?? "T"}
+              {toInitials(user?.name)}
             </span>
           </div>
           <h1
             className="mt-3 text-[18px] font-bold text-[#0F172A] dark:text-gray-50"
             style={{ letterSpacing: "-0.3px" }}
           >
-            {profile?.name ?? user?.email}
+            {user?.name ?? user?.email}
           </h1>
           <p className="mt-1 text-[13px] text-[#64748B] dark:text-gray-400">
-            {profile?.specialty ?? "Field Technician"}
+            Field Technician
           </p>
           <div className="mt-3">
             <button
@@ -140,29 +142,7 @@ export default function Profile() {
           className="rounded-[12px] bg-white dark:bg-gray-900"
           style={{ border: "1px solid #F1F5F9" }}
         >
-          {profile?.specialty && (
-            <div
-              className="flex items-center"
-              style={{
-                height: 52,
-                padding: "0 16px",
-                borderBottom: "1px solid #F8FAFC",
-              }}
-            >
-              <div className="h-7 w-7 rounded-full grid place-items-center bg-[#F8FAFC] dark:bg-gray-800 mr-4">
-                <Wrench size={16} className="text-[#94A3B8]" />
-              </div>
-              <div>
-                <div className="text-[11px] uppercase tracking-wide text-[#94A3B8]">
-                  Specialty
-                </div>
-                <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
-                  {profile.specialty}
-                </div>
-              </div>
-            </div>
-          )}
-          {profile?.email && (
+          {user?.email && (
             <div
               className="flex items-center"
               style={{
@@ -175,11 +155,11 @@ export default function Profile() {
                 <Mail size={16} className="text-[#94A3B8]" />
               </div>
               <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
-                {profile.email}
+                {user.email}
               </div>
             </div>
           )}
-          {profile?.phone && (
+          {false && (
             <div
               className="flex items-center"
               style={{ height: 52, padding: "0 16px" }}
@@ -192,7 +172,7 @@ export default function Profile() {
                   Phone
                 </div>
                 <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
-                  {profile.phone}
+                  —
                 </div>
               </div>
             </div>

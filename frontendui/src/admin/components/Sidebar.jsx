@@ -11,7 +11,6 @@ import {
   Users,
 } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
-import { getUserById } from "../../shared/utils/mockData";
 
 const NAV_SECTIONS = [
   {
@@ -48,7 +47,9 @@ export default function Sidebar({
 }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const profile = getUserById(user?.id);
+  const userInitials = user?.name
+    ? user.name.split(" ").map((n) => n[0] ?? "").join("").toUpperCase().slice(0, 2)
+    : (user?.email?.[0] ?? "A").toUpperCase();
 
   function setCollapsed(next) {
     onCollapsedChange?.(next);
@@ -234,13 +235,13 @@ export default function Sidebar({
               outlineOffset: "2px",
             }}
           >
-            {profile?.initials ?? "A"}
+            {userInitials}
           </div>
 
           {!collapsed && (
             <div className="min-w-0">
               <p className="truncate text-[13px] font-medium leading-tight text-white">
-                {profile?.name ?? user?.email}
+                {user?.name ?? user?.email}
               </p>
               <p className="text-[11px] text-white/40">Operations Manager</p>
             </div>

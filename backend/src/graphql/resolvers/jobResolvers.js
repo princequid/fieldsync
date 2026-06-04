@@ -85,7 +85,7 @@ const jobResolvers = {
     createJob: async (_, args, context) => {
       authorizeRoles("ADMIN")(context.user);
 
-      const { title, description, location, technicianId, clientId } = args;
+      const { title, description, location, technicianId, clientId, priority } = args;
 
       // validate technician
       const technician = await User.findById(technicianId);
@@ -106,11 +106,9 @@ const jobResolvers = {
         title,
         description,
         location,
-
+        priority: priority ?? "MEDIUM",
         technician: technicianId,
-
         client: clientId,
-
         createdBy: context.user._id,
       });
 
@@ -168,6 +166,58 @@ const jobResolvers = {
         job: job._id,
 
         message: `Job "${job.title}" status updated to ${status}`,
+      });
+
+      return await getPopulatedJob(job._id);
+    },
+
+    cancelJob: async (_, { jobId }, context) => {
+      authorizeRoles("ADMIN")(context.user);
+
+      const job = await Job.findById(jobId);
+      if (!job) throw new Error("Job not found");
+      if (job.status === "VERIFIED") throw new Error("Cannot cancel a verified job");
+
+      job.status = "CANCELLED";
+      await job.save();
+      return await getPopulatedJob(job._id);
+    },
+
+    reassignJob: async (_, { jobId, technicianId }, context) => {
+      authorizeRoles("ADMIN")(context.user);
+
+      const job = await Job.findById(jobId);
+      if (!job) throw new Error("Job not found");
+
+      const technician = await User.findById(technicianId);
+      if (!technician || technician.role !== "TECHNICIAN") throw new Error("Invalid technician");
+
+      job.technician = technicianId;
+      await job.save();
+
+      await createNotification({
+        client: job.client,
+        job: job._id,
+        message: `Job "${job.title}" reassigned to ${technician.name}`,
+      });
+
+      return await getPopulatedJob(job._id);
+    },
+
+    rejectJobCompletion: async (_, { jobId }, context) => {
+      authorizeRoles("ADMIN")(context.user);
+
+      const job = await Job.findById(jobId);
+      if (!job) throw new Error("Job not found");
+      if (job.status !== "COMPLETED") throw new Error("Job is not in COMPLETED status");
+
+      job.status = "IN_PROGRESS";
+      await job.save();
+
+      await createNotification({
+        client: job.client,
+        job: job._id,
+        message: `Job "${job.title}" completion was rejected, returned to In Progress`,
       });
 
       return await getPopulatedJob(job._id);

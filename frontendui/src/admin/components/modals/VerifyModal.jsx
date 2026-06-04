@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import Modal from "../../../components/common/Modal";
-import { getUserById } from "../../../shared/utils/mockData";
 
 export default function VerifyModal({ job, onConfirm, onReject, onClose }) {
   const [adminNotes, setAdminNotes] = useState("");
   const [verified,   setVerified]   = useState(false);
   const [closing,    setClosing]    = useState(false);
 
-  const technician     = getUserById(job.technicianId);
+  const technician     = job.technician ?? null;
   const completionEntry = job.statusHistory?.find((e) => e.status === "COMPLETED");
   const completedAt    = completionEntry ? formatDateTime(completionEntry.changedAt) : null;
 

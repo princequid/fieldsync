@@ -1,14 +1,11 @@
 const Job = require("../models/Job");
 
 const allowedTransitions = {
-
   PENDING: ["IN_PROGRESS"],
-
   IN_PROGRESS: ["COMPLETED"],
-
-  COMPLETED: ["VERIFIED"],
-
-  VERIFIED: []
+  COMPLETED: ["VERIFIED", "IN_PROGRESS"],
+  VERIFIED: [],
+  CANCELLED: []
 };
 
 const validateStatusTransition = (

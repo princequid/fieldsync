@@ -17,7 +17,6 @@ import {
   Users,
 } from "lucide-react";
 import { useAdminData } from "../hooks/useAdminData";
-import { MOCK_JOBS, getTechnicians } from "../../shared/utils/mockData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import { AnalyticsPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
 import { useTheme } from "../../shared/context/ThemeContext";
@@ -54,7 +53,7 @@ function resolutionHours(job) {
 }
 
 export default function Analytics() {
-  const { loading, error, refetch } = useAdminData();
+  const { jobs: allJobs, technicians: allTechnicians, loading, error, refetch } = useAdminData();
   const { theme } = useTheme();
   const [period, setPeriod] = useState("WEEK");
   const isDark = theme === "dark";
@@ -68,8 +67,8 @@ export default function Analytics() {
     : CHART_COLORS;
 
   const analytics = useMemo(() => {
-    const jobs = MOCK_JOBS.filter((job) => inPeriod(job.updatedAt, period));
-    const technicians = getTechnicians();
+    const jobs = allJobs.filter((job) => inPeriod(job.updatedAt, period));
+    const technicians = allTechnicians;
     const completed = jobs.filter(
       (j) => j.status === "COMPLETED" || j.status === "VERIFIED",
     );

@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { ChevronRight, MapPin, Building } from "lucide-react";
-import { getUserById } from "../../shared/utils/mockData";
 import PriorityBadge from "../../shared/components/PriorityBadge";
 import { formatRelativeDate } from "../../shared/utils/formatDate";
 
@@ -33,7 +32,7 @@ const STATUS_LABEL = {
 
 export default function JobCard({ job }) {
   const navigate = useNavigate();
-  const client = getUserById(job.clientId);
+  const client = job.client ?? null;
   const stripColor = STATUS_COLOR[job.status] ?? STATUS_COLOR.PENDING;
 
   useEffect(() => {

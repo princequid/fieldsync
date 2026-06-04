@@ -16,6 +16,11 @@ const notificationTypeDefs = `#graphql
   type Query {
     notifications: [Notification]
   }
+
+  type Mutation {
+    markNotificationRead(notificationId: ID!): Notification
+    markAllNotificationsRead: Boolean
+  }
 `;
 
 module.exports = notificationTypeDefs;

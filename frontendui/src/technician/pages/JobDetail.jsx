@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, Phone, Building } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
 import { useTechnicianData } from "../hooks/useTechnicianData";
-import { getUserById } from "../../shared/utils/mockData";
 import StatusBanner from "../components/StatusBanner";
 import PriorityBadge from "../../shared/components/PriorityBadge";
 import { formatFullDate, formatTime } from "../../shared/utils/formatDate";
@@ -48,7 +47,7 @@ export default function TechJobDetail() {
 
   if (job.technicianId !== user?.id) return null;
 
-  const client = getUserById(job.clientId);
+  const client = job.client ?? null;
   const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(job.location)}`;
   const showTimeline = job.status === "COMPLETED" || job.status === "VERIFIED";
   const history = [...(job.statusHistory ?? [])].reverse();

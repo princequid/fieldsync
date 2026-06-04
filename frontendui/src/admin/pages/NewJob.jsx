@@ -5,7 +5,6 @@ import { useAdminData } from "../../admin/hooks/useAdminData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import FormTransition from "../../shared/components/FormTransition";
 import { NewJobPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
-import { getTechnicians, getUserById } from "../../shared/utils/mockData";
 
 const PRIORITY_OPTIONS = [
   { value: "LOW", label: "Low" },
@@ -20,8 +19,7 @@ const INPUT_ERR_CLS =
 
 export default function NewJob() {
   const navigate = useNavigate();
-  const { clients, createJob, loading, error, refetch } = useAdminData();
-  const technicians = getTechnicians();
+  const { clients, technicians, createJob, loading, error, refetch } = useAdminData();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -85,12 +83,13 @@ export default function NewJob() {
           ? { scheduledDate: formData.scheduledDate }
           : {}),
       };
-      const newJob = createJob(jobData);
+      const newJob = await createJob(jobData);
       const technicianName =
-        getUserById(newJob.technicianId)?.name ?? "Unassigned";
+        technicians.find((t) => t.id === jobData.technicianId)?.name ??
+        "Unassigned";
       setSuccessData({
-        jobId: newJob.id,
-        jobNumber: newJob.jobNumber,
+        jobId: newJob?.id,
+        jobNumber: newJob?.jobNumber,
         technicianName,
       });
     } catch {
@@ -217,7 +216,7 @@ export default function NewJob() {
                     <option value="">Select client…</option>
                     {clients.map((client) => (
                       <option key={client.id} value={client.id}>
-                        {client.companyName}
+                        {client.companyName ?? client.name}
                       </option>
                     ))}
                   </select>

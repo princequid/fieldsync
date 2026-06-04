@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin } from "lucide-react";
-import { getClientById, getUserById } from "../../shared/utils/mockData";
 import TechChip from "../components/TechChip";
 import { useAdminData } from "../hooks/useAdminData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
@@ -58,8 +57,8 @@ export default function JobDetail() {
   const detail = useMemo(() => {
     if (!job) return null;
     return {
-      client: getClientById(job.clientId),
-      technician: getUserById(job.technicianId),
+      client: job.client ?? null,
+      technician: job.technician ?? null,
     };
   }, [job]);
 
@@ -88,7 +87,7 @@ export default function JobDetail() {
 
 function JobDetailContent({ job, detail, navigate }) {
   const [modal, setModal] = useState(null);
-  const { verifyJob, rejectJob, reassignJob, cancelJob } = useAdminData();
+  const { verifyJob, rejectJob, reassignJob, cancelJob, technicians } = useAdminData();
 
   const meta = STATUS_META[job.status] ?? STATUS_META.PENDING;
   const jobHistory = [...(job.statusHistory ?? [])].reverse();
@@ -376,8 +375,9 @@ function JobDetailContent({ job, detail, navigate }) {
       )}
       {modal === "reassign" && (
         <ReassignModal
-          jobId={job.id}
-          currentTechnicianId={job.technicianId}
+          job={job}
+          currentTechnician={job.technician}
+          technicians={technicians}
           onConfirm={(techId) => reassignJob(job.id, techId)}
           onClose={() => setModal(null)}
         />

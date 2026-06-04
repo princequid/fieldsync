@@ -5,7 +5,6 @@ import {
   TechnicianDataProvider,
   useTechnicianData,
 } from "../hooks/useTechnicianData";
-import { getUserById } from "../../shared/utils/mockData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import TechNavbar from "../components/TechNavbar";
 import PageTransitionWrapper from "../../shared/components/PageTransitionWrapper";
@@ -38,7 +37,6 @@ function isTabActive(pathname, path) {
 export default function TechnicianLayout() {
   const { user } = useAuth();
   const location = useLocation();
-  const userData = getUserById(user?.id);
   const title = getPageTitle(location.pathname);
 
   return (

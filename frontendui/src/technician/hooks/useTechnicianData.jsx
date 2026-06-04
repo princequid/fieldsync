@@ -1,74 +1,44 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { getJobsByTechnician, getUserById } from "../../shared/utils/mockData";
+import { createContext, useCallback, useContext, useMemo } from "react";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { GET_JOBS, UPDATE_JOB_STATUS } from "../../graphql/operations";
 
 const TechnicianDataContext = createContext(null);
-const MOCK_FETCH_MS = 300;
+
+function normalizeJob(job) {
+  if (!job) return null;
+  return {
+    ...job,
+    technicianId: job.technician?.id ?? null,
+    clientId: job.client?.id ?? null,
+    clientEmail: job.client?.email ?? null,
+    priority: job.priority ?? "MEDIUM",
+    jobNumber: `#${job.id.slice(-6).toUpperCase()}`,
+    completionNote: job.completionNote ?? null,
+    statusHistory: [],
+  };
+}
 
 export function TechnicianDataProvider({ technicianId, children }) {
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, loading, error, refetch: apolloRefetch } = useQuery(GET_JOBS, {
+    fetchPolicy: "cache-and-network",
+    skip: !technicianId,
+  });
 
-  const techUser = getUserById(technicianId);
-  const techName = techUser?.name ?? "Technician";
+  const [updateStatusMutation] = useMutation(UPDATE_JOB_STATUS, {
+    refetchQueries: [{ query: GET_JOBS }],
+  });
 
-  const refetch = useCallback(async () => {
-    if (!technicianId) {
-      setJobs([]);
-      setLoading(false);
-      return;
-    }
+  const jobs = useMemo(
+    () => (data?.jobs ?? []).map(normalizeJob),
+    [data],
+  );
 
-    // TODO: replace with Apollo useQuery(GET_TECHNICIAN_JOBS) once backend is ready
-    setLoading(true);
-    setError(null);
+  const refetch = useCallback(() => {
+    if (technicianId) apolloRefetch();
+  }, [technicianId, apolloRefetch]);
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, MOCK_FETCH_MS));
-      setJobs(getJobsByTechnician(technicianId));
-    } catch (err) {
-      setError(err?.message ?? "Unable to load your jobs.");
-    } finally {
-      setLoading(false);
-    }
-  }, [technicianId]);
-
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
-
-  function updateJobStatus(jobId, newStatus, note = null) {
-    // TODO: replace with Apollo useMutation(UPDATE_JOB_STATUS) once backend is ready
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === jobId
-          ? {
-              ...j,
-              status: newStatus,
-              ...(newStatus === "COMPLETED" && note
-                ? { completionNote: note }
-                : {}),
-              updatedAt: new Date().toISOString(),
-              statusHistory: [
-                {
-                  status: newStatus,
-                  changedByName: techName,
-                  changedAt: new Date().toISOString(),
-                  note,
-                },
-                ...(j.statusHistory ?? []),
-              ],
-            }
-          : j,
-      ),
-    );
+  async function updateJobStatus(jobId, newStatus) {
+    await updateStatusMutation({ variables: { jobId, status: newStatus } });
   }
 
   const value = useMemo(
@@ -76,10 +46,11 @@ export function TechnicianDataProvider({ technicianId, children }) {
       technicianId,
       jobs,
       loading,
-      error,
+      error: error?.message ?? null,
       refetch,
       updateJobStatus,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [technicianId, jobs, loading, error, refetch],
   );
 
@@ -93,9 +64,7 @@ export function TechnicianDataProvider({ technicianId, children }) {
 export function useTechnicianData(technicianId) {
   const ctx = useContext(TechnicianDataContext);
   if (!ctx) {
-    throw new Error(
-      "useTechnicianData must be used within TechnicianDataProvider",
-    );
+    throw new Error("useTechnicianData must be used within TechnicianDataProvider");
   }
   if (technicianId && ctx.technicianId !== technicianId) {
     return { ...ctx, jobs: [], loading: false, error: null };

@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronUp } from "lucide-react";
-import { getClientById, getUserById } from "../../shared/utils/mockData";
 import StatusBadge from "../../shared/components/StatusBadge";
 import PriorityBadge from "../../shared/components/PriorityBadge";
 
@@ -76,8 +75,8 @@ export default function Table({
           {/* ── Body ───────────────────────────────────────────────── */}
           <tbody>
             {rows.map((job) => {
-              const client = getClientById(job.clientId);
-              const technician = getUserById(job.technicianId);
+              const client = job.client ?? null;
+              const technician = job.technician ?? null;
 
               return (
                 /* fs-table-row uses CSS transitions defined in index.css — not class toggling */

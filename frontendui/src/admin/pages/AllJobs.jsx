@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, Plus, Search } from "lucide-react";
 import { useAdminData } from "../../admin/hooks/useAdminData";
-import { getClientById, getUserById } from "../../shared/utils/mockData";
 import Table from "../../admin/components/Table";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import EmptyState from "../../shared/components/EmptyState";
@@ -45,15 +44,11 @@ export default function AllJobs() {
 
   const enrichedJobs = useMemo(
     () =>
-      jobs.map((job) => {
-        const client = getClientById(job.clientId);
-        const technician = getUserById(job.technicianId);
-        return {
-          ...job,
-          clientName: client?.companyName ?? "Unassigned client",
-          technicianName: technician?.name ?? "Unassigned technician",
-        };
-      }),
+      jobs.map((job) => ({
+        ...job,
+        clientName: job.client?.companyName ?? job.client?.name ?? "Unassigned client",
+        technicianName: job.technician?.name ?? "Unassigned technician",
+      })),
     [jobs],
   );
 

@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Bell, Search } from "lucide-react";
 import ThemeToggle from "../../shared/components/ThemeToggle";
 import { useAuth } from "../../shared/context/AuthContext";
-import { getUserById } from "../../shared/utils/mockData";
 import { formatNotificationRelative } from "../../shared/utils/formatDate";
 import { useAdminData } from "../hooks/useAdminData";
 
@@ -55,7 +54,9 @@ export default function AdminTopbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const profile = getUserById(user?.id);
+  const userInitials = user?.name
+    ? user.name.split(" ").map((n) => n[0] ?? "").join("").toUpperCase().slice(0, 2)
+    : (user?.email?.[0] ?? "A").toUpperCase();
   const {
     notifications,
     markNotificationRead,
@@ -336,10 +337,10 @@ export default function AdminTopbar() {
               border: "2px solid white",
               boxShadow: "0 0 0 3px rgba(46,134,171,0.15)",
             }}
-            title={profile?.name ?? user?.email}
+            title={user?.name ?? user?.email}
             aria-hidden
           >
-            {profile?.initials ?? user?.initials ?? "A"}
+            {userInitials}
           </div>
         </div>
       </div>

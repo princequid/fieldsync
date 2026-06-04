@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { CheckCircle2, Clock, MoreVertical, Plus, X, Zap } from "lucide-react";
-import { MOCK_JOBS } from "../../shared/utils/mockData";
 import { useAdminData } from "../hooks/useAdminData";
 import AddTechnicianModal from "../components/modals/AddTechnicianModal";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
@@ -202,8 +201,9 @@ export default function TeamManagement() {
 
 function TechnicianDetailPanel({ tech, onClose }) {
   const [visible, setVisible] = useState(false);
+  const { jobs } = useAdminData();
 
-  const techJobs = MOCK_JOBS.filter((job) => job.technicianId === tech.id);
+  const techJobs = jobs.filter((job) => job.technicianId === tech.id);
   const completedCount = techJobs.filter(
     (j) => j.status === "COMPLETED" || j.status === "VERIFIED",
   ).length;

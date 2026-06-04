@@ -15,7 +15,7 @@ const userTypeDefs = `#graphql
   }
 
   type Query {
-    users: [User]
+    users(role: String): [User]
     me: User
   }
 

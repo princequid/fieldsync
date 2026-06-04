@@ -20,7 +20,7 @@
     "express": "^5.2.1",
     "graphql": "^16.14.0",
     "jsonwebtoken": "^9.0.3",
-    "mangodb": "^1.0.0",
+    "mongodb": "^4.19.0",
     "mongoose": "^9.6.2"
   },
   "devDependencies": {
