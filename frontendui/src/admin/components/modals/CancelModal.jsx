@@ -33,14 +33,11 @@ export default function CancelModal({ jobId, jobTitle, onConfirm, onClose }) {
       {/* Body */}
       <div className="fs-modal-body">
         <div className="mb-5 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
-            {/* Alert triangle inline */}
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/>
-              <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-          </div>
+          <svg className="mx-auto mb-4" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
           <h2 className="text-[18px] font-bold text-[#0F172A]">Cancel this job?</h2>
           <p className="mt-2 text-[13px] text-[#64748B] dark:text-gray-400">
             This action cannot be undone. The technician and client will be notified.
@@ -57,17 +54,17 @@ export default function CancelModal({ jobId, jobTitle, onConfirm, onClose }) {
         <button
           type="button"
           onClick={animatedClose}
-          className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button border border-black/8 bg-white px-4 text-[13px] font-medium text-[#374151] transition-colors hover:border-brand-accent hover:text-brand-accent"
+          className="fs-focus-ring flex h-9 items-center rounded-button border border-black/8 bg-white px-4 text-[13px] font-medium text-[#374151] transition-colors hover:border-brand-accent hover:text-brand-accent"
         >
           Go Back
         </button>
         <button
           type="button"
           onClick={handleConfirm}
-          className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button px-4 text-[13px] font-medium text-white"
+          className="fs-focus-ring flex h-9 items-center rounded-button px-4 text-[13px] font-medium text-white"
           style={{
-            background: "linear-gradient(180deg, #EF4444 0%, #DC2626 100%)",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
+            background: "#DC2626",
+            boxShadow: "var(--shadow-1)",
           }}
         >
           Yes, Cancel Job

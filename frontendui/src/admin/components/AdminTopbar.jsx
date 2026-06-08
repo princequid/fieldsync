@@ -220,12 +220,10 @@ export default function AdminTopbar() {
             {dropdownOpen && (
               <div
                 ref={panelRef}
-                className="animate-scale-in absolute right-0 top-[calc(100%+8px)] w-90 overflow-hidden border border-[#F1F5F9] bg-white dark:border-gray-800 dark:bg-gray-900"
+                className="absolute right-0 top-[calc(100%+8px)] w-90 overflow-hidden rounded-card border border-[#F1F5F9] bg-white dark:border-gray-800 dark:bg-gray-900"
                 style={{
-                  borderRadius: "16px",
                   maxHeight: "420px",
-                  boxShadow: "var(--shadow-3)",
-                  transformOrigin: "top right",
+                  boxShadow: "var(--shadow-1)",
                 }}
                 role="menu"
                 aria-label="Notifications"
@@ -329,13 +327,12 @@ export default function AdminTopbar() {
             )}
           </div>
 
-          {/* Avatar — gradient #2E86AB → #1A6FA8, 2px white border, ring glow */}
+          {/* Avatar */}
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold text-white"
             style={{
-              background: "linear-gradient(135deg, #2E86AB 0%, #1A6FA8 100%)",
+              background: "#2E86AB",
               border: "2px solid white",
-              boxShadow: "0 0 0 3px rgba(46,134,171,0.15)",
             }}
             title={user?.name ?? user?.email}
             aria-hidden

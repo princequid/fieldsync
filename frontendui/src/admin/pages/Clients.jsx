@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAdminData } from "../hooks/useAdminData";
-import AddClientModal from "../components/AddClientModal";
 import Button from "../../shared/components/Button";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import { ClientsPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
@@ -11,8 +10,8 @@ const TH_CLASS =
   "px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400";
 
 export default function Clients() {
-  const { clients, createClient, loading, error, refetch } = useAdminData();
-  const [showAddModal, setShowAddModal] = useState(false);
+  const navigate = useNavigate();
+  const { clients, loading, error, refetch } = useAdminData();
 
   return (
     <AsyncPageContent
@@ -31,13 +30,13 @@ export default function Clients() {
             {clients.length} client{clients.length === 1 ? "" : "s"}
           </p>
         </div>
-        <Button variant="primary" onClick={() => setShowAddModal(true)}>
+        <Button variant="primary" onClick={() => navigate("/admin/clients/new")}>
           + Add Client
         </Button>
       </header>
 
       <section
-        className="overflow-hidden rounded-[12px] border border-[#F1F5F9] bg-white dark:border-gray-800 dark:bg-gray-900"
+        className="overflow-hidden rounded-card border border-[#F1F5F9] bg-white dark:border-gray-800 dark:bg-gray-900"
         style={{ boxShadow: "var(--shadow-1)" }}
       >
         {clients.length === 0 ? (
@@ -47,7 +46,7 @@ export default function Clients() {
             subtitle="Add your first client to start assigning jobs."
             action={{
               label: "+ Add Client",
-              onClick: () => setShowAddModal(true),
+              onClick: () => navigate("/admin/clients/new"),
             }}
           />
         ) : (
@@ -103,15 +102,6 @@ export default function Clients() {
           </div>
         )}
       </section>
-
-      {showAddModal && (
-        <AddClientModal
-          onSuccess={(clientData) => {
-            createClient(clientData);
-          }}
-          onClose={() => setShowAddModal(false)}
-        />
-      )}
       </div>
     </AsyncPageContent>
   );

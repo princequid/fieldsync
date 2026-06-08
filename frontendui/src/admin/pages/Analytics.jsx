@@ -10,7 +10,6 @@ import {
   YAxis,
 } from "recharts";
 import {
-  BarChart3,
   CheckCircle2,
   Clock3,
   TrendingUp,
@@ -167,14 +166,10 @@ export default function Analytics() {
       className="fs-admin-page-bg min-h-full"
     >
       <div className="fs-admin-page-bg space-y-6 p-4 sm:p-6">
-        <header className="fs-card overflow-hidden border border-transparent p-5 sm:p-6 dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_1px_0_0_rgba(46,134,171,0.08)_inset,0_4px_24px_rgba(0,0,0,0.25)]">
+        <header className="fs-card overflow-hidden border border-transparent p-5 sm:p-6 dark:border-gray-800/80 dark:bg-gray-900/90">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div className="flex items-center gap-2 text-brand-accent">
-                <BarChart3 size={20} aria-hidden />
-                <span className="fs-label text-brand-accent">Insights</span>
-              </div>
-              <h1 className="fs-page-title mt-2 text-brand-navy dark:text-gray-50">
+              <h1 className="fs-page-title text-brand-navy dark:text-gray-50">
                 Analytics
               </h1>
               <p className="mt-1 max-w-xl text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
@@ -184,7 +179,7 @@ export default function Analytics() {
             </div>
 
             <div
-              className="inline-flex rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] p-1 dark:border-gray-700 dark:bg-gray-800/80 dark:shadow-inner dark:shadow-black/20"
+              className="inline-flex rounded-card border border-[#E5E7EB] bg-[#F8FAFC] p-1 dark:border-gray-700 dark:bg-gray-800/80 dark:shadow-black/20"
               role="group"
               aria-label="Time period"
             >
@@ -193,9 +188,9 @@ export default function Analytics() {
                   key={key}
                   type="button"
                   onClick={() => setPeriod(key)}
-                  className={`fs-btn-press min-h-10 rounded-lg px-4 py-2 text-[13px] font-medium transition-all ${
+                  className={`min-h-10 rounded-lg px-4 py-2 text-[13px] font-medium transition-all ${
                     period === key
-                      ? "bg-brand-navy text-white shadow-sm dark:shadow-[0_2px_8px_rgba(30,58,95,0.5)]"
+                      ? "bg-brand-navy text-white shadow-sm"
                       : "text-gray-600 hover:bg-white hover:text-brand-navy dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
                   }`}
                 >
@@ -211,28 +206,24 @@ export default function Analytics() {
             label="Jobs Completed"
             value={analytics.completedCount}
             icon={CheckCircle2}
-            tone="green"
             hint="Completed or verified in period"
           />
           <KpiCard
             label="Avg Resolution"
             value={`${analytics.avgResolution.toFixed(1)}h`}
             icon={Clock3}
-            tone="blue"
             hint="Pending to completed"
           />
           <KpiCard
             label="Pending Jobs"
             value={analytics.pending}
             icon={Users}
-            tone="amber"
             hint="Awaiting assignment or start"
           />
           <KpiCard
             label="On-time Rate"
             value={`${analytics.onTimeRate}%`}
             icon={TrendingUp}
-            tone="navy"
             hint="Resolved within 8 hours"
           />
         </div>
@@ -272,7 +263,7 @@ export default function Analytics() {
           </ChartPanel>
         </div>
 
-        <section className="fs-card overflow-hidden border border-transparent dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_4px_32px_rgba(0,0,0,0.28)]">
+        <section className="fs-card overflow-hidden border border-transparent dark:border-gray-800/80 dark:bg-gray-900/90">
           <div className="border-b border-[#E5E7EB] px-5 py-4 sm:px-6 dark:border-gray-700/80">
             <h2 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">
               Technician performance
@@ -335,47 +326,20 @@ export default function Analytics() {
   );
 }
 
-const KPI_TONES = {
-  green: {
-    icon: "bg-green-50 text-green-600 dark:bg-green-900/35 dark:text-green-400",
-    ring: "hover:border-green-200 dark:hover:border-green-800",
-  },
-  blue: {
-    icon: "bg-blue-50 text-blue-600 dark:bg-blue-900/35 dark:text-blue-400",
-    ring: "hover:border-blue-200 dark:hover:border-blue-800",
-  },
-  amber: {
-    icon: "bg-amber-50 text-amber-600 dark:bg-amber-900/35 dark:text-amber-400",
-    ring: "hover:border-amber-200 dark:hover:border-amber-800",
-  },
-  navy: {
-    icon: "bg-slate-100 text-brand-navy dark:bg-slate-800 dark:text-slate-300",
-    ring: "hover:border-brand-navy/20 dark:hover:border-gray-600",
-  },
-};
-
-function KpiCard({ label, value, icon: Icon, tone, hint }) {
-  const styles = KPI_TONES[tone] ?? KPI_TONES.navy;
-
+function KpiCard({ label, value, icon: Icon, hint }) {
   return (
-    <article
-      className={`fs-card group border border-transparent p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_14px_rgba(30,58,95,0.08)] dark:border-gray-800/60 dark:shadow-[0_4px_20px_rgba(0,0,0,0.22)] dark:hover:shadow-[0_6px_24px_rgba(0,0,0,0.35)] ${styles.ring}`}
-    >
+    <article className="fs-card border border-gray-200 p-5 dark:border-gray-800">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="fs-label text-gray-500 dark:text-gray-400">{label}</p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-brand-navy dark:text-gray-50 sm:text-3xl">
+          <p className="mt-2 text-2xl font-semibold text-brand-navy dark:text-gray-50">
             {value}
           </p>
-          <p className="mt-2 text-[11px] leading-snug text-gray-400 dark:text-gray-500">
+          <p className="mt-2 text-[12px] leading-snug text-gray-400 dark:text-gray-500">
             {hint}
           </p>
         </div>
-        <span
-          className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl shadow-sm transition-transform duration-200 group-hover:scale-105 ${styles.icon}`}
-        >
-          <Icon size={20} aria-hidden />
-        </span>
+        <Icon size={18} aria-hidden className="text-gray-400 dark:text-gray-500" />
       </div>
     </article>
   );
@@ -383,7 +347,7 @@ function KpiCard({ label, value, icon: Icon, tone, hint }) {
 
 function ChartPanel({ title, subtitle, legendColor, children }) {
   return (
-    <section className="fs-card flex flex-col overflow-hidden border border-transparent transition-shadow duration-200 hover:shadow-[0_4px_14px_rgba(30,58,95,0.06)] dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_4px_24px_rgba(0,0,0,0.22)] dark:hover:shadow-[0_6px_28px_rgba(0,0,0,0.32)]">
+    <section className="fs-card flex flex-col overflow-hidden border border-transparent transition-shadow duration-200 dark:border-gray-800/80 dark:bg-gray-900/90">
       <div className="border-b border-[#F3F4F6] px-5 py-4 sm:px-6 dark:border-gray-700/80">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
@@ -418,7 +382,7 @@ function ChartTooltip({ active, payload, label, valueFormatter }) {
     label ?? payload[0]?.payload?.fullName ?? payload[0]?.payload?.name;
 
   return (
-    <div className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 shadow-[0_8px_24px_rgba(15,23,42,0.12)] dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+    <div className="rounded-card border border-[#E5E7EB] bg-white px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
       <p className="text-[12px] font-semibold text-gray-900 dark:text-gray-100">
         {displayLabel}
       </p>

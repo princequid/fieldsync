@@ -6,6 +6,8 @@ const authorizeRoles = require("../../middleware/roleMiddleware");
 
 const Notification = require("../../models/Notification");
 
+const formatDate = require("../../utils/formatDate");
+
 const allowedTransitions = {
   PENDING: ["IN_PROGRESS"],
 
@@ -24,6 +26,11 @@ const {
 const { createNotification } = require("../../services/notificationService");
 
 const jobResolvers = {
+  Job: {
+    createdAt: (job) => formatDate(job.createdAt),
+    updatedAt: (job) => formatDate(job.updatedAt),
+  },
+
   Query: {
     jobs: async (_, { status }, context) => {
       authorizeRoles("ADMIN", "TECHNICIAN")(context.user);

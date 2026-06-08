@@ -10,21 +10,71 @@ export const LOGIN_MUTATION = gql`
         id
         name
         email
+        phone
         role
+        mustChangePassword
       }
     }
   }
 `;
 
-export const REGISTER_MUTATION = gql`
-  mutation Register($name: String!, $email: String!, $password: String!, $role: String!) {
-    register(name: $name, email: $email, password: $password, role: $role) {
+export const CHANGE_PASSWORD_MUTATION = gql`
+  mutation ChangePassword($currentPassword: String!, $newPassword: String!) {
+    changePassword(currentPassword: $currentPassword, newPassword: $newPassword) {
       token
       user {
         id
         name
         email
         role
+        mustChangePassword
+      }
+    }
+  }
+`;
+
+export const REGISTER_MUTATION = gql`
+  mutation Register(
+    $name: String!
+    $email: String!
+    $password: String!
+    $role: String!
+    $phone: String
+    $address: String
+  ) {
+    register(
+      name: $name
+      email: $email
+      password: $password
+      role: $role
+      phone: $phone
+      address: $address
+    ) {
+      token
+      user {
+        id
+        name
+        email
+        phone
+        address
+        role
+        createdAt
+      }
+    }
+  }
+`;
+
+export const CREATE_TECHNICIAN_MUTATION = gql`
+  mutation CreateTechnician($name: String!, $email: String!, $phone: String) {
+    createTechnician(name: $name, email: $email, phone: $phone) {
+      temporaryPassword
+      user {
+        id
+        name
+        email
+        phone
+        role
+        createdAt
       }
     }
   }
@@ -49,6 +99,8 @@ export const GET_USERS = gql`
       id
       name
       email
+      phone
+      address
       role
       createdAt
     }
@@ -78,6 +130,8 @@ const JOB_FIELDS = gql`
       id
       name
       email
+      phone
+      address
       role
     }
     createdBy {

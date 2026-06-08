@@ -24,6 +24,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["ADMIN", "TECHNICIAN", "CLIENT"],
       required: true
+    },
+
+    phone: {
+      type: String,
+      default: null,
+      trim: true
+    },
+
+    address: {
+      type: String,
+      default: null,
+      trim: true
+    },
+
+    mustChangePassword: {
+      type: Boolean,
+      default: false
     }
   },
   {

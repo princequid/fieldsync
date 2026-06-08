@@ -10,6 +10,7 @@ import {
   REASSIGN_JOB,
   REJECT_JOB_COMPLETION,
   REGISTER_MUTATION,
+  CREATE_TECHNICIAN_MUTATION,
   MARK_NOTIFICATION_READ,
   MARK_ALL_NOTIFICATIONS_READ,
 } from "../../graphql/operations";
@@ -33,8 +34,8 @@ function normalizeUser(user) {
     ...user,
     initials: toInitials(user.name),
     companyName: user.name,
-    phone: null,
-    address: null,
+    phone: user.phone ?? null,
+    address: user.address ?? null,
     online: false,
     activeJobs: 0,
     completedThisMonth: 0,
@@ -51,8 +52,8 @@ function normalizeJob(job) {
     technicianId: job.technician?.id ?? null,
     clientId: job.client?.id ?? null,
     clientEmail: job.client?.email ?? null,
-    clientPhone: null,
-    clientAddress: null,
+    clientPhone: job.client?.phone ?? null,
+    clientAddress: job.client?.address ?? null,
     priority: job.priority ?? "MEDIUM",
     jobNumber: `#${job.id.slice(-6).toUpperCase()}`,
     completionNote: job.completionNote ?? null,
@@ -107,6 +108,9 @@ export function AdminDataProvider({ children }) {
       { query: GET_USERS, variables: { role: "TECHNICIAN" } },
       { query: GET_USERS, variables: { role: "CLIENT" } },
     ],
+  });
+  const [createTechnicianMutation] = useMutation(CREATE_TECHNICIAN_MUTATION, {
+    refetchQueries: [{ query: GET_USERS, variables: { role: "TECHNICIAN" } }],
   });
   const [markReadMutation] = useMutation(MARK_NOTIFICATION_READ, {
     refetchQueries: [{ query: GET_NOTIFICATIONS }],
@@ -185,25 +189,33 @@ export function AdminDataProvider({ children }) {
     return normalizeJob(data?.createJob);
   }
 
-  async function createClient({ companyName, email }) {
+  async function createClient({ companyName, email, phone, address }) {
     const password = `Client@${Date.now()}`;
     const { data } = await registerMutation({
-      variables: { name: companyName, email, password, role: "CLIENT" },
+      variables: {
+        name: companyName,
+        email,
+        password,
+        role: "CLIENT",
+        phone: phone?.trim() || null,
+        address: address?.trim() || null,
+      },
     });
     return normalizeUser(data?.register?.user);
   }
 
-  async function addTechnician({ firstName, lastName, email }) {
-    const password = `Tech@${Date.now()}`;
-    const { data } = await registerMutation({
+  async function addTechnician({ firstName, lastName, email, phone }) {
+    const { data } = await createTechnicianMutation({
       variables: {
         name: `${firstName} ${lastName}`,
         email,
-        password,
-        role: "TECHNICIAN",
+        phone: phone?.trim() || null,
       },
     });
-    return normalizeUser(data?.register?.user);
+    return {
+      user: normalizeUser(data?.createTechnician?.user),
+      temporaryPassword: data?.createTechnician?.temporaryPassword ?? null,
+    };
   }
 
   async function markNotificationRead(notificationId) {

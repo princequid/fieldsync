@@ -1,6 +1,13 @@
 const Notification = require("../../models/Notification");
 
+const formatDate = require("../../utils/formatDate");
+
 const notificationResolvers = {
+  Notification: {
+    createdAt: (notification) => formatDate(notification.createdAt),
+    updatedAt: (notification) => formatDate(notification.updatedAt),
+  },
+
   Query: {
     notifications: async (_, args, context) => {
       if (!context.user) throw new Error("Not authenticated");

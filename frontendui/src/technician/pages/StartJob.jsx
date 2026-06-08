@@ -44,7 +44,7 @@ export default function StartJob() {
   return (
     <div className="min-h-[60vh] bg-[#F0EDE8] dark:bg-gray-950 flex items-start justify-center py-8 px-6">
       <div
-        className="w-full max-w-md rounded-[16px] bg-white dark:bg-gray-900 shadow-2 p-6"
+        className="w-full max-w-md rounded-card bg-white dark:bg-gray-900 shadow-2 p-6"
         style={{ margin: "0 24px" }}
       >
         <Link
@@ -62,8 +62,7 @@ export default function StartJob() {
             style={{
               width: 72,
               height: 72,
-              background: "linear-gradient(180deg,#EFF6FF,#DBEAFE)",
-              boxShadow: "0 0 0 8px rgba(46,134,171,0.08)",
+              background: "#EFF6FF",
               border: "1px solid #BFDBFE",
             }}
           >
@@ -92,7 +91,7 @@ export default function StartJob() {
           </p>
 
           <div
-            className="mt-4 w-full rounded-[12px] bg-[#F8FAFC] dark:bg-gray-800 border p-4"
+            className="mt-4 w-full rounded-card bg-[#F8FAFC] dark:bg-gray-800 border p-4"
             style={{ border: "1px solid #F1F5F9" }}
           >
             <p className="text-[14px] font-semibold text-[#374151] dark:text-gray-200">
@@ -111,20 +110,19 @@ export default function StartJob() {
                 "Start the job timer",
               ].map((text) => (
                 <div key={text} className="flex items-center gap-3">
-                  <div className="h-5 w-5 rounded-full grid place-items-center bg-[#EFF6FF] dark:bg-blue-900/30">
-                    <svg
-                      width="10"
-                      height="10"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#2E86AB"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#2E86AB"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
                   <p className="text-[13px] text-[#374151] dark:text-gray-300">
                     {text}
                   </p>
@@ -138,18 +136,15 @@ export default function StartJob() {
               type="button"
               onClick={handleStart}
               disabled={isSubmitting}
-              className="w-full h-13 rounded-[12px] text-white font-semibold"
-              style={{
-                background: "linear-gradient(180deg,#2E86AB,#1A6FA8)",
-                boxShadow: "0 2px 8px rgba(46,134,171,0.35)",
-              }}
+              className="w-full h-13 rounded-card text-white font-semibold"
+              style={{ background: "#2E86AB" }}
             >
               {isSubmitting ? "Starting..." : "Start Job Now"}
             </button>
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="w-full h-12 mt-2 rounded-[12px] bg-white dark:bg-gray-800 border text-[#374151] dark:text-gray-300"
+              className="w-full h-12 mt-2 rounded-card bg-white dark:bg-gray-800 border text-[#374151] dark:text-gray-300"
               style={{ border: "1px solid #E2E8F0" }}
             >
               Cancel

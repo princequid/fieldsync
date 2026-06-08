@@ -55,7 +55,7 @@ export function SkeletonChartPanel({ height = "h-52" }) {
         <SkeletonBlock className="mt-2 h-3 w-56 max-w-full rounded-md" />
       </div>
       <div className="p-5">
-        <SkeletonBlock className={`${height} w-full rounded-xl`} />
+        <SkeletonBlock className={`${height} w-full rounded-card`} />
       </div>
     </div>
   );
@@ -76,7 +76,7 @@ export function DashboardPageSkeleton() {
               <SkeletonBlock className="mx-auto h-36 w-36 rounded-full" />
               <div className="mt-5 space-y-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <SkeletonBlock key={i} className="h-10 w-full rounded-xl" />
+                  <SkeletonBlock key={i} className="h-10 w-full rounded-card" />
                 ))}
               </div>
             </div>
@@ -118,7 +118,7 @@ export function AnalyticsPageSkeleton() {
         <SkeletonBlock className="h-4 w-24 rounded-md" />
         <SkeletonBlock className="h-8 w-48 rounded-md" />
         <SkeletonBlock className="h-4 w-72 max-w-full rounded-md" />
-        <SkeletonBlock className="mt-2 h-10 w-56 rounded-xl" />
+        <SkeletonBlock className="mt-2 h-10 w-56 rounded-card" />
       </div>
       <SkeletonStatGrid />
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">

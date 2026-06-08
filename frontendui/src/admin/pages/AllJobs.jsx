@@ -113,7 +113,7 @@ export default function AllJobs() {
       <div className="fs-admin-page-bg min-h-screen px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-5">
           {/* Page header */}
-          <header className="fs-card flex flex-col gap-4 border border-transparent px-5 py-5 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_1px_0_0_rgba(46,134,171,0.08)_inset,0_4px_24px_rgba(0,0,0,0.25)]">
+          <header className="fs-card flex flex-col gap-4 border border-transparent px-5 py-5 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800/80 dark:bg-gray-900/90">
             <div>
               <p className="fs-page-title dark:text-gray-50">All Jobs</p>
               <p className="mt-1 text-[13px] text-gray-500 dark:text-gray-400">
@@ -122,7 +122,7 @@ export default function AllJobs() {
             </div>
             <Link
               to="/admin/jobs/new"
-              className="fs-btn-gradient-navy fs-btn-press fs-focus-ring inline-flex shrink-0 items-center justify-center gap-2 rounded-button px-4 py-2.5 text-[13px] font-medium text-white shadow-sm dark:shadow-[0_2px_12px_rgba(30,58,95,0.45)]"
+              className="fs-btn-gradient-navy fs-focus-ring inline-flex shrink-0 items-center justify-center gap-2 rounded-button px-4 py-2.5 text-[13px] font-medium text-white shadow-sm"
             >
               <Plus size={16} aria-hidden />
               Create Job
@@ -130,7 +130,7 @@ export default function AllJobs() {
           </header>
 
           {/* Filters + table card */}
-          <section className="fs-card border border-transparent p-5 dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_4px_32px_rgba(0,0,0,0.28)]">
+          <section className="fs-card border border-transparent p-5 dark:border-gray-800/80 dark:bg-gray-900/90">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               {/* Status tabs */}
               <div className="flex flex-wrap gap-1.5">

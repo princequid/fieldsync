@@ -61,16 +61,14 @@ export default function FirstLogin() {
     return (
       <AuthShell>
         <div className="mx-auto w-full max-w-md text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
-            <KeyRound className="text-red-500" size={24} />
-          </div>
+          <KeyRound className="mx-auto mb-4 text-red-600" size={32} aria-hidden />
           <h1 className="text-[18px] font-bold text-gray-900">Invalid invitation</h1>
           <p className="mt-2 text-[13px] text-gray-500">
             This link is missing a token or has expired. Ask your admin to send a new invitation.
           </p>
           <Link
             to="/login"
-            className="fs-btn-gradient-navy fs-btn-press fs-focus-ring mt-7 inline-flex h-11 items-center justify-center rounded-button px-6 text-[13px] font-semibold text-white"
+            className="fs-btn-gradient-navy fs-focus-ring mt-7 inline-flex h-11 items-center justify-center rounded-button px-6 text-[13px] font-semibold text-white"
           >
             Back to login
           </Link>
@@ -150,7 +148,7 @@ export default function FirstLogin() {
 function AuthShell({ children }) {
   return (
     <div className="flex min-h-screen flex-col justify-center bg-brand-bg px-4 py-10">
-      <div className="mx-auto w-full max-w-lg rounded-modal bg-white p-8 shadow-3 sm:p-10">
+      <div className="mx-auto w-full max-w-lg rounded-modal bg-white p-6 sm:p-8">
         {children}
       </div>
     </div>

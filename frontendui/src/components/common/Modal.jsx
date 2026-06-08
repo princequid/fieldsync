@@ -55,7 +55,7 @@ export default function Modal({
 
   return (
     <>
-      {/* Backdrop: bg-black/60 + blur-md */}
+      {/* Backdrop */}
       <div
         className={
           closing ? "animate-modal-backdrop-out" : "animate-modal-backdrop-in"
@@ -64,9 +64,7 @@ export default function Modal({
           position: "fixed",
           inset: 0,
           zIndex: 40,
-          background: "rgba(0,0,0,0.60)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
+          background: "rgba(0,0,0,0.45)",
         }}
         onClick={onClose}
         aria-hidden
@@ -79,7 +77,7 @@ export default function Modal({
           inset: 0,
           zIndex: 50,
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-start",
           justifyContent: "center",
           padding: "32px 16px",
           overflowY: "auto",
@@ -89,13 +87,13 @@ export default function Modal({
         <div
           ref={panelRef}
           className={[
-            "w-full overflow-hidden border border-transparent bg-white dark:border-gray-800 dark:bg-gray-900 dark:shadow-[0_24px_64px_rgba(0,0,0,0.45)]",
+            "w-full overflow-hidden border border-transparent bg-white dark:border-gray-800 dark:bg-gray-900",
             maxWidth,
             closing ? "animate-modal-card-out" : "animate-modal-card-in",
           ].join(" ")}
           style={{
-            borderRadius: "var(--radius-modal, 16px)",
-            boxShadow: "var(--shadow-4)",
+            borderRadius: "var(--radius-modal, 6px)",
+            boxShadow: "var(--shadow-1)",
           }}
           role="dialog"
           aria-modal="true"

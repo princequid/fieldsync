@@ -52,7 +52,7 @@ export default function ReassignModal({
             <div className="inline-flex items-center gap-2 rounded-card border border-black/5 bg-gray-50 px-3 py-2 dark:bg-gray-800 dark:text-gray-200">
               <div
                 className="grid h-6 w-6 place-items-center rounded-full text-[10px] font-bold text-white"
-                style={{ background: "linear-gradient(135deg, #2E86AB, #1A6FA8)" }}
+                style={{ background: "#2E86AB" }}
               >
                 {currentTechnician.initials}
               </div>
@@ -87,7 +87,7 @@ export default function ReassignModal({
                 >
                   <div
                     className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[11px] font-bold text-white"
-                    style={{ background: "linear-gradient(135deg, #2E86AB, #1A6FA8)" }}
+                    style={{ background: "#2E86AB" }}
                   >
                     {tech.initials}
                   </div>
@@ -135,7 +135,7 @@ export default function ReassignModal({
         <button
           type="button"
           onClick={animatedClose}
-          className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button border border-black/8 bg-white px-4 text-[13px] font-medium text-[#374151] transition-colors hover:border-brand-accent hover:text-brand-accent"
+          className="fs-focus-ring flex h-9 items-center rounded-button border border-black/8 bg-white px-4 text-[13px] font-medium text-[#374151] transition-colors hover:border-brand-accent hover:text-brand-accent"
         >
           Cancel
         </button>
@@ -143,10 +143,10 @@ export default function ReassignModal({
           type="button"
           onClick={handleConfirm}
           disabled={!selectedId}
-          className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button px-4 text-[13px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+          className="fs-focus-ring flex h-9 items-center rounded-button px-4 text-[13px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
           style={{
-            background: "linear-gradient(180deg, #1E3A5F 0%, #162D4A 100%)",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
+            background: "#1E3A5F",
+            boxShadow: "var(--shadow-1)",
           }}
         >
           Confirm Reassignment

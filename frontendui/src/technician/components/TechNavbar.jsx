@@ -58,7 +58,7 @@ export default function TechNavbar({ pageTitle }) {
           width: 28,
           height: 28,
           borderRadius: 7,
-          background: "linear-gradient(135deg,#2E86AB,#1A6FA8)",
+          background: "#2E86AB",
           border: "1px solid rgba(255,255,255,0.15)",
           display: "grid",
           placeItems: "center",
@@ -82,9 +82,8 @@ export default function TechNavbar({ pageTitle }) {
           borderRadius: "50%",
           display: "grid",
           placeItems: "center",
-          background: "linear-gradient(135deg,#2E86AB,#1A6FA8)",
+          background: "#2E86AB",
           border: "2px solid #FFFFFF",
-          boxShadow: "0 0 0 2px rgba(46,134,171,0.4)",
         }}
       >
         <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>
@@ -98,9 +97,8 @@ export default function TechNavbar({ pageTitle }) {
     <header
       className="pt-[env(safe-area-inset-top)] h-[calc(60px+env(safe-area-inset-top))] w-full"
       style={{
-        background: "linear-gradient(90deg, #1E3A5F 0%, #162D4A 100%)",
+        background: "#1E3A5F",
         borderBottom: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 1px 0 rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.08)",
       }}
     >
       <div
@@ -109,7 +107,7 @@ export default function TechNavbar({ pageTitle }) {
         style={{
           opacity: 0.03,
           backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.9) 0.6px, transparent 0.6px)",
+            "transparent",
           backgroundSize: "14px 14px",
           mixBlendMode: "soft-light",
         }}

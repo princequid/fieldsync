@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { useApolloClient } from "@apollo/client/react";
+import { CHANGE_PASSWORD_MUTATION } from "../../graphql/operations";
 
 const AuthContext = createContext(null);
 
@@ -21,7 +22,7 @@ export function AuthProvider({ children }) {
     const query = `mutation Login($email: String!, $password: String!) {
       login(email: $email, password: $password) {
         token
-        user { id name email role }
+        user { id name email phone role mustChangePassword }
       }
     }`;
 
@@ -46,8 +47,36 @@ export function AuthProvider({ children }) {
     return persistUser({
       id: u.id,
       email: u.email,
+      phone: u.phone ?? null,
       role: u.role,
       name: u.name,
+      mustChangePassword: !!u.mustChangePassword,
+    });
+  }
+
+  async function changePassword(currentPassword, newPassword) {
+    const { data, errors } = await apolloClient.mutate({
+      mutation: CHANGE_PASSWORD_MUTATION,
+      variables: { currentPassword, newPassword },
+    });
+
+    if (errors?.length) {
+      throw new Error(errors[0].message || "Failed to change password");
+    }
+
+    const payload = data?.changePassword;
+    if (!payload) throw new Error("Invalid response from server");
+
+    const { token, user: u } = payload;
+    if (token) localStorage.setItem("fieldsync_token", token);
+
+    return persistUser({
+      id: u.id,
+      email: u.email,
+      phone: u.phone ?? null,
+      role: u.role,
+      name: u.name,
+      mustChangePassword: !!u.mustChangePassword,
     });
   }
 
@@ -71,6 +100,7 @@ export function AuthProvider({ children }) {
         user,
         login,
         logout,
+        changePassword,
         activateFirstLogin,
         isAuthenticated: !!user,
       }}
