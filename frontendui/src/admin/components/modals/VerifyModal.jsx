@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import Modal from "../../../components/common/Modal";
-import { getUserById } from "../../../shared/utils/mockData";
 
 export default function VerifyModal({ job, onConfirm, onReject, onClose }) {
   const [adminNotes, setAdminNotes] = useState("");
   const [verified,   setVerified]   = useState(false);
   const [closing,    setClosing]    = useState(false);
 
-  const technician     = getUserById(job.technicianId);
+  const technician     = job.technician ?? null;
   const completionEntry = job.statusHistory?.find((e) => e.status === "COMPLETED");
   const completedAt    = completionEntry ? formatDateTime(completionEntry.changedAt) : null;
 
@@ -155,17 +154,17 @@ export default function VerifyModal({ job, onConfirm, onReject, onClose }) {
             <button
               type="button"
               onClick={handleReject}
-              className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button border border-red-200 bg-white px-4 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50"
+              className="fs-focus-ring flex h-9 items-center rounded-button border border-red-200 bg-white px-4 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50"
             >
               Reject
             </button>
             <button
               type="button"
               onClick={handleVerify}
-              className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button px-4 text-[13px] font-medium text-white"
+              className="fs-focus-ring flex h-9 items-center rounded-button px-4 text-[13px] font-medium text-white"
               style={{
-                background: "linear-gradient(180deg, #22C55E 0%, #16A34A 100%)",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
+                background: "#16A34A",
+                boxShadow: "var(--shadow-1)",
               }}
             >
               Verify &amp; Close Job

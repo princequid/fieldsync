@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Briefcase, CheckCircle2, Clock3, ShieldCheck } from "lucide-react";
 import { useAdminData } from "../hooks/useAdminData";
 import StatCard from "../components/StatCard";
@@ -46,30 +47,10 @@ function buildStatCards(jobs) {
 }
 
 const STATUS_SEGMENTS = [
-  {
-    status: "PENDING",
-    label: "Pending",
-    color: "#f59e0b",
-    gradient: ["#fbbf24", "#d97706"],
-  },
-  {
-    status: "IN_PROGRESS",
-    label: "In Progress",
-    color: "#3b82f6",
-    gradient: ["#60a5fa", "#2563eb"],
-  },
-  {
-    status: "COMPLETED",
-    label: "Completed",
-    color: "#22c55e",
-    gradient: ["#4ade80", "#16a34a"],
-  },
-  {
-    status: "VERIFIED",
-    label: "Verified",
-    color: "#64748b",
-    gradient: ["#94a3b8", "#475569"],
-  },
+  { status: "PENDING", label: "Pending", color: "#f59e0b" },
+  { status: "IN_PROGRESS", label: "In Progress", color: "#3b82f6" },
+  { status: "COMPLETED", label: "Completed", color: "#22c55e" },
+  { status: "VERIFIED", label: "Verified", color: "#64748b" },
 ];
 
 function JobsByStatusPanel({ jobs, activeStatus, onStatusClick }) {
@@ -89,7 +70,7 @@ function JobsByStatusPanel({ jobs, activeStatus, onStatusClick }) {
   const total = segments[0]?.total ?? 0;
 
   return (
-    <section className="fs-card overflow-hidden border border-transparent dark:border-gray-800/80 dark:shadow-[0_4px_24px_rgba(0,0,0,0.22)]">
+    <section className="fs-card overflow-hidden border border-transparent dark:border-gray-800/80">
       <div className="border-b border-black/5 px-5 py-4 dark:border-gray-800">
         <h2 className="fs-card-title dark:text-gray-100">Jobs by Status</h2>
         <p className="mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
@@ -108,7 +89,7 @@ function JobsByStatusPanel({ jobs, activeStatus, onStatusClick }) {
                 <button
                   type="button"
                   onClick={() => onStatusClick?.(seg.status)}
-                  className={`group w-full rounded-xl border px-3 py-2.5 text-left transition-all duration-150 ${
+                  className={`group w-full rounded-card border px-3 py-2.5 text-left transition-all duration-150 ${
                     isActive
                       ? "border-brand-accent/40 bg-brand-accent/5 shadow-sm dark:border-brand-accent/30 dark:bg-brand-accent/10"
                       : "border-transparent bg-[#F8FAFC] hover:border-black/5 hover:bg-white dark:bg-gray-800/50 dark:hover:border-gray-700 dark:hover:bg-gray-800"
@@ -139,7 +120,7 @@ function JobsByStatusPanel({ jobs, activeStatus, onStatusClick }) {
                       className="h-full rounded-full transition-all duration-500 ease-out"
                       style={{
                         width: `${seg.percent}%`,
-                        background: `linear-gradient(90deg, ${seg.gradient[0]}, ${seg.gradient[1]})`,
+                        background: seg.color,
                       }}
                     />
                   </div>
@@ -165,7 +146,7 @@ function StatusDonutChart({ segments, total }) {
   return (
     <div className="relative mx-auto flex h-44 w-44 items-center justify-center">
       <div
-        className="absolute inset-3 rounded-full bg-gradient-to-br from-[#F8FAFC] to-white shadow-inner dark:from-gray-800/80 dark:to-gray-900/90"
+        className="absolute inset-3 rounded-full bg-[#F8FAFC] dark:bg-gray-800"
         aria-hidden
       />
       <svg
@@ -173,22 +154,6 @@ function StatusDonutChart({ segments, total }) {
         className="relative h-full w-full -rotate-90"
         aria-hidden
       >
-        <defs>
-          {STATUS_SEGMENTS.map((seg) => (
-            <linearGradient
-              key={seg.status}
-              id={`donut-${seg.status}`}
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
-              <stop offset="0%" stopColor={seg.gradient[0]} />
-              <stop offset="100%" stopColor={seg.gradient[1]} />
-            </linearGradient>
-          ))}
-        </defs>
-
         <circle
           cx="70"
           cy="70"
@@ -220,7 +185,7 @@ function StatusDonutChart({ segments, total }) {
                 cy="70"
                 r={radius}
                 fill="none"
-                stroke={`url(#donut-${seg.status})`}
+                stroke={seg.color}
                 strokeWidth={strokeWidth}
                 strokeLinecap="round"
                 strokeDasharray={`${dash} ${circumference - dash}`}
@@ -247,6 +212,7 @@ function StatusDonutChart({ segments, total }) {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { jobs, technicians, loading, error, refetch, verifyJob, rejectJob } =
     useAdminData();
   const [statusFilter, setStatusFilter] = useState(null);
@@ -377,7 +343,8 @@ export default function Dashboard() {
                     return (
                       <li
                         key={tech.id}
-                        className="flex items-center justify-between gap-2 rounded-card px-2 py-2 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+                        onClick={() => navigate(`/admin/team?tech=${tech.id}`)}
+                        className="flex cursor-pointer items-center justify-between gap-2 rounded-card px-2 py-2 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         <div className="flex items-center gap-2.5">
                           <span className="grid h-8 w-8 place-items-center rounded-full bg-brand-accent text-[11px] font-bold text-white">

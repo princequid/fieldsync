@@ -9,37 +9,16 @@ import { useState } from "react";
  * Disabled: 40% opacity, cursor-not-allowed, no hover
  */
 
-const GRADIENT_SHADOW =
-  "0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.10)";
+const FLAT_SHADOW = "none";
 
 const VARIANT_STYLES = {
   primary: {
-    base: {
-      background: "linear-gradient(180deg, #1E3A5F 0%, #162D4A 100%)",
-      color: "#fff",
-      boxShadow: GRADIENT_SHADOW,
-      border: "none",
-    },
-    hover: {
-      background: "linear-gradient(180deg, #234672 0%, #1A3256 100%)",
-      color: "#fff",
-      boxShadow: GRADIENT_SHADOW,
-      border: "none",
-    },
+    base: { background: "#1E3A5F", color: "#fff", boxShadow: FLAT_SHADOW, border: "none" },
+    hover: { background: "#16304D", color: "#fff", boxShadow: FLAT_SHADOW, border: "none" },
   },
   secondary: {
-    base: {
-      background: "linear-gradient(180deg, #2577A3 0%, #1B6289 100%)",
-      color: "#fff",
-      boxShadow: GRADIENT_SHADOW,
-      border: "none",
-    },
-    hover: {
-      background: "linear-gradient(180deg, #2A81B1 0%, #1F6F99 100%)",
-      color: "#fff",
-      boxShadow: GRADIENT_SHADOW,
-      border: "none",
-    },
+    base: { background: "#2E86AB", color: "#fff", boxShadow: FLAT_SHADOW, border: "none" },
+    hover: { background: "#246D8A", color: "#fff", boxShadow: FLAT_SHADOW, border: "none" },
   },
   ghost: {
     base: {
@@ -56,18 +35,8 @@ const VARIANT_STYLES = {
     },
   },
   danger: {
-    base: {
-      background: "linear-gradient(180deg, #EF4444 0%, #DC2626 100%)",
-      color: "#fff",
-      boxShadow: GRADIENT_SHADOW,
-      border: "none",
-    },
-    hover: {
-      background: "linear-gradient(180deg, #F25555 0%, #E53535 100%)",
-      color: "#fff",
-      boxShadow: GRADIENT_SHADOW,
-      border: "none",
-    },
+    base: { background: "#DC2626", color: "#fff", boxShadow: FLAT_SHADOW, border: "none" },
+    hover: { background: "#B91C1C", color: "#fff", boxShadow: FLAT_SHADOW, border: "none" },
   },
   "danger-ghost": {
     base: {
@@ -84,18 +53,8 @@ const VARIANT_STYLES = {
     },
   },
   success: {
-    base: {
-      background: "linear-gradient(180deg, #22C55E 0%, #16A34A 100%)",
-      color: "#fff",
-      boxShadow: GRADIENT_SHADOW,
-      border: "none",
-    },
-    hover: {
-      background: "linear-gradient(180deg, #26D167 0%, #18B350 100%)",
-      color: "#fff",
-      boxShadow: GRADIENT_SHADOW,
-      border: "none",
-    },
+    base: { background: "#16A34A", color: "#fff", boxShadow: FLAT_SHADOW, border: "none" },
+    hover: { background: "#128A3E", color: "#fff", boxShadow: FLAT_SHADOW, border: "none" },
   },
 };
 
@@ -129,7 +88,7 @@ export default function Button({
     ...appliedVariant,
     fontWeight: 500,
     letterSpacing: "-0.1px",
-    borderRadius: "var(--radius-button, 8px)",
+    borderRadius: "var(--radius-button, 4px)",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
@@ -196,7 +155,6 @@ export default function Button({
       {/* Spinner — crossfades in during loading */}
       {loading && (
         <span
-          className="animate-fade-in"
           style={{
             position: "absolute",
             inset: 0,

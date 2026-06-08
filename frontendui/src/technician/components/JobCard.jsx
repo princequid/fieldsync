@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { ChevronRight, MapPin, Building } from "lucide-react";
-import { getUserById } from "../../shared/utils/mockData";
 import PriorityBadge from "../../shared/components/PriorityBadge";
 import { formatRelativeDate } from "../../shared/utils/formatDate";
 
@@ -33,7 +32,7 @@ const STATUS_LABEL = {
 
 export default function JobCard({ job }) {
   const navigate = useNavigate();
-  const client = getUserById(job.clientId);
+  const client = job.client ?? null;
   const stripColor = STATUS_COLOR[job.status] ?? STATUS_COLOR.PENDING;
 
   useEffect(() => {
@@ -55,10 +54,8 @@ export default function JobCard({ job }) {
     <button
       type="button"
       onClick={handleOpen}
-      className="fs-btn-press mx-3 my-1 overflow-hidden rounded-[12px] border border-[#F1F5F9] bg-white text-left dark:border-gray-800 dark:bg-gray-900 active:scale-[0.97] active:shadow-sm transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-      style={{
-        boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)",
-      }}
+      className="mx-3 my-1 overflow-hidden rounded-card border border-[#F1F5F9] bg-white text-left dark:border-gray-800 dark:bg-gray-900"
+      style={{ boxShadow: "var(--shadow-1)" }}
     >
       {/* Status strip */}
       <div
@@ -73,7 +70,7 @@ export default function JobCard({ job }) {
               position: "absolute",
               inset: 0,
               backgroundImage:
-                "linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.25), rgba(255,255,255,0))",
+                "transparent",
               backgroundSize: "200% 100%",
               animation: "techShimmer 2s linear infinite",
             }}

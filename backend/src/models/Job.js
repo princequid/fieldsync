@@ -23,9 +23,21 @@ const jobSchema = new mongoose.Schema(
         "PENDING",
         "IN_PROGRESS",
         "COMPLETED",
-        "VERIFIED"
+        "VERIFIED",
+        "CANCELLED"
       ],
       default: "PENDING"
+    },
+
+    priority: {
+      type: String,
+      enum: ["LOW", "MEDIUM", "HIGH"],
+      default: "MEDIUM"
+    },
+
+    completionNote: {
+      type: String,
+      default: null
     },
 
     technician: {

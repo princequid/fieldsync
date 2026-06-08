@@ -4,7 +4,10 @@ const userTypeDefs = `#graphql
     id: ID!
     name: String!
     email: String!
+    phone: String
+    address: String
     role: String!
+    mustChangePassword: Boolean
     createdAt: String
     updatedAt: String
   }
@@ -14,8 +17,13 @@ const userTypeDefs = `#graphql
     user: User!
   }
 
+  type CreateTechnicianResponse {
+    user: User!
+    temporaryPassword: String!
+  }
+
   type Query {
-    users: [User]
+    users(role: String): [User]
     me: User
   }
 
@@ -26,6 +34,19 @@ const userTypeDefs = `#graphql
       email: String!
       password: String!
       role: String!
+      phone: String
+      address: String
+    ): AuthResponse
+
+    createTechnician(
+      name: String!
+      email: String!
+      phone: String
+    ): CreateTechnicianResponse
+
+    changePassword(
+      currentPassword: String!
+      newPassword: String!
     ): AuthResponse
 
     login(

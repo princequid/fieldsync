@@ -78,9 +78,7 @@ export default function Modal({
           position: "fixed",
           inset: 0,
           zIndex: 40,
-          background: "rgba(0,0,0,0.60)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
+          background: "rgba(0,0,0,0.45)",
         }}
         onClick={animatedClose}
         aria-hidden
@@ -92,7 +90,7 @@ export default function Modal({
           inset: 0,
           zIndex: 50,
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-start",
           justifyContent: "center",
           padding: "32px 16px",
           overflowY: "auto",
@@ -106,8 +104,8 @@ export default function Modal({
             closing ? "animate-modal-card-out" : "animate-modal-card-in",
           ].join(" ")}
           style={{
-            borderRadius: "var(--radius-modal, 16px)",
-            boxShadow: "var(--shadow-4)",
+            borderRadius: "var(--radius-modal, 6px)",
+            boxShadow: "var(--shadow-1)",
           }}
           role="dialog"
           aria-modal="true"

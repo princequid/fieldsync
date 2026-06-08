@@ -5,9 +5,9 @@ import {
   TechnicianDataProvider,
   useTechnicianData,
 } from "../hooks/useTechnicianData";
-import { getUserById } from "../../shared/utils/mockData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import TechNavbar from "../components/TechNavbar";
+import ForcePasswordChangeModal from "../components/ForcePasswordChangeModal";
 import PageTransitionWrapper from "../../shared/components/PageTransitionWrapper";
 import {
   GenericPageSkeleton,
@@ -38,7 +38,6 @@ function isTabActive(pathname, path) {
 export default function TechnicianLayout() {
   const { user } = useAuth();
   const location = useLocation();
-  const userData = getUserById(user?.id);
   const title = getPageTitle(location.pathname);
 
   return (
@@ -53,6 +52,8 @@ export default function TechnicianLayout() {
         {/* Bottom navigation rendered inside provider via NavTabs */}
         <NavTabs currentPath={location.pathname} />
       </div>
+
+      {user?.mustChangePassword && <ForcePasswordChangeModal />}
     </TechnicianDataProvider>
   );
 }
@@ -66,7 +67,7 @@ function NavTabs({ currentPath }) {
         borderTop: "1px solid #F1F5F9",
         paddingBottom: "env(safe-area-inset-bottom)",
         boxSizing: "border-box",
-        boxShadow: "0 -1px 0 rgba(0,0,0,0.04), 0 -4px 12px rgba(0,0,0,0.03)",
+        boxShadow: "var(--shadow-1)",
       }}
     >
       <div className="grid h-full grid-cols-2">

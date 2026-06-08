@@ -60,7 +60,7 @@ export default function AdminLayout() {
           onCollapsedChange={setSidebarCollapsed}
           className={
             showMobileDrawer
-              ? "fixed left-0 top-0 z-50 h-screen w-64 shadow-[4px_0_24px_rgba(0,0,0,0.12)]"
+              ? "fixed left-0 top-0 z-50 h-screen w-64"
               : "relative z-auto shrink-0"
           }
         />

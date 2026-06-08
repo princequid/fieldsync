@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronUp } from "lucide-react";
-import { getClientById, getUserById } from "../../shared/utils/mockData";
 import StatusBadge from "../../shared/components/StatusBadge";
 import PriorityBadge from "../../shared/components/PriorityBadge";
 
@@ -13,7 +12,7 @@ function formatRelative(iso) {
   return `${Math.floor(hrs / 24)}d`;
 }
 
-const AVATAR_GRADIENT = "linear-gradient(135deg, #2E86AB 0%, #1A6FA8 100%)";
+const AVATAR_FILL = "#2E86AB";
 
 const COLUMNS = [
   "Job",
@@ -76,8 +75,8 @@ export default function Table({
           {/* ── Body ───────────────────────────────────────────────── */}
           <tbody>
             {rows.map((job) => {
-              const client = getClientById(job.clientId);
-              const technician = getUserById(job.technicianId);
+              const client = job.client ?? null;
+              const technician = job.technician ?? null;
 
               return (
                 /* fs-table-row uses CSS transitions defined in index.css — not class toggling */
@@ -113,7 +112,7 @@ export default function Table({
                       <div className="inline-flex items-center gap-2">
                         <div
                           className="grid h-6 w-6 shrink-0 place-items-center rounded-full text-[10px] font-bold text-white"
-                          style={{ background: AVATAR_GRADIENT }}
+                          style={{ background: AVATAR_FILL }}
                         >
                           {technician.initials}
                         </div>
@@ -160,7 +159,7 @@ export default function Table({
                           className="fs-btn-shine relative flex h-7 items-center rounded-badge px-3 text-[11px] font-semibold text-white"
                           style={{
                             background:
-                              "linear-gradient(180deg, #22C55E 0%, #16A34A 100%)",
+                              "#16A34A",
                           }}
                         >
                           Verify

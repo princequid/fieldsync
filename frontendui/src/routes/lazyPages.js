@@ -8,7 +8,11 @@ export const LazyJobDetail = lazy(() => import("../admin/pages/JobDetail"));
 export const LazyTeamManagement = lazy(
   () => import("../admin/pages/TeamManagement"),
 );
+export const LazyNewTechnician = lazy(
+  () => import("../admin/pages/NewTechnician"),
+);
 export const LazyClients = lazy(() => import("../admin/pages/Clients"));
+export const LazyNewClient = lazy(() => import("../admin/pages/NewClient"));
 export const LazyAnalytics = lazy(() => import("../admin/pages/Analytics"));
 
 /* Technician pages */

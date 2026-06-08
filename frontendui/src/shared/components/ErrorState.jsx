@@ -26,7 +26,7 @@ export default function ErrorState({
           <button
             type="button"
             onClick={onRetry}
-            className="fs-btn-press fs-focus-ring mt-5 rounded-button border border-[#E2E8F0] bg-white px-5 py-2.5 text-[13px] font-medium text-[#374151] hover:bg-[#F8FAFC]"
+            className="fs-focus-ring mt-5 rounded-button border border-[#E2E8F0] bg-white px-5 py-2.5 text-[13px] font-medium text-[#374151] hover:bg-[#F8FAFC]"
           >
             Retry
           </button>

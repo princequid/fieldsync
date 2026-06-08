@@ -69,9 +69,7 @@ export default function LoginForm() {
                 key={item}
                 className="flex items-center gap-3 text-[14px] text-white/70"
               >
-                <span className="grid h-5 w-5 place-items-center rounded-full bg-[rgba(46,134,171,0.3)]">
-                  <Check size={12} className="text-[#2E86AB]" />
-                </span>
+                <Check size={14} className="text-[#2E86AB]" aria-hidden />
                 {item}
               </li>
             ))}
@@ -82,11 +80,6 @@ export default function LoginForm() {
           SwiftFix Facilities Management Ltd. · Accra, Ghana
         </p>
 
-        <div className="fs-login-brand-circles" aria-hidden>
-          <span />
-          <span />
-          <span />
-        </div>
       </aside>
 
       <section className="flex min-h-screen items-center justify-center bg-white px-6 py-10 sm:px-10 lg:px-12 dark:bg-gray-950">
@@ -165,16 +158,8 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="fs-btn-press fs-focus-ring relative flex h-11 w-full items-center justify-center overflow-hidden rounded-button bg-linear-to-r from-[#1E3A5F] to-[#162D4A] text-[13px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-75"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+              className="fs-focus-ring relative flex h-11 w-full items-center justify-center overflow-hidden rounded-button bg-[#1E3A5F] hover:bg-[#16304D] text-[13px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-75"
             >
-              <span
-                className="pointer-events-none absolute inset-x-0 top-0 h-1/2"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(255,255,255,0.08), transparent)",
-                }}
-              />
               {isSubmitting ? (
                 <span className="relative z-10 flex items-center gap-2">
                   <LoaderCircle className="animate-spin" size={16} />

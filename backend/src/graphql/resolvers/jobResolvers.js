@@ -6,6 +6,8 @@ const authorizeRoles = require("../../middleware/roleMiddleware");
 
 const Notification = require("../../models/Notification");
 
+const formatDate = require("../../utils/formatDate");
+
 const allowedTransitions = {
   PENDING: ["IN_PROGRESS"],
 
@@ -23,7 +25,18 @@ const {
 
 const { createNotification } = require("../../services/notificationService");
 
+const {
+  sendJobCreatedEmail,
+  sendJobAssignedEmail,
+  sendJobStatusUpdateEmail,
+} = require("../../services/emailService");
+
 const jobResolvers = {
+  Job: {
+    createdAt: (job) => formatDate(job.createdAt),
+    updatedAt: (job) => formatDate(job.updatedAt),
+  },
+
   Query: {
     jobs: async (_, { status }, context) => {
       authorizeRoles("ADMIN", "TECHNICIAN")(context.user);
@@ -85,7 +98,7 @@ const jobResolvers = {
     createJob: async (_, args, context) => {
       authorizeRoles("ADMIN")(context.user);
 
-      const { title, description, location, technicianId, clientId } = args;
+      const { title, description, location, technicianId, clientId, priority } = args;
 
       // validate technician
       const technician = await User.findById(technicianId);
@@ -106,13 +119,23 @@ const jobResolvers = {
         title,
         description,
         location,
-
+        priority: priority ?? "MEDIUM",
         technician: technicianId,
-
         client: clientId,
-
         createdBy: context.user._id,
       });
+
+      try {
+        await sendJobCreatedEmail({ client, job, technician });
+      } catch (err) {
+        console.error("Failed to send job confirmation email:", err.message);
+      }
+
+      try {
+        await sendJobAssignedEmail({ technician, job, client });
+      } catch (err) {
+        console.error("Failed to send job assignment email:", err.message);
+      }
 
       return await Job.findById(job._id)
         .populate("technician")
@@ -168,6 +191,71 @@ const jobResolvers = {
         job: job._id,
 
         message: `Job "${job.title}" status updated to ${status}`,
+      });
+
+      const populatedJob = await getPopulatedJob(job._id);
+
+      try {
+        await sendJobStatusUpdateEmail({
+          client: populatedJob.client,
+          job: populatedJob,
+          technician: populatedJob.technician,
+          status,
+        });
+      } catch (err) {
+        console.error("Failed to send job status update email:", err.message);
+      }
+
+      return populatedJob;
+    },
+
+    cancelJob: async (_, { jobId }, context) => {
+      authorizeRoles("ADMIN")(context.user);
+
+      const job = await Job.findById(jobId);
+      if (!job) throw new Error("Job not found");
+      if (job.status === "VERIFIED") throw new Error("Cannot cancel a verified job");
+
+      job.status = "CANCELLED";
+      await job.save();
+      return await getPopulatedJob(job._id);
+    },
+
+    reassignJob: async (_, { jobId, technicianId }, context) => {
+      authorizeRoles("ADMIN")(context.user);
+
+      const job = await Job.findById(jobId);
+      if (!job) throw new Error("Job not found");
+
+      const technician = await User.findById(technicianId);
+      if (!technician || technician.role !== "TECHNICIAN") throw new Error("Invalid technician");
+
+      job.technician = technicianId;
+      await job.save();
+
+      await createNotification({
+        client: job.client,
+        job: job._id,
+        message: `Job "${job.title}" reassigned to ${technician.name}`,
+      });
+
+      return await getPopulatedJob(job._id);
+    },
+
+    rejectJobCompletion: async (_, { jobId }, context) => {
+      authorizeRoles("ADMIN")(context.user);
+
+      const job = await Job.findById(jobId);
+      if (!job) throw new Error("Job not found");
+      if (job.status !== "COMPLETED") throw new Error("Job is not in COMPLETED status");
+
+      job.status = "IN_PROGRESS";
+      await job.save();
+
+      await createNotification({
+        client: job.client,
+        job: job._id,
+        message: `Job "${job.title}" completion was rejected, returned to In Progress`,
       });
 
       return await getPopulatedJob(job._id);

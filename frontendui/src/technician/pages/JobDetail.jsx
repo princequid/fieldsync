@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, Phone, Building } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
 import { useTechnicianData } from "../hooks/useTechnicianData";
-import { getUserById } from "../../shared/utils/mockData";
 import StatusBanner from "../components/StatusBanner";
 import PriorityBadge from "../../shared/components/PriorityBadge";
 import { formatFullDate, formatTime } from "../../shared/utils/formatDate";
@@ -38,7 +37,7 @@ export default function TechJobDetail() {
         <button
           type="button"
           onClick={() => navigate("/tech/jobs")}
-          className="fs-btn-gradient-accent fs-btn-press fs-focus-ring mt-5 rounded-button px-5 py-2.5 text-[13px] font-semibold text-white"
+          className="fs-btn-gradient-accent fs-focus-ring mt-5 rounded-button px-5 py-2.5 text-[13px] font-semibold text-white"
         >
           Back to My Jobs
         </button>
@@ -48,7 +47,7 @@ export default function TechJobDetail() {
 
   if (job.technicianId !== user?.id) return null;
 
-  const client = getUserById(job.clientId);
+  const client = job.client ?? null;
   const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(job.location)}`;
   const showTimeline = job.status === "COMPLETED" || job.status === "VERIFIED";
   const history = [...(job.statusHistory ?? [])].reverse();
@@ -169,19 +168,19 @@ export default function TechJobDetail() {
 function JobActionBar({ job, jobId, navigate }) {
   const shellStyle = {
     bottom: "64px",
-    boxShadow: "0 -4px 16px rgba(0,0,0,0.06)",
+    boxShadow: "var(--shadow-1)",
   };
 
   if (job.status === "PENDING") {
     return (
       <div
-        className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm dark:bg-gray-900/96"
+        className="sticky z-10 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900"
         style={shellStyle}
       >
         <button
           type="button"
           onClick={() => navigate(`/tech/jobs/${jobId}/start`)}
-          className="fs-btn-shine fs-btn-gradient-accent fs-btn-press fs-focus-ring w-full rounded-[12px] text-[16px] font-semibold text-white"
+          className="fs-btn-shine fs-btn-gradient-accent fs-focus-ring w-full rounded-card text-[16px] font-semibold text-white"
           style={{ height: "52px" }}
         >
           Start This Job
@@ -193,13 +192,13 @@ function JobActionBar({ job, jobId, navigate }) {
   if (job.status === "IN_PROGRESS") {
     return (
       <div
-        className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm dark:bg-gray-900/96"
+        className="sticky z-10 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900"
         style={shellStyle}
       >
         <button
           type="button"
           onClick={() => navigate(`/tech/jobs/${jobId}/complete`)}
-          className="fs-btn-shine fs-btn-gradient-success fs-btn-press fs-focus-ring w-full rounded-[12px] text-[16px] font-semibold text-white"
+          className="fs-btn-shine fs-btn-gradient-success fs-focus-ring w-full rounded-card text-[16px] font-semibold text-white"
           style={{ height: "52px" }}
         >
           Mark as Complete
@@ -211,10 +210,10 @@ function JobActionBar({ job, jobId, navigate }) {
   if (job.status === "COMPLETED") {
     return (
       <div
-        className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm dark:bg-gray-900/96"
+        className="sticky z-10 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900"
         style={shellStyle}
       >
-        <div className="flex h-13 w-full items-center justify-center rounded-[12px] bg-gray-100 text-[16px] font-semibold text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+        <div className="flex h-13 w-full items-center justify-center rounded-card bg-gray-100 text-[16px] font-semibold text-gray-400 dark:bg-gray-800 dark:text-gray-500">
           Awaiting admin verification
         </div>
       </div>
@@ -223,10 +222,10 @@ function JobActionBar({ job, jobId, navigate }) {
 
   return (
     <div
-      className="sticky z-10 bg-white/96 px-4 py-3 backdrop-blur-sm dark:bg-gray-900/96"
+      className="sticky z-10 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900"
       style={shellStyle}
     >
-      <div className="flex h-13 w-full items-center justify-center rounded-[12px] bg-brand-navy text-[16px] font-semibold text-white/80">
+      <div className="flex h-13 w-full items-center justify-center rounded-card bg-brand-navy text-[16px] font-semibold text-white/80">
         This job is closed
       </div>
     </div>
@@ -236,7 +235,7 @@ function JobActionBar({ job, jobId, navigate }) {
 function StatTile({ label, value }) {
   return (
     <div
-      className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
+      className="rounded-card border bg-white dark:bg-gray-900 p-3"
       style={{ border: "1px solid #F1F5F9" }}
     >
       <p className="fs-label text-gray-400 dark:text-gray-500">{label}</p>
