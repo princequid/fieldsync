@@ -25,6 +25,12 @@ const {
 
 const { createNotification } = require("../../services/notificationService");
 
+const {
+  sendJobCreatedEmail,
+  sendJobAssignedEmail,
+  sendJobStatusUpdateEmail,
+} = require("../../services/emailService");
+
 const jobResolvers = {
   Job: {
     createdAt: (job) => formatDate(job.createdAt),
@@ -119,6 +125,18 @@ const jobResolvers = {
         createdBy: context.user._id,
       });
 
+      try {
+        await sendJobCreatedEmail({ client, job, technician });
+      } catch (err) {
+        console.error("Failed to send job confirmation email:", err.message);
+      }
+
+      try {
+        await sendJobAssignedEmail({ technician, job, client });
+      } catch (err) {
+        console.error("Failed to send job assignment email:", err.message);
+      }
+
       return await Job.findById(job._id)
         .populate("technician")
         .populate("client")
@@ -175,7 +193,20 @@ const jobResolvers = {
         message: `Job "${job.title}" status updated to ${status}`,
       });
 
-      return await getPopulatedJob(job._id);
+      const populatedJob = await getPopulatedJob(job._id);
+
+      try {
+        await sendJobStatusUpdateEmail({
+          client: populatedJob.client,
+          job: populatedJob,
+          technician: populatedJob.technician,
+          status,
+        });
+      } catch (err) {
+        console.error("Failed to send job status update email:", err.message);
+      }
+
+      return populatedJob;
     },
 
     cancelJob: async (_, { jobId }, context) => {
