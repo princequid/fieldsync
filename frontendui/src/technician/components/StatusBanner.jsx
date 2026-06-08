@@ -9,22 +9,21 @@ import {
 const STYLES = {
   pending: {
     shell:
-      "border-l-[4px] border-l-[#F59E0B] bg-gradient-to-r from-[#FFFBEB] to-[#FEFCE8] text-[#92400E] dark:from-amber-950/40 dark:to-amber-950/20 dark:border-amber-600",
+      "border-l-[4px] border-l-[#F59E0B] bg-[#FFFBEB] text-[#92400E] dark:bg-amber-950/30 dark:border-amber-600",
     iconBg: "bg-[rgba(245,158,11,0.15)] text-[#92400E] dark:bg-amber-900/30",
   },
   progress: {
     shell:
-      "border-l-[4px] border-l-[#3B82F6] bg-gradient-to-r from-[#EFF6FF] to-[#EFF6FF] text-[#1D4ED8] dark:from-blue-950/40 dark:to-blue-950/20 dark:border-blue-600",
+      "border-l-[4px] border-l-[#3B82F6] bg-[#EFF6FF] text-[#1D4ED8] dark:bg-blue-950/30 dark:border-blue-600",
     iconBg: "bg-[rgba(59,130,246,0.15)] text-[#1D4ED8] dark:bg-blue-900/30",
   },
   completed: {
     shell:
-      "border-l-[4px] border-l-[#22C55E] bg-gradient-to-r from-[#F0FDF4] to-[#DCFCE7] text-green-900 dark:from-green-950/40 dark:to-green-950/20 dark:border-l-[#16A34A]",
+      "border-l-[4px] border-l-[#22C55E] bg-[#F0FDF4] text-green-900 dark:bg-green-950/30 dark:border-l-[#16A34A]",
     iconBg: "bg-[rgba(34,197,94,0.15)] text-green-700 dark:bg-green-900/30",
   },
   verified: {
-    shell:
-      "border-l-[4px] border-l-[#1E3A5F] bg-gradient-to-r from-[#1E3A5F] to-[#162D4A] text-white",
+    shell: "border-l-[4px] border-l-[#1E3A5F] bg-[#1E3A5F] text-white",
     iconBg: "bg-white/10 text-white",
   },
 };
@@ -116,21 +115,13 @@ export default function StatusBanner({ job }) {
   return null;
 }
 
-function BannerShell({ children, cls, iconBg }) {
+function BannerShell({ children, cls }) {
   const [icon, content] = Array.isArray(children) ? children : [children, null];
 
   return (
     <div className="px-3 pt-3">
-      <div
-        className={`fs-card flex items-start gap-3 rounded-[16px] p-4 ${cls}`}
-        style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
-      >
-        <span
-          className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full ${iconBg}`}
-          style={{ width: 36, height: 36 }}
-        >
-          {icon}
-        </span>
+      <div className={`flex items-start gap-3 rounded-card border border-gray-200 p-4 dark:border-gray-800 ${cls}`}>
+        <span className="mt-0.5 shrink-0">{icon}</span>
         {content}
       </div>
     </div>

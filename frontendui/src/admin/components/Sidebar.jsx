@@ -11,7 +11,6 @@ import {
   Users,
 } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
-import { getUserById } from "../../shared/utils/mockData";
 
 const NAV_SECTIONS = [
   {
@@ -33,10 +32,10 @@ const NAV_SECTIONS = [
 ];
 
 /* FS logo gradient */
-const LOGO_GRADIENT = "linear-gradient(135deg, #2E86AB 0%, #1A6FA8 100%)";
+const LOGO_FILL = "#2E86AB";
 
 const TOGGLE_BTN =
-  "fs-focus-ring flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white/80 transition-all duration-150 hover:border-white/20 hover:bg-white/15 hover:text-white active:scale-95";
+  "fs-focus-ring flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white/80 hover:border-white/20 hover:bg-white/15 hover:text-white";
 
 export default function Sidebar({
   collapsed = false,
@@ -48,7 +47,9 @@ export default function Sidebar({
 }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const profile = getUserById(user?.id);
+  const userInitials = user?.name
+    ? user.name.split(" ").map((n) => n[0] ?? "").join("").toUpperCase().slice(0, 2)
+    : (user?.email?.[0] ?? "A").toUpperCase();
 
   function setCollapsed(next) {
     onCollapsedChange?.(next);
@@ -83,7 +84,7 @@ export default function Sidebar({
           <div
             className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] text-[13px] font-bold text-white"
             style={{
-              background: LOGO_GRADIENT,
+              background: LOGO_FILL,
               border: "1px solid rgba(255,255,255,0.15)",
             }}
             aria-hidden
@@ -99,7 +100,7 @@ export default function Sidebar({
               >
                 FieldSync
               </p>
-              <p className="text-[10px] uppercase tracking-widest text-white/35">
+              <p className="text-[11px] text-white/40">
                 Operations Platform
               </p>
             </div>
@@ -148,7 +149,7 @@ export default function Sidebar({
             {/* Section label — hidden when collapsed */}
             {!collapsed && (
               <p
-                className="mb-1 text-[10px] uppercase tracking-widest text-white/30"
+                className="mb-1 text-[11px] text-white/35"
                 style={{ paddingLeft: "20px" }}
               >
                 {sectionLabel}
@@ -228,19 +229,19 @@ export default function Sidebar({
           <div
             className="h-8 w-8 shrink-0 overflow-hidden rounded-full text-center text-[12px] font-bold leading-8 text-white"
             style={{
-              background: LOGO_GRADIENT,
+              background: LOGO_FILL,
               /* 2px ring with 2px white gap via outline */
               outline: "2px solid rgba(255,255,255,0.2)",
               outlineOffset: "2px",
             }}
           >
-            {profile?.initials ?? "A"}
+            {userInitials}
           </div>
 
           {!collapsed && (
             <div className="min-w-0">
               <p className="truncate text-[13px] font-medium leading-tight text-white">
-                {profile?.name ?? user?.email}
+                {user?.name ?? user?.email}
               </p>
               <p className="text-[11px] text-white/40">Operations Manager</p>
             </div>

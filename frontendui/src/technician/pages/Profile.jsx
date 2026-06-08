@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Mail, Phone, Wrench } from "lucide-react";
+import { LogOut, Mail, Phone } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
-import { getUserById } from "../../shared/utils/mockData";
 import { useTechnicianData } from "../hooks/useTechnicianData";
+
+function toInitials(name = "") {
+  return name.split(" ").map((n) => n[0] ?? "").join("").toUpperCase().slice(0, 2) || "T";
+}
 
 export default function Profile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const profile = getUserById(user?.id);
   const { jobs } = useTechnicianData(user?.id);
   const [showSignOut, setShowSignOut] = useState(false);
   const presenceStorageKey = `fieldsync_tech_presence_${user?.id ?? "unknown"}`;
@@ -18,9 +20,9 @@ export default function Profile() {
       if (stored === "active") return true;
       if (stored === "offline") return false;
     } catch {
-      // Ignore storage failures and use profile fallback.
+      // Ignore storage failures.
     }
-    return Boolean(profile?.online);
+    return false;
   });
 
   const activeJobs = jobs.filter(
@@ -61,23 +63,22 @@ export default function Profile() {
             style={{
               width: 72,
               height: 72,
-              background: "linear-gradient(135deg,#2E86AB,#1A6FA8)",
-              border: "3px solid #2E86AB",
-              boxShadow: "0 0 0 3px #FFFFFF, 0 0 0 6px #2E86AB",
+              background: "#2E86AB",
+              border: "3px solid #FFFFFF",
             }}
           >
             <span className="text-white text-[24px] font-bold">
-              {profile?.initials ?? "T"}
+              {toInitials(user?.name)}
             </span>
           </div>
           <h1
             className="mt-3 text-[18px] font-bold text-[#0F172A] dark:text-gray-50"
             style={{ letterSpacing: "-0.3px" }}
           >
-            {profile?.name ?? user?.email}
+            {user?.name ?? user?.email}
           </h1>
           <p className="mt-1 text-[13px] text-[#64748B] dark:text-gray-400">
-            {profile?.specialty ?? "Field Technician"}
+            Field Technician
           </p>
           <div className="mt-3">
             <button
@@ -99,27 +100,27 @@ export default function Profile() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3" style={{ margin: "8px 12px 0" }}>
         <div
-          className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
+          className="rounded-card border bg-white dark:bg-gray-900 p-3"
           style={{ border: "1px solid #F1F5F9" }}
         >
           <p className="text-[22px] font-bold text-[#0F172A] dark:text-gray-50">
             {activeJobs}
           </p>
-          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500 uppercase tracking-wide">
+          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500">
             Active
           </p>
         </div>
         <div
-          className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
+          className="rounded-card border bg-white dark:bg-gray-900 p-3"
           style={{ border: "1px solid #F1F5F9" }}
         >
           <p className="text-[22px] font-bold text-[#2E86AB]">{completed}</p>
-          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500 uppercase tracking-wide">
+          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500">
             Completed
           </p>
         </div>
         <div
-          className="rounded-[12px] border bg-white dark:bg-gray-900 p-3"
+          className="rounded-card border bg-white dark:bg-gray-900 p-3"
           style={{ border: "1px solid #F1F5F9" }}
         >
           <p
@@ -128,7 +129,7 @@ export default function Profile() {
           >
             {verified}
           </p>
-          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500 uppercase tracking-wide">
+          <p className="mt-1 text-[11px] text-[#94A3B8] dark:text-gray-500">
             Verified
           </p>
         </div>
@@ -137,10 +138,10 @@ export default function Profile() {
       {/* Info section */}
       <div style={{ margin: "8px 12px 0" }}>
         <div
-          className="rounded-[12px] bg-white dark:bg-gray-900"
+          className="rounded-card bg-white dark:bg-gray-900"
           style={{ border: "1px solid #F1F5F9" }}
         >
-          {profile?.specialty && (
+          {user?.email && (
             <div
               className="flex items-center"
               style={{
@@ -149,50 +150,24 @@ export default function Profile() {
                 borderBottom: "1px solid #F8FAFC",
               }}
             >
-              <div className="h-7 w-7 rounded-full grid place-items-center bg-[#F8FAFC] dark:bg-gray-800 mr-4">
-                <Wrench size={16} className="text-[#94A3B8]" />
-              </div>
-              <div>
-                <div className="text-[11px] uppercase tracking-wide text-[#94A3B8]">
-                  Specialty
-                </div>
-                <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
-                  {profile.specialty}
-                </div>
-              </div>
-            </div>
-          )}
-          {profile?.email && (
-            <div
-              className="flex items-center"
-              style={{
-                height: 52,
-                padding: "0 16px",
-                borderBottom: "1px solid #F8FAFC",
-              }}
-            >
-              <div className="h-7 w-7 rounded-full grid place-items-center bg-[#F8FAFC] dark:bg-gray-800 mr-4">
-                <Mail size={16} className="text-[#94A3B8]" />
-              </div>
+              <Mail size={16} className="mr-3 text-[#94A3B8]" aria-hidden />
               <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
-                {profile.email}
+                {user.email}
               </div>
             </div>
           )}
-          {profile?.phone && (
+          {user?.phone && (
             <div
               className="flex items-center"
               style={{ height: 52, padding: "0 16px" }}
             >
-              <div className="h-7 w-7 rounded-full grid place-items-center bg-[#F8FAFC] dark:bg-gray-800 mr-4">
-                <Phone size={16} className="text-[#94A3B8]" />
-              </div>
+              <Phone size={16} className="mr-3 text-[#94A3B8]" aria-hidden />
               <div>
-                <div className="text-[11px] uppercase tracking-wide text-[#94A3B8]">
+                <div className="text-[11px] text-[#94A3B8]">
                   Phone
                 </div>
                 <div className="text-[13px] font-medium text-[#374151] dark:text-gray-200">
-                  {profile.phone}
+                  {user.phone}
                 </div>
               </div>
             </div>
@@ -205,7 +180,7 @@ export default function Profile() {
         <button
           type="button"
           onClick={() => setShowSignOut(true)}
-          className="w-full h-12 rounded-[12px] text-[14px] font-medium"
+          className="w-full h-12 rounded-card text-[14px] font-medium"
           style={{
             background: "#FEF2F2",
             border: "1px solid #FECACA",
@@ -230,8 +205,8 @@ export default function Profile() {
               width: "100%",
               maxWidth: 480,
               background: "white",
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
               padding: 20,
               paddingBottom: 36,
             }}
@@ -250,16 +225,16 @@ export default function Profile() {
             <div className="mt-5">
               <button
                 onClick={handleSignOut}
-                className="w-full h-12 rounded-[12px] text-white font-semibold"
+                className="w-full h-12 rounded-card text-white font-semibold"
                 style={{
-                  background: "linear-gradient(180deg,#EF4444,#DC2626)",
+                  background: "#DC2626",
                 }}
               >
                 Yes, Sign Out
               </button>
               <button
                 onClick={() => setShowSignOut(false)}
-                className="w-full h-12 mt-2 rounded-[12px] bg-[#F8FAFC] text-[#374151]"
+                className="w-full h-12 mt-2 rounded-card bg-[#F8FAFC] text-[#374151]"
               >
                 Cancel
               </button>
@@ -267,25 +242,6 @@ export default function Profile() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function ProfileStatTile({ label, value, accent }) {
-  return (
-    <div
-      className="rounded-card border border-black/6 bg-white p-3 text-center dark:border-gray-800 dark:bg-gray-900"
-      style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}
-    >
-      <p
-        className="text-[18px] font-bold leading-tight"
-        style={{ color: accent }}
-      >
-        {value}
-      </p>
-      <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-        {label}
-      </p>
     </div>
   );
 }

@@ -8,7 +8,9 @@ import {
   LazyNewJob,
   LazyJobDetail,
   LazyTeamManagement,
+  LazyNewTechnician,
   LazyClients,
+  LazyNewClient,
   LazyAnalytics,
 } from "./lazyPages";
 import {
@@ -42,7 +44,15 @@ export const adminRouteTree = (
       element={lazyRoute(LazyJobDetail, JobDetailPageSkeleton)}
     />
     <Route path="team" element={lazyRoute(LazyTeamManagement, TeamPageSkeleton)} />
+    <Route
+      path="team/new"
+      element={lazyRoute(LazyNewTechnician, NewJobPageSkeleton)}
+    />
     <Route path="clients" element={lazyRoute(LazyClients, ClientsPageSkeleton)} />
+    <Route
+      path="clients/new"
+      element={lazyRoute(LazyNewClient, NewJobPageSkeleton)}
+    />
     <Route
       path="analytics"
       element={lazyRoute(LazyAnalytics, AnalyticsPageSkeleton)}

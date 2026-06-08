@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin } from "lucide-react";
-import { getClientById, getUserById } from "../../shared/utils/mockData";
 import TechChip from "../components/TechChip";
 import { useAdminData } from "../hooks/useAdminData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
@@ -58,8 +57,8 @@ export default function JobDetail() {
   const detail = useMemo(() => {
     if (!job) return null;
     return {
-      client: getClientById(job.clientId),
-      technician: getUserById(job.technicianId),
+      client: job.client ?? null,
+      technician: job.technician ?? null,
     };
   }, [job]);
 
@@ -88,7 +87,7 @@ export default function JobDetail() {
 
 function JobDetailContent({ job, detail, navigate }) {
   const [modal, setModal] = useState(null);
-  const { verifyJob, rejectJob, reassignJob, cancelJob } = useAdminData();
+  const { verifyJob, rejectJob, reassignJob, cancelJob, technicians } = useAdminData();
 
   const meta = STATUS_META[job.status] ?? STATUS_META.PENDING;
   const jobHistory = [...(job.statusHistory ?? [])].reverse();
@@ -157,7 +156,7 @@ function JobDetailContent({ job, detail, navigate }) {
                   <p className="fs-label mb-1.5 text-gray-400 dark:text-gray-400">Location</p>
                   <div className="flex gap-3">
                     <div
-                      className="grid h-14 w-20 shrink-0 place-items-center rounded-card border border-black/5 bg-[linear-gradient(#f8fafc_1px,transparent_1px),linear-gradient(90deg,#f8fafc_1px,transparent_1px)] bg-size-[8px_8px] text-gray-300 dark:border-gray-800 dark:bg-gray-800"
+                      className="grid h-14 w-20 shrink-0 place-items-center rounded-card border border-black/5 bg-gray-50 text-gray-300 dark:border-gray-800 dark:bg-gray-800"
                       aria-hidden
                     >
                       <MapPin size={16} />
@@ -302,7 +301,7 @@ function JobDetailContent({ job, detail, navigate }) {
                 <button
                   type="button"
                   onClick={() => setModal("reassign")}
-                  className="fs-btn-press fs-focus-ring w-full rounded-button border border-black/8 bg-white px-4 py-2.5 text-[13px] font-medium text-gray-700 transition hover:border-brand-accent hover:text-brand-accent"
+                  className="fs-focus-ring w-full rounded-button border border-black/8 bg-white px-4 py-2.5 text-[13px] font-medium text-gray-700 transition hover:border-brand-accent hover:text-brand-accent"
                 >
                   Reassign Technician
                 </button>
@@ -311,7 +310,7 @@ function JobDetailContent({ job, detail, navigate }) {
                   <button
                     type="button"
                     onClick={() => setModal("verify")}
-                    className="fs-btn-press fs-focus-ring w-full rounded-button bg-green-600 px-4 py-2.5 text-[13px] font-medium text-white transition hover:bg-green-700"
+                    className="fs-focus-ring w-full rounded-button bg-green-600 px-4 py-2.5 text-[13px] font-medium text-white transition hover:bg-green-700"
                   >
                     Verify Job
                   </button>
@@ -321,7 +320,7 @@ function JobDetailContent({ job, detail, navigate }) {
                   <button
                     type="button"
                     onClick={() => rejectJob(job.id)}
-                    className="fs-btn-press fs-focus-ring w-full rounded-button border border-red-200 bg-white px-4 py-2.5 text-[13px] font-medium text-red-600 transition hover:bg-red-50"
+                    className="fs-focus-ring w-full rounded-button border border-red-200 bg-white px-4 py-2.5 text-[13px] font-medium text-red-600 transition hover:bg-red-50"
                   >
                     Reject Completion
                   </button>
@@ -331,7 +330,7 @@ function JobDetailContent({ job, detail, navigate }) {
                   <button
                     type="button"
                     onClick={() => navigate(`/admin/jobs/new`)}
-                    className="fs-btn-press fs-focus-ring w-full rounded-button border border-black/8 bg-white px-4 py-2.5 text-[13px] font-medium text-gray-700 transition hover:border-brand-accent hover:text-brand-accent"
+                    className="fs-focus-ring w-full rounded-button border border-black/8 bg-white px-4 py-2.5 text-[13px] font-medium text-gray-700 transition hover:border-brand-accent hover:text-brand-accent"
                   >
                     Edit Job Details
                   </button>
@@ -341,7 +340,7 @@ function JobDetailContent({ job, detail, navigate }) {
                   <button
                     type="button"
                     onClick={() => setModal("cancel")}
-                    className="fs-btn-press fs-focus-ring w-full rounded-button px-4 py-2.5 text-[13px] font-medium text-red-500 transition hover:bg-red-50"
+                    className="fs-focus-ring w-full rounded-button px-4 py-2.5 text-[13px] font-medium text-red-500 transition hover:bg-red-50"
                   >
                     Cancel Job
                   </button>
@@ -376,8 +375,9 @@ function JobDetailContent({ job, detail, navigate }) {
       )}
       {modal === "reassign" && (
         <ReassignModal
-          jobId={job.id}
-          currentTechnicianId={job.technicianId}
+          job={job}
+          currentTechnician={job.technician}
+          technicians={technicians}
           onConfirm={(techId) => reassignJob(job.id, techId)}
           onClose={() => setModal(null)}
         />
@@ -421,6 +421,7 @@ function SummaryRow({ label, value }) {
 
 function formatDateTime(value) {
   const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
   const day = new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
     month: "short",

@@ -1,67 +1,12 @@
 import { createContext, useContext, useState } from "react";
-import { getUserById } from "../utils/mockData";
-
-const MOCK_CREDENTIALS = [
-  {
-    email: "akosua@swiftfix.com",
-    password: "admin123",
-    userId: "user-1",
-    role: "ADMIN",
-  },
-  {
-    email: "kwame@swiftfix.com",
-    password: "tech123",
-    userId: "user-2",
-    role: "TECHNICIAN",
-  },
-  {
-    email: "ama@swiftfix.com",
-    password: "tech123",
-    userId: "user-3",
-    role: "TECHNICIAN",
-  },
-];
-
-const PASSWORDS_KEY = "fieldsync_passwords";
+import { useApolloClient } from "@apollo/client/react";
+import { CHANGE_PASSWORD_MUTATION } from "../../graphql/operations";
 
 const AuthContext = createContext(null);
 
-function readPasswordOverrides() {
-  try {
-    const raw = localStorage.getItem(PASSWORDS_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
-function writePasswordOverride(email, password) {
-  const overrides = readPasswordOverrides();
-  overrides[email.toLowerCase()] = password;
-  localStorage.setItem(PASSWORDS_KEY, JSON.stringify(overrides));
-}
-
-function resolvePassword(email) {
-  const overrides = readPasswordOverrides();
-  const match = MOCK_CREDENTIALS.find(
-    (c) => c.email.toLowerCase() === email.toLowerCase(),
-  );
-  if (!match) return null;
-  return overrides[email.toLowerCase()] ?? match.password;
-}
-
-function buildUserData(credential) {
-  const profile = getUserById(credential.userId);
-  return {
-    id: credential.userId,
-    email: credential.email,
-    role: credential.role,
-    name: profile?.name,
-    initials: profile?.initials,
-  };
-}
-
 export function AuthProvider({ children }) {
+  const apolloClient = useApolloClient();
+
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("fieldsync_user");
     return stored ? JSON.parse(stored) : null;
@@ -73,46 +18,92 @@ export function AuthProvider({ children }) {
     return userData;
   }
 
-  function login(email, password) {
-    // TODO: replace with Apollo useMutation(LOGIN) once backend is ready
-    const credential = MOCK_CREDENTIALS.find(
-      (c) => c.email.toLowerCase() === email.toLowerCase(),
-    );
-    if (!credential) {
-      throw new Error("Invalid email or password.");
+  async function login(email, password) {
+    const query = `mutation Login($email: String!, $password: String!) {
+      login(email: $email, password: $password) {
+        token
+        user { id name email phone role mustChangePassword }
+      }
+    }`;
+
+    const res = await fetch("/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, variables: { email, password } }),
+    });
+
+    const json = await res.json();
+
+    if (json.errors?.length) {
+      throw new Error(json.errors[0].message || "Login failed");
     }
-    const expected = resolvePassword(email);
-    if (password !== expected) {
-      throw new Error("Invalid email or password.");
-    }
-    return persistUser(buildUserData(credential));
+
+    const payload = json.data?.login;
+    if (!payload) throw new Error("Invalid login response");
+
+    const { token, user: u } = payload;
+    if (token) localStorage.setItem("fieldsync_token", token);
+
+    return persistUser({
+      id: u.id,
+      email: u.email,
+      phone: u.phone ?? null,
+      role: u.role,
+      name: u.name,
+      mustChangePassword: !!u.mustChangePassword,
+    });
   }
 
-  function activateFirstLogin(token, email, password) {
-    // TODO: replace with Apollo useMutation(ACTIVATE_FIRST_LOGIN) once backend is ready
+  async function changePassword(currentPassword, newPassword) {
+    const { data, errors } = await apolloClient.mutate({
+      mutation: CHANGE_PASSWORD_MUTATION,
+      variables: { currentPassword, newPassword },
+    });
+
+    if (errors?.length) {
+      throw new Error(errors[0].message || "Failed to change password");
+    }
+
+    const payload = data?.changePassword;
+    if (!payload) throw new Error("Invalid response from server");
+
+    const { token, user: u } = payload;
+    if (token) localStorage.setItem("fieldsync_token", token);
+
+    return persistUser({
+      id: u.id,
+      email: u.email,
+      phone: u.phone ?? null,
+      role: u.role,
+      name: u.name,
+      mustChangePassword: !!u.mustChangePassword,
+    });
+  }
+
+  async function activateFirstLogin(token, email, password) {
     if (!token?.trim()) {
       throw new Error("This invitation link is invalid or has expired.");
     }
-
-    const credential = MOCK_CREDENTIALS.find(
-      (c) => c.email.toLowerCase() === email.toLowerCase(),
-    );
-    if (!credential || credential.role !== "TECHNICIAN") {
-      throw new Error("Unable to activate this account.");
-    }
-
-    writePasswordOverride(email, password);
-    return persistUser(buildUserData(credential));
+    throw new Error("Account activation must be done through the backend.");
   }
 
   function logout() {
     localStorage.removeItem("fieldsync_user");
+    localStorage.removeItem("fieldsync_token");
     setUser(null);
+    apolloClient.clearStore();
   }
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, activateFirstLogin, isAuthenticated: !!user }}
+      value={{
+        user,
+        login,
+        logout,
+        changePassword,
+        activateFirstLogin,
+        isAuthenticated: !!user,
+      }}
     >
       {children}
     </AuthContext.Provider>

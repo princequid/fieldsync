@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import Modal from "../../../components/common/Modal";
-import { getJobById, getUserById, getTechnicians } from "../../../shared/utils/mockData";
 
-export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, onClose }) {
+export default function ReassignModal({
+  job,
+  currentTechnician,
+  technicians = [],
+  onConfirm,
+  onClose,
+}) {
   const [closing,    setClosing]    = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [reason,     setReason]     = useState("");
 
-  const job         = getJobById(jobId);
-  const currentTech = getUserById(currentTechnicianId);
-  const technicians = getTechnicians();
+  const currentTechnicianId = currentTechnician?.id ?? null;
 
   function animatedClose() {
     if (closing) return;
@@ -43,19 +46,19 @@ export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, o
 
       {/* Body */}
       <div className="fs-modal-body space-y-4">
-        {currentTech && (
+        {currentTechnician && (
           <div>
             <p className="fs-label mb-1.5 text-[#94A3B8]">Currently Assigned</p>
             <div className="inline-flex items-center gap-2 rounded-card border border-black/5 bg-gray-50 px-3 py-2 dark:bg-gray-800 dark:text-gray-200">
               <div
                 className="grid h-6 w-6 place-items-center rounded-full text-[10px] font-bold text-white"
-                style={{ background: "linear-gradient(135deg, #2E86AB, #1A6FA8)" }}
+                style={{ background: "#2E86AB" }}
               >
-                {currentTech.initials}
+                {currentTechnician.initials}
               </div>
-              <span className="text-[13px] font-medium text-[#0F172A] dark:text-gray-200">{currentTech.name}</span>
+              <span className="text-[13px] font-medium text-[#0F172A] dark:text-gray-200">{currentTechnician.name}</span>
               <span className="rounded-badge bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
-                {currentTech.activeJobs ?? 0} active
+                {currentTechnician.activeJobs ?? 0} active
               </span>
             </div>
           </div>
@@ -84,7 +87,7 @@ export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, o
                 >
                   <div
                     className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[11px] font-bold text-white"
-                    style={{ background: "linear-gradient(135deg, #2E86AB, #1A6FA8)" }}
+                    style={{ background: "#2E86AB" }}
                   >
                     {tech.initials}
                   </div>
@@ -132,7 +135,7 @@ export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, o
         <button
           type="button"
           onClick={animatedClose}
-          className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button border border-black/8 bg-white px-4 text-[13px] font-medium text-[#374151] transition-colors hover:border-brand-accent hover:text-brand-accent"
+          className="fs-focus-ring flex h-9 items-center rounded-button border border-black/8 bg-white px-4 text-[13px] font-medium text-[#374151] transition-colors hover:border-brand-accent hover:text-brand-accent"
         >
           Cancel
         </button>
@@ -140,10 +143,10 @@ export default function ReassignModal({ jobId, currentTechnicianId, onConfirm, o
           type="button"
           onClick={handleConfirm}
           disabled={!selectedId}
-          className="fs-btn-press fs-focus-ring flex h-9 items-center rounded-button px-4 text-[13px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+          className="fs-focus-ring flex h-9 items-center rounded-button px-4 text-[13px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
           style={{
-            background: "linear-gradient(180deg, #1E3A5F 0%, #162D4A 100%)",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
+            background: "#1E3A5F",
+            boxShadow: "var(--shadow-1)",
           }}
         >
           Confirm Reassignment

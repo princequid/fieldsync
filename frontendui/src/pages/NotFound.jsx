@@ -12,7 +12,7 @@ export default function NotFound() {
       : "/admin/dashboard";
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#f5f2ee] px-4 py-12 text-center dark:bg-gray-950">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#f4f4f5] px-4 py-12 text-center dark:bg-gray-950">
       <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
         <Search size={32} className="text-[#1E3A5F]" aria-hidden />
       </div>
@@ -23,7 +23,7 @@ export default function NotFound() {
       </p>
       <Link
         to={homePath}
-        className="mt-8 inline-flex min-h-11 items-center justify-center rounded-2xl bg-[#1E3A5F] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#17304d]"
+        className="mt-8 inline-flex min-h-11 items-center justify-center rounded-button bg-[#1E3A5F] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#17304d]"
       >
         {isAuthenticated ? "Back to dashboard" : "Back to login"}
       </Link>

@@ -17,7 +17,7 @@ export default function FormFooter({
     <div
       className={`fixed bottom-0 left-0 right-0 h-[68px] bg-white border-t border-[#F1F5F9] flex items-center justify-between px-6 dark:bg-gray-900 dark:border-gray-800 ${className}`}
       style={{
-        boxShadow: "0 -4px 12px rgba(0,0,0,0.04)",
+        boxShadow: "var(--shadow-1)",
       }}
     >
       <button

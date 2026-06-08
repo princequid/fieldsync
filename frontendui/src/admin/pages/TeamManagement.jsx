@@ -1,18 +1,32 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, Clock, MoreVertical, Plus, X, Zap } from "lucide-react";
-import { MOCK_JOBS } from "../../shared/utils/mockData";
 import { useAdminData } from "../hooks/useAdminData";
-import AddTechnicianModal from "../components/modals/AddTechnicianModal";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import EmptyState from "../../shared/components/EmptyState";
 import { TeamPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
 
 export default function TeamManagement() {
-  const { technicians, addTechnician, loading, error, refetch } =
-    useAdminData();
+  const { technicians, loading, error, refetch } = useAdminData();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTech, setSelectedTech] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
   const [menuOpen, setMenuOpen] = useState(null);
+
+  // Deep-link support: open a technician's profile directly via ?tech=<id>
+  useEffect(() => {
+    const techId = searchParams.get("tech");
+    if (!techId || !technicians.length) return;
+    const match = technicians.find((t) => t.id === techId);
+    if (match) setSelectedTech(match);
+    setSearchParams(
+      (prev) => {
+        prev.delete("tech");
+        return prev;
+      },
+      { replace: true },
+    );
+  }, [searchParams, setSearchParams, technicians]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -35,7 +49,7 @@ export default function TeamManagement() {
       <div className="fs-admin-page-bg min-h-screen px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-5">
           {/* Header */}
-          <header className="fs-card flex flex-col gap-4 border border-transparent px-5 py-5 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_1px_0_0_rgba(46,134,171,0.08)_inset,0_4px_24px_rgba(0,0,0,0.25)]">
+          <header className="fs-card flex flex-col gap-4 border border-transparent px-5 py-5 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800/80 dark:bg-gray-900/90">
             <div>
               <h1 className="fs-page-title dark:text-gray-50">Team</h1>
               <p className="mt-1 text-[13px] text-gray-500 dark:text-gray-400">
@@ -43,8 +57,8 @@ export default function TeamManagement() {
               </p>
             </div>
             <button
-              onClick={() => setShowAddModal(true)}
-              className="fs-btn-gradient-navy fs-btn-press fs-focus-ring inline-flex shrink-0 items-center gap-2 rounded-button px-4 py-2.5 text-[13px] font-medium text-white shadow-sm dark:shadow-[0_2px_12px_rgba(30,58,95,0.45)]"
+              onClick={() => navigate("/admin/team/new")}
+              className="fs-btn-gradient-navy fs-focus-ring inline-flex shrink-0 items-center gap-2 rounded-button px-4 py-2.5 text-[13px] font-medium text-white shadow-sm"
             >
               <Plus size={16} />
               Add Technician
@@ -52,14 +66,14 @@ export default function TeamManagement() {
           </header>
 
           {/* Table */}
-          <div className="fs-card overflow-hidden border border-transparent dark:border-gray-800/80 dark:bg-gray-900/90 dark:shadow-[0_4px_32px_rgba(0,0,0,0.28)]">
+          <div className="fs-card overflow-hidden border border-transparent dark:border-gray-800/80 dark:bg-gray-900/90">
             {technicians.length === 0 ? (
               <EmptyState
                 icon="👷"
                 title="No technicians yet"
                 subtitle="Add your first field technician to start assigning jobs."
                 action={{
-                  onClick: () => setShowAddModal(true),
+                  onClick: () => navigate("/admin/team/new"),
                   label: "Add Technician",
                 }}
               />
@@ -90,7 +104,8 @@ export default function TeamManagement() {
                     {technicians.map((tech) => (
                       <tr
                         key={tech.id}
-                        className="transition-colors hover:bg-gray-50/60 dark:hover:bg-gray-800"
+                        onClick={() => setSelectedTech(tech)}
+                        className="cursor-pointer transition-colors hover:bg-gray-50/60 dark:hover:bg-gray-800"
                       >
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
@@ -108,7 +123,7 @@ export default function TeamManagement() {
                           </div>
                         </td>
                         <td className="px-5 py-4 text-[13px] text-gray-600 dark:text-gray-300">
-                          {tech.phone}
+                          {tech.phone || "—"}
                         </td>
                         <td className="px-5 py-4 text-center text-[13px] font-semibold text-gray-900 dark:text-gray-100">
                           {tech.activeJobs ?? 0}
@@ -137,11 +152,11 @@ export default function TeamManagement() {
                             {tech.online ? "Online" : "Offline"}
                           </span>
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => setSelectedTech(tech)}
-                              className="fs-btn-press fs-focus-ring rounded-button border border-brand-accent/40 px-3 py-1.5 text-[11px] font-medium text-brand-accent transition hover:bg-brand-accent hover:text-white"
+                              className="fs-focus-ring rounded-button border border-brand-accent/40 px-3 py-1.5 text-[11px] font-medium text-brand-accent transition hover:bg-brand-accent hover:text-white"
                             >
                               View
                             </button>
@@ -153,12 +168,12 @@ export default function TeamManagement() {
                                     menuOpen === tech.id ? null : tech.id,
                                   );
                                 }}
-                                className="fs-btn-press rounded-button p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                className="rounded-button p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                               >
                                 <MoreVertical size={15} />
                               </button>
                               {menuOpen === tech.id && (
-                                <div className="absolute right-0 z-10 mt-1 w-44 overflow-hidden rounded-modal border border-black/6 bg-white shadow-3 dark:border-gray-800 dark:bg-gray-900">
+                                <div className="absolute right-0 z-10 mt-1 w-44 overflow-hidden rounded-modal border border-black/6 bg-white dark:border-gray-800 dark:bg-gray-900">
                                   <button className="block w-full px-4 py-2.5 text-left text-[13px] text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800">
                                     Edit Details
                                   </button>
@@ -188,13 +203,6 @@ export default function TeamManagement() {
             onClose={() => setSelectedTech(null)}
           />
         )}
-
-        {showAddModal && (
-          <AddTechnicianModal
-            onSuccess={(data) => addTechnician(data)}
-            onClose={() => setShowAddModal(false)}
-          />
-        )}
       </div>
     </AsyncPageContent>
   );
@@ -202,8 +210,9 @@ export default function TeamManagement() {
 
 function TechnicianDetailPanel({ tech, onClose }) {
   const [visible, setVisible] = useState(false);
+  const { jobs } = useAdminData();
 
-  const techJobs = MOCK_JOBS.filter((job) => job.technicianId === tech.id);
+  const techJobs = jobs.filter((job) => job.technicianId === tech.id);
   const completedCount = techJobs.filter(
     (j) => j.status === "COMPLETED" || j.status === "VERIFIED",
   ).length;
@@ -223,7 +232,7 @@ function TechnicianDetailPanel({ tech, onClose }) {
   return (
     <>
       <div
-        className={`fixed inset-0 z-40 bg-black/25 backdrop-blur-[2px] transition-opacity duration-280 ${
+        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-280 ${
           visible ? "opacity-100" : "opacity-0"
         }`}
         onClick={handleClose}
@@ -240,7 +249,7 @@ function TechnicianDetailPanel({ tech, onClose }) {
           </h2>
           <button
             onClick={handleClose}
-            className="fs-btn-press fs-focus-ring flex h-7 w-7 items-center justify-center rounded-button text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+            className="fs-focus-ring flex h-7 w-7 items-center justify-center rounded-button text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
           >
             <X size={16} />
           </button>
@@ -268,6 +277,10 @@ function TechnicianDetailPanel({ tech, onClose }) {
               />
               {tech.online ? "Online" : "Offline"}
             </span>
+            <div className="mt-3 space-y-0.5 text-[12px] text-gray-500 dark:text-gray-400">
+              <p>{tech.email}</p>
+              {tech.phone && <p>{tech.phone}</p>}
+            </div>
           </div>
 
           {/* Stats */}
@@ -321,7 +334,7 @@ function TechnicianDetailPanel({ tech, onClose }) {
             )}
           </div>
 
-          <button className="fs-btn-press fs-focus-ring w-full rounded-button border border-red-200 bg-red-50 px-4 py-2.5 text-[13px] font-medium text-red-600 transition hover:bg-red-100">
+          <button className="fs-focus-ring w-full rounded-button border border-red-200 bg-red-50 px-4 py-2.5 text-[13px] font-medium text-red-600 transition hover:bg-red-100">
             Deactivate Account
           </button>
         </div>
@@ -337,7 +350,7 @@ function StatTile({ icon, label, value }) {
       <p className="text-[15px] font-bold leading-tight text-gray-900 dark:text-gray-100">
         {value}
       </p>
-      <p className="text-[10px] uppercase tracking-wide text-gray-400 dark:text-gray-400">
+      <p className="text-[11px] text-gray-400 dark:text-gray-400">
         {label}
       </p>
     </div>

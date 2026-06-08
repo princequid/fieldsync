@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Camera } from "lucide-react";
+import { ArrowLeft, Camera, CheckCircle2 } from "lucide-react";
 import { useAuth } from "../../shared/context/AuthContext";
 import { useTechnicianData } from "../hooks/useTechnicianData";
 import ErrorState from "../../shared/components/ErrorState";
@@ -56,38 +56,8 @@ export default function CompleteJob() {
   if (showSuccess) {
     return (
       <div className="min-h-screen bg-[#F0EDE8] dark:bg-gray-950 flex items-center justify-center p-6">
-        <div className="w-full max-w-md rounded-[12px] bg-white dark:bg-gray-900 p-6 text-center">
-          <div className="mx-auto mb-4 flex h-18 w-18 items-center justify-center rounded-full bg-[#DCFCE7] dark:bg-green-900/30">
-            <svg
-              width="72"
-              height="72"
-              viewBox="0 0 72 72"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="36"
-                cy="36"
-                r="34"
-                fill="none"
-                stroke="#DCFCE7"
-                strokeWidth="0"
-              />
-              <path
-                id="check"
-                d="M22 37l8 8 20-20"
-                stroke="#22C55E"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                strokeDasharray="100"
-                strokeDashoffset="100"
-                style={{ animation: "drawCheck 500ms ease-out forwards" }}
-              />
-              <style>{`@keyframes drawCheck{to{stroke-dashoffset:0}}`}</style>
-            </svg>
-          </div>
+        <div className="w-full max-w-md rounded-card border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 p-6 text-center">
+          <CheckCircle2 className="mx-auto mb-4 text-green-600" size={36} aria-hidden />
           <h2
             className="text-[22px] font-bold text-[#15803D] dark:text-green-400"
             style={{ letterSpacing: "-0.5px" }}
@@ -103,8 +73,8 @@ export default function CompleteJob() {
           </p>
           <button
             onClick={() => navigate("/tech/jobs")}
-            className="mt-4 w-full h-12 rounded-[12px] text-white"
-            style={{ background: "linear-gradient(180deg,#2E86AB,#1A6FA8)" }}
+            className="mt-4 w-full h-12 rounded-card text-white"
+            style={{ background: "#2E86AB" }}
           >
             Back to My Jobs
           </button>
@@ -116,7 +86,7 @@ export default function CompleteJob() {
   return (
     <div className="min-h-screen bg-[#F0EDE8] dark:bg-gray-950">
       <div
-        className="max-w-md mx-auto mt-6 bg-white dark:bg-gray-900 rounded-[12px]"
+        className="max-w-md mx-auto mt-6 bg-white dark:bg-gray-900 rounded-card"
         style={{ margin: "0 24px" }}
       >
         <div style={{ padding: 20 }}>
@@ -172,7 +142,7 @@ export default function CompleteJob() {
             <form onSubmit={handleSubmit}>
               <label className="block">
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-semibold uppercase tracking-widest text-[#64748B] dark:text-gray-400">
+                  <span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">
                     Completion Note
                   </span>
                   <span className="text-[11px] text-[#94A3B8]">optional</span>
@@ -197,11 +167,8 @@ export default function CompleteJob() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-13 rounded-[12px] text-white font-semibold"
-                  style={{
-                    background: "linear-gradient(180deg,#22C55E,#16A34A)",
-                    boxShadow: "0 2px 8px rgba(34,197,94,0.35)",
-                  }}
+                  className="w-full h-13 rounded-card text-white font-semibold"
+                  style={{ background: "#16A34A" }}
                 >
                   {isSubmitting ? "Submitting..." : "Submit as Complete"}
                 </button>

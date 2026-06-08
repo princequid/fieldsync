@@ -5,7 +5,6 @@ import { useAdminData } from "../../admin/hooks/useAdminData";
 import AsyncPageContent from "../../shared/components/AsyncPageContent";
 import FormTransition from "../../shared/components/FormTransition";
 import { NewJobPageSkeleton } from "../../shared/components/skeletons/PageSkeletons";
-import { getTechnicians, getUserById } from "../../shared/utils/mockData";
 
 const PRIORITY_OPTIONS = [
   { value: "LOW", label: "Low" },
@@ -20,8 +19,7 @@ const INPUT_ERR_CLS =
 
 export default function NewJob() {
   const navigate = useNavigate();
-  const { clients, createJob, loading, error, refetch } = useAdminData();
-  const technicians = getTechnicians();
+  const { clients, technicians, createJob, loading, error, refetch } = useAdminData();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -77,20 +75,17 @@ export default function NewJob() {
         clientId: formData.clientId,
         technicianId: formData.technicianId,
         priority: formData.priority,
-        // TODO: these fields map to clientEmail, clientPhone, clientAddress on the CreateJobInput GraphQL type
-        clientEmail: formData.clientEmail,
-        clientPhone: formData.clientPhone,
-        clientAddress: formData.clientAddress,
         ...(formData.scheduledDate
           ? { scheduledDate: formData.scheduledDate }
           : {}),
       };
-      const newJob = createJob(jobData);
+      const newJob = await createJob(jobData);
       const technicianName =
-        getUserById(newJob.technicianId)?.name ?? "Unassigned";
+        technicians.find((t) => t.id === jobData.technicianId)?.name ??
+        "Unassigned";
       setSuccessData({
-        jobId: newJob.id,
-        jobNumber: newJob.jobNumber,
+        jobId: newJob?.id,
+        jobNumber: newJob?.jobNumber,
         technicianName,
       });
     } catch {
@@ -122,10 +117,8 @@ export default function NewJob() {
   if (successData) {
     return (
       <div className="fs-admin-page-bg min-h-screen px-4 py-10 sm:px-6 lg:px-8">
-        <div className="fs-card mx-auto max-w-lg border border-transparent p-8 text-center shadow-3 dark:border-gray-800/80 dark:bg-gray-900/95 dark:shadow-[0_8px_40px_rgba(0,0,0,0.35)]">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-50">
-            <CheckCircle2 className="text-green-500" size={28} />
-          </div>
+        <div className="fs-card mx-auto max-w-lg border border-transparent p-8 text-center dark:border-gray-800/80 dark:bg-gray-900/95">
+          <CheckCircle2 className="mx-auto mb-4 text-green-600" size={36} aria-hidden />
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-50">Job Created</h1>
           <p className="mt-2 text-[13px] text-gray-600 dark:text-gray-400">
             <span className="font-medium text-gray-900 dark:text-gray-300">
@@ -141,14 +134,14 @@ export default function NewJob() {
             <button
               type="button"
               onClick={handleReset}
-              className="fs-btn-secondary fs-btn-press fs-focus-ring rounded-button px-6 py-2.5 text-[13px]"
+              className="fs-btn-secondary fs-focus-ring rounded-button px-6 py-2.5 text-[13px]"
             >
               Create Another
             </button>
             <button
               type="button"
               onClick={() => navigate(`/admin/jobs/${successData.jobId}`)}
-              className="fs-btn-gradient-navy fs-btn-press fs-focus-ring rounded-button px-6 py-2.5 text-[13px] font-medium text-white"
+              className="fs-btn-gradient-navy fs-focus-ring rounded-button px-6 py-2.5 text-[13px] font-medium text-white"
             >
               View Job →
             </button>
@@ -168,7 +161,7 @@ export default function NewJob() {
       className="fs-admin-page-bg min-h-screen"
     >
       <div className="fs-admin-page-bg min-h-screen p-6 pb-28">
-        <div className="fs-card mx-auto max-w-2xl border border-transparent p-8 dark:border-gray-800/80 dark:bg-gray-900/95 dark:shadow-[0_4px_32px_rgba(0,0,0,0.3)]">
+        <div className="fs-card mx-auto max-w-2xl border border-transparent p-8 dark:border-gray-800/80 dark:bg-gray-900/95">
           <h1 className="fs-page-title dark:text-gray-50">Create New Job</h1>
           <p className="mt-1 text-[13px] text-gray-500 dark:text-gray-400">
             Fill in the details below to create and assign a new job.
@@ -217,7 +210,7 @@ export default function NewJob() {
                     <option value="">Select client…</option>
                     {clients.map((client) => (
                       <option key={client.id} value={client.id}>
-                        {client.companyName}
+                        {client.companyName ?? client.name}
                       </option>
                     ))}
                   </select>
@@ -328,14 +321,14 @@ export default function NewJob() {
               <button
                 type="button"
                 onClick={() => navigate("/admin/jobs")}
-                className="fs-btn-secondary fs-btn-press fs-focus-ring order-2 rounded-button px-5 py-2.5 text-[13px] sm:order-1"
+                className="fs-btn-secondary fs-focus-ring order-2 rounded-button px-5 py-2.5 text-[13px] sm:order-1"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting || hasErrors}
-                className="fs-btn-gradient-navy fs-btn-press fs-focus-ring order-1 rounded-button px-6 py-2.5 text-[13px] font-medium text-white shadow-sm disabled:pointer-events-none disabled:opacity-50 dark:shadow-[0_2px_14px_rgba(30,58,95,0.5)] sm:order-2"
+                className="fs-btn-gradient-navy fs-focus-ring order-1 rounded-button px-6 py-2.5 text-[13px] font-medium text-white shadow-sm disabled:pointer-events-none disabled:opacity-50 sm:order-2"
               >
                 {isSubmitting ? "Creating…" : "Create Job"}
               </button>

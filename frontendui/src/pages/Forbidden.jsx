@@ -8,8 +8,8 @@ export default function Forbidden() {
     user?.role === "TECHNICIAN" ? "/tech/jobs" : "/admin/dashboard";
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#f5f2ee] px-4 py-12 dark:bg-gray-950">
-      <div className="w-full max-w-md rounded-3xl bg-white p-10 text-center shadow-[0_20px_60px_rgba(30,58,95,0.12)] dark:border dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#f4f4f5] px-4 py-12 dark:bg-gray-950">
+      <div className="w-full max-w-md rounded-card bg-white p-8 text-center dark:border dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
           <Lock size={32} className="text-[#1E3A5F]" aria-hidden />
         </div>
@@ -19,7 +19,7 @@ export default function Forbidden() {
         </p>
         <Link
           to={dashboardPath}
-          className="mt-8 inline-flex min-h-11 items-center justify-center rounded-2xl bg-[#1E3A5F] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#17304d]"
+          className="mt-8 inline-flex min-h-11 items-center justify-center rounded-button bg-[#1E3A5F] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#17304d]"
         >
           Back to dashboard
         </Link>
