@@ -26,7 +26,8 @@ export function AuthProvider({ children }) {
       }
     }`;
 
-    const res = await fetch("/graphql", {
+    const apiUrl = import.meta.env.VITE_API_URL || "";
+    const res = await fetch(`${apiUrl}/graphql`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query, variables: { email, password } }),
